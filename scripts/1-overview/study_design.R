@@ -115,7 +115,7 @@ df_traits <- df_msmr_tenk10k[,
         legend.justification = c(1,1))
 )
 
-infographic <- png::readPNG("figures/study_design/infographics_v3.png", native = TRUE)
+infographic <- png::readPNG("figures/study_design/infographics_v4.png", native = TRUE)
 
 plots <- (wrap_elements(full = infographic) /
           wrap_elements(full = p_gene) / 

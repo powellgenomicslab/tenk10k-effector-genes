@@ -66,7 +66,7 @@ calc_spearman <- function(p1, p2){
 # ----------------------------------------------------------------------------------------------------------------------------------
 
 # source("scripts/preprocess_strict.R") #
-df_msmr_strict <- read_parquet("/g/data/fy54/analysis/tenk10k-causal/results/preprocessed/tenk10k_phase1.v2.parquet.gz") %>%
+df_msmr_strict <- read_parquet("/g/data/fy54/analysis/tenk10k-causal/results/preprocessed/tenk10k_phase1.v4.parquet.gz") %>%
     setDT()
 
 # start with the full mr result list - not filtered for sig only 
@@ -182,6 +182,8 @@ spearmancorr_results_summary %>%
 # Range of Spearman correlations for disease traits
 # ----------------------------------------------------------------------------------------------------------------------------------
 
+# Calculate stats for the manuscript
+
 trait_meta <- fread("resources/metadata/trait_metadata_n.tsv")
 disease_trait_labels <- trait_meta[supercategory == "disease", label]
 
@@ -192,13 +194,19 @@ disease_corrs <- spearmancorr_results_summary %>%
 cat(glue("Disease trait Spearman correlations: min = {min(disease_corrs$spearman_corr)}, max = {max(disease_corrs$spearman_corr)}"), "\n")
 
 
+# ----------------------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
 # TODO:
 # get hypermat p value BY corrected 
 # Is this just the max p value in the BY corrected matrix?
 
 # ----------------------------------------------------------------------------------------------------------------------------------
 # Test specific trait pairs
-# --------------------------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------------------
 
 # p1 <- "Estimated heel BMD"
 # p2 <- "Femur neck BMD"
