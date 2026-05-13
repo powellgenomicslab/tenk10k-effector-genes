@@ -1,12 +1,17 @@
 # preprocessing script with stringent MSMR results as the baseline results
+# note that df_msmr_tenk10k is an intermediate file created by the snakemake workflow: 
+# https://github.com/powellgenomicslab/tenk10k-causal/blob/main/workflow/rules/snakescripts/preprocess/tenk10k_phase1.v2.R#L108
+# gene universe is everything in df_msmr_tenk10k
 
 # preprocess main results
-library(data.table)
-library(tidyverse)
-library(arrow)
-library(fs)
-library(readxl)
-library(qvalue)
+suppressPackageStartupMessages({
+    library(data.table)
+    library(tidyverse)
+    library(arrow)
+    library(fs)
+    library(readxl)
+    library(qvalue)
+})
 
 major_cell_type_order <- c(
   "CD4 T", "CD8 T", "Unconventional T", "NK", "Plasma B", "B", "Monocyte", "Dendritic", "HSPC"
@@ -61,7 +66,25 @@ df_magma <- df_magma_all %>%
 df_msmr_tenk10k[, magma_gene := FALSE]
 df_msmr_tenk10k[df_magma, magma_gene := TRUE, on = c("probeID" = "GENE", "phenotype")]
 
-# annotate eqtlgen mr results
-df_msmr_tenk10k[, eqtlgen_mr := FALSE]
-df_msmr_tenk10k[df_msmr_eqtlgen, eqtlgen_mr := i.sig, on = c("probeID", "phenotype")]
+# coloc
+df_coloc <- read_parquet("results/aggregate/coloc/tenk10k_phase1.coloc.parquet.gz") %>%
+  mutate(across(c(PP.H0.abf:PP.H4.abf), as.numeric)) %>%
+  mutate(pp_h3_h4 = PP.H3.abf + PP.H4.abf,
+         sig = PP.H4.abf >= 0.8) %>%
+  filter(pheno %in% phenotypes, gene %in% gene_universe)
+
+# multivariant coloc
+df_mvcoloc <- read_parquet("results/aggregate/coloc/tenk10k_phase1.mvcoloc.parquet.gz") |> 
+  filter(pheno %in% phenotypes, gene %in% gene_universe) |> 
+  mutate(across(c(PP.H0.abf:PP.H4.abf), as.numeric)) |> 
+  mutate(pp_h3_h4 = PP.H3.abf + PP.H4.abf) |> 
+  # take maximum
+  group_by(gene, pheno, biosample) |> 
+  slice_max(PP.H4.abf, n = 1, with_ties = FALSE) |> 
+  setDT() |> 
+  mutate(sig = PP.H4.abf >= 0.8)
+
+# # annotate eqtlgen mr results
+# df_msmr_tenk10k[, eqtlgen_mr := FALSE]
+# df_msmr_tenk10k[df_msmr_eqtlgen, eqtlgen_mr := i.sig, on = c("probeID", "phenotype")]
 
