@@ -1,20 +1,23 @@
-## Purpose: Format breast_cimba GWAS summary statistics for downstream analysis
-## Input: Raw GWAS file, liftover chain, allele frequency panel
-## Output: Formatted .ma file
 library(data.table)
 library(tidyverse)
 
 setDTthreads(8)
+# setDTthreads(snakemake@threads)
 
 liftover_script <- snakemake@input[["liftover_script"]]
 gwas_file <- snakemake@input[["gwas"]]
 chain_file <- snakemake@input[["chain_file"]]
 pheno <- snakemake@wildcards[["pheno"]]
 
+# pheno <- "breast_cimba"
+# liftover_script <- "workflow/rules/snakescripts/hg19tohg38.R"
+# gwas_file <- paste0("resources/sumstats/gwas/", pheno, ".gwas")
+# chain_file <- "resources/misc/hg19ToHg38.over.chain"
 
 gwas_df <- fread(gwas_file) %>% 
     filter(CHR %in% 1:22)
 
+# Liftover code
 source(liftover_script)
 
 coord_df <- gwas_df[, .(CHR, BP, var_name)]
@@ -26,12 +29,14 @@ colnames(coord_hg38_df) <- c("CHR", "pos_b38", "var_name")
 
 out_df <- merge(gwas_df, coord_hg38_df, by = c("CHR", "var_name"))
 
+# Get MAF information from TenK10K panel
 df_tenk10k_freq <- fread("resources/genotypes_frq/tenk10k_phase1.frq")
 
 out_df[df_tenk10k_freq,
        `:=`(snp_id = i.SNP, A1.ref = i.A1, A2.ref = i.A2),
        on = c("CHR", "pos_b38" = "POS")]
 
+# format
 out_df_format <- out_df %>% 
     filter(!is.na(snp_id)) %>%
     arrange(CHR, pos_b38) %>% 
@@ -42,6 +47,8 @@ out_df_format <- out_df %>%
            freq, b, se = SE,  p = P, N)
 
 
+# Write results
 out_file <- snakemake@output[[1]]
+# out_file <- paste0("resources/pipeline_ma/", pheno, ".ma")
 fwrite(out_df_format, out_file, sep = "\t", na = "NA", quote = FALSE)
 

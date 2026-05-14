@@ -1,6 +1,4 @@
-## Purpose: Update MAGMA output with HGNC symbol and FDR statistics
-## Input: MAGMA genes.out file, gene location file
-## Output: Annotated MAGMA output TSV file
+# update magma output with hgnc symbol and fdr
 
 library(tidyverse)
 library(data.table)

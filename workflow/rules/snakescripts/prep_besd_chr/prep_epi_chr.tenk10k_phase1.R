@@ -1,6 +1,3 @@
-## Purpose: Prepare .epi files for BESD input from GTF annotation and cell-specific data
-## Input: GTF file, BESD source directory
-## Output: .epi files per cell and chromosome
 library(rtracklayer)
 library(data.table)
 library(fs)

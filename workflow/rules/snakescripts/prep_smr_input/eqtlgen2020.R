@@ -1,6 +1,4 @@
-## Purpose: Generate probe list and p-threshold for SMR from eQTLGen 2020 data
-## Input: eQTLGen summary statistics file
-## Output: Probe list and p-threshold text files
+# get probe list and p-threshold for SMR from eQTLGen 2020
 
 library(data.table)
 library(fs)

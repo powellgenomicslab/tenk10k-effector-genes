@@ -24,15 +24,15 @@ df_drug <- INPUT$otp_drug_dir %>%
     open_dataset() %>%
     filter_unique(diseaseId, df_trait_meta$query_id) %>%
     collect()
-
-# get summaries of target-diseae pairs
+    
+# summaries of target-diseae pairs
 df_drug_summary <- df_drug %>%
-    unnest(urls) %>%
+    # unnest(urls) %>%
     group_by(targetId, diseaseId) %>%
-    summarise(max_phase = max(phase, na.rm = TRUE),
+    summarise(max_score = max(score, na.rm = TRUE),
               n_drug = length(unique(drugId)),
-              mean_phase = mean(phase, na.rm = TRUE),
-              n_trial = length(url)) %>%
+              mean_score = mean(score, na.rm = TRUE),
+              n_trial = n()) %>%
     ungroup()
 
 fs::dir_create(PARAMS$output_dir)

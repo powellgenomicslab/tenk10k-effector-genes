@@ -1,4 +1,5 @@
-## Purpose: Convert MAGMA gene-level Z statistics to Zscore file for SC-DRS
+# scripts to convert MAGMA gene-level Z statistics to Zscore file used
+# for SC-DRS
 
 library(arrow)
 library(tidyverse)

@@ -1,7 +1,6 @@
-## Purpose: Summarize Open Targets target-disease evidence
-## Input: Open Targets disease dataset directory
-## Output: Disease summary TSV file
+# quantify open targets target-disease evidence
 
+# Using arrow / dplyr
 library(tidyverse)
 library(arrow)
 
@@ -9,6 +8,10 @@ INPUT <- snakemake@input
 OUTPUT <- snakemake@output
 PARAMS <- snakemake@params
 
+# read trait metadata
+# INPUT <- list(
+#     otp_disease_dir = "resources/nci/otp_output/25.03/disease"
+# )
 
 ds_disease <- open_dataset(INPUT$otp_disease_dir)
 

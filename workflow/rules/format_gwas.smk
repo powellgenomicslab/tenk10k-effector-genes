@@ -1,10 +1,8 @@
-...existing code...
+# snakemake rules to format GWAS summary stats
 
 rule format_gwas:
     """
-    Format GWAS summary statistics for a given phenotype.
-    Input: Raw GWAS file, trait metadata, chain file, liftover script
-    Output: Formatted .ma file
+    Format GWAS summary statistics
     """
     input:
         gwas = "resources/sumstats/gwas/{pheno}.gwas",
@@ -23,9 +21,7 @@ rule format_gwas:
 
 rule mk_tabix_region:
     """
-    Create tabix region file for genotype extraction.
-    Input: Genotype BIM files
-    Output: Tabix region file
+    Make tabix region file based on genotype file for extraction
     """
     input: expand("resources/genotypes/{{study}}_common/chr{chr}.bim", chr = range(1,23))
     output: "resources/misc/tabix_region/{study}_common.region"
@@ -42,17 +38,15 @@ def get_finngen_gwas(x):
     }
 
 rule extract_finngen_gwas:
-    """
-    Extract Finngen GWAS data for a given phenotype and region.
-    Input: Finngen GWAS file, tabix region file
-    Output: Extracted GWAS TSV file
-    """
     input:
         unpack(get_finngen_gwas),
         region = "resources/misc/tabix_region/{study}_common.region"
     output: temp("resources/sumstats/finngen_gwas_extract/{study}/{pheno}.tsv.gz")
     threads: 8
     envmodules: "htslib"
+    params:
+        # extract chr pos ref alt snp, af cohorts, estimate meta (all), rsid
+        # cols = ",".join([str(x) for x in [1, 2, 3, 4, 5, 9, 16, 20, 25, 30, 31, 32, 33, 34, 67]])
     shell:
         """
         tabix -hR {input.region} {input.gwas} | \
@@ -84,3 +78,36 @@ rule format_finngen_gwas:
     conda: "renv"
     log: "logs/format_finngen_gwas/{study}/{pheno}.log"
     script: "snakescripts/format_finngen_gwas.R"
+
+rule sumstats_diagnosis:
+    """
+    Run SuSie diagnostic tool to check consistency between LD matrix and GWAS summary statistics
+    """
+    input:
+        ld_matrix = "resources/ld/{study}.ld",
+        gwas_summary = "resources/sumstats/finngen_gwas_extract/{study}/{pheno}.ma"
+    output: "resources/sumstats/finngen_gwas_extract/{study}/{pheno}_susie_diag.txt"
+    threads: 8
+    conda: "renv"
+    log: "logs/sumstats_diagnosis/{study}/{pheno}.log"
+    script: "snakescripts/sumstats_diagnosis.R"
+
+rule split_ma_by_chr:
+    """
+    Split GWAS ma format by chromosome
+    """
+    input: "resources/ma/{pheno}.ma"
+    output: expand("resources/ma_by_chr/{{pheno}}/chr{chr}.ma", chr = range(1,23))
+    shell:
+        """
+        OUTDIR=$(dirname {output[0]})
+        mkdir -p $OUTDIR && \
+            awk -F'\\t' -v OFS='\\t' -v OUTDIR="$OUTDIR" '
+                NR==1 {{ $7='P'; header=$0; next }}
+                {{split($1, a, ":"); 
+                 chr=a[1]; 
+                 file=OUTDIR "/chr" chr ".ma"; 
+                 if (!seen[chr]++) {{print header > file;}}
+                 print $0 >> file;
+                }}' {input}
+        """

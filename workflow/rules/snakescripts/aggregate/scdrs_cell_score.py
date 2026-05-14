@@ -12,7 +12,7 @@ CELL_SCORE_FILES = snakemake.input.cell_score
 OUTPUT = snakemake.output
 
 # interactive
-# STUDY = "tenk10k_phase1"
+# STUDY = "immune_atlas"
 # ADATA_PKL = f"resources/scdrs/h5ad/{STUDY}.reg.h5ad.pkl"
 # ADATA = f"resources/scdrs/h5ad/{STUDY}.prep.h5ad"
 # CONFIG = f"resources/scdrs/config/{STUDY}.yaml"
@@ -47,14 +47,14 @@ sc.pp.log1p(adata)
 sc.pp.highly_variable_genes(adata, min_mean=0.0125, max_mean=3, min_disp=0.5)
 adata.raw = adata
 adata = adata[:, adata.var.highly_variable]
-sc.pp.regress_out(adata, ["total_counts", "pct_counts_mt"])
+sc.pp.regress_out(adata, config['regress_out_cols'])
 sc.pp.scale(adata, max_value=10)
 
 # PCA
 sc.tl.pca(adata, svd_solver="arpack", n_comps=30)
 
 # perform Harmony integration to remove technical batch effects between pools
-sc.external.pp.harmony_integrate(adata, "sequencing_library")
+sc.external.pp.harmony_integrate(adata, config['harmony_batch_col'])
 
 # Re-run UMAP on the Harmony principal components
 adata.obsm["X_pca"] = adata.obsm["X_pca_harmony"]

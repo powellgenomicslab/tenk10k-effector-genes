@@ -1,7 +1,3 @@
-## Purpose: Summarize drug mechanism of action from Open Targets ChEMBL data
-## Input: Drug, drug mechanism, and evidence dataset directories
-## Output: Drug mechanism summary TSV file
-
 # quantify open targets target-disease evidence
 
 # Using arrow / dplyr
@@ -14,9 +10,9 @@ PARAMS <- snakemake@params
 
 # read trait metadata
 # INPUT <- list(
-#     otp_drug_dir = "resources/nci/otp_output/25.06/drug_molecule",
-#     otp_drug_mechanism_dir = "resources/nci/otp_output/25.06/drug_mechanism_of_action",
-#     otp_evidence_dir = "resources/nci/otp_output/25.06/evidence"
+#     otp_drug_dir = "resources/nci/otp_output/25.12/drug_molecule",
+#     otp_drug_mechanism_dir = "resources/nci/otp_output/25.12/drug_mechanism_of_action",
+#     otp_evidence_chembl_dir = "resources/nci/otp_output/25.12/evidence_chembl"
 # )
 
 
@@ -32,15 +28,17 @@ df_drug_mechanism <- ds_drug_mechanism %>%
 # get drug annotations
 ds_drug <- open_dataset(INPUT$otp_drug_dir)
 df_drug <- ds_drug %>%
-    select(id, drugType, name, yearOfFirstApproval,
-           maximumClinicalTrialPhase) %>% 
+    select(id, drugType, name,
+        #    yearOfFirstApproval, # removed in 26.03
+          maximumClinicalStage
+        ) %>% 
     collect() %>% 
     rename(drugId = id) %>%
     distinct()
 
-ds_evidence <- open_dataset(INPUT$otp_evidence_dir)
+ds_evidence <- open_dataset(INPUT$otp_evidence_chembl_dir)
 df_evidence <- ds_evidence %>%
-    filter(datasourceId == "chembl") %>% 
+    # filter(datasourceId == "chembl") %>% 
     select(drugId, targetId, diseaseId, score) %>%
     collect() %>% 
     distinct()

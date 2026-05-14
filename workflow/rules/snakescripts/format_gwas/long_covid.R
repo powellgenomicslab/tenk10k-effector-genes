@@ -28,7 +28,7 @@ output_df <- gwas_df %>%
            freq = fifelse(alt == A1, alt_allele_freq, 1 - alt_allele_freq),
            N = floor(4 / (1/N_case + 1/N_control)),
            p = 10^(-neg_log_pvalue)) %>% 
-    select(SNP, A1, A2, freq, beta, se = stderr_beta, p, N)
+    select(SNP, A1, A2, freq, b = beta, se = stderr_beta, p, N)
 
 # Write results    
 fwrite(output_df, snakemake@output[[1]], sep = "\t", na = "NA", quote = FALSE)

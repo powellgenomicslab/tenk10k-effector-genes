@@ -1,4 +1,7 @@
+# Rules to run scDRS
+
 wildcard_constraints:
+    # exclude forward slash
     study="[^/]+",
     phenotype="[^/]+"
 
@@ -34,6 +37,28 @@ rule scdrs_munge_gs:
             --fdr {params.fdr}
         """
 
+# def get_covar_study(x):
+#     dir_covar = Path(f"resources/scdrs/sc_covar/{x.study}")
+#     return [str(f) for f in list(dir_covar.glob("*.covar.csv"))]
+
+rule h5ad_annot:
+    """
+    Convert .h5ad file to .rds file for scPred annotation
+    """
+    input:
+        h5ad = "resources/scdrs/h5ad/{study}.prep.h5ad",
+        ref_scpred = "resources/scpred/{study}.{annot}.ref.rds"
+    output:
+        raw = "results/scdrs/annot_sample/{study}.{annot}.raw.csv",
+        format = "results/scdrs/annot_sample/{study}.{annot}.format.csv"
+    conda: "r-sc"
+    resources:
+        ncpus = 8,
+        mem =  "300G",
+        queue = "hugemem",
+        jobfs = "20G"
+    log: "logs/scdrs/{study}.{annot}.h5ad_to_rds.log"
+    script: "snakescripts/scdrs/annot/{wildcards.annot}.R"
 
 checkpoint chunk_gs:
     """
@@ -132,6 +157,24 @@ rule scdrs_get_top_score:
     log: "logs/scdrs/{study}-{phenotype}.get_top_score.log"
     script: "snakescripts/scdrs/get_top_score.py"
 
+rule scdrs_annot_stats:
+    """
+    Compute cell-type level stats for custom annotations
+    """
+    input:
+        reg_pkl = "resources/scdrs/h5ad/{study}.reg.h5ad.pkl",
+        cell_score = "results/scdrs/cell_score/{study}/{phenotype}.cell_score.tsv.parquet.gz",
+        config = "resources/scdrs/config/{study}.yaml",
+        annot = "results/scdrs/annot_sample/{study}.{annot}.format.csv"
+    output: "results/scdrs/cell_type_annot/{study}/{phenotype}.{annot}.stats.tsv"
+    conda: "scverse"
+    resources:
+        ncpus = 8,
+        mem =  "48G"
+    log: "logs/scdrs/{study}-{phenotype}-{annot}.annot_stats.log"
+    script: "snakescripts/scdrs/cell_type_stats_annot.py"
+
+
 
 # aggregate scdrs per phenotype
 def scdrs_aggregate_stat(x):
@@ -159,6 +202,27 @@ rule scdrs_aggregate_stat:
     conda: "renv"
     script: "snakescripts/aggregate/scdrs_cell_type.R"
     
+
+def scdrs_aggregate_stat_annot(x):
+    """
+    Aggregate scDRS cell type stats per phenotype for custom annotations
+    """
+    dir_gs = Path(str(checkpoints.chunk_gs.get(**x).output[0]))
+    gs_files = dir_gs.glob("*.gs")
+    traits = [str(gs_file.stem) for gs_file in gs_files]
+
+    celltype_stats_files = [f"results/scdrs/cell_type_annot/{x.study}/{p}.{x.annot}.stats.tsv" for p in traits]
+    return celltype_stats_files
+
+rule scdrs_aggregate_stat_annot:
+    input: scdrs_aggregate_stat_annot
+    output: "results/aggregate/{study}.scdrs.{annot}.stats.tsv",
+    resources:
+        ncpus = 8,
+        mem =  "64G"
+    log: "logs/aggregate/{study}.scdrs.{annot}.stats.log"
+    conda: "renv"
+    script: "snakescripts/aggregate/scdrs_custom_annot.R"
 
 def scdrs_aggregate_score(x):
     """
@@ -236,5 +300,31 @@ rule scdrs_aggregate_score:
 #         mem =  "600G",
 #         queue = "hugemem",
 #         time = "48:00:00"
-
 #     log: "logs/scdrs/compute_score.{study}.log"
+#     params:
+#         h5ad_species = lambda x: scdrs_read_params(x, 'h5ad_species'),
+#         gs_species = lambda x: scdrs_read_params(x, 'gs_dst_species'),
+#         filter_data = lambda x: scdrs_read_params(x, 'filter_data'),
+#         raw_count = lambda x: scdrs_read_params(x, 'raw_count'),
+#         n_ctrl = lambda x: scdrs_read_params(x, 'n_ctrl'),
+#         adj_prop_col = lambda x: scdrs_read_params(x, 'adj_prop_col'),
+#         return_ctrl_raw_score = lambda x: scdrs_read_params(x, 'return_ctrl_raw_score'),
+#         return_ctrl_norm_score = lambda x: scdrs_read_params(x, 'return_ctrl_norm_score')
+#     shell:
+#         """
+#         mkdir -p {output}
+#         scdrs compute-score \
+#             --h5ad-file {input.prep_h5ad} \
+#             --h5ad-species {params.h5ad_species} \
+#             --gs-file {input.gs} \
+#             --gs-species {params.gs_species} \
+#             --out-folder {output} \
+#             --cov-file {input.cov} \
+#             --flag-filter-data {params.filter_data} \
+#             --flag-raw-count {params.raw_count} \
+#             --n-ctrl {params.n_ctrl} \
+#             --adj-prop {params.adj_prop_col} \
+#             --flag-return-ctrl-raw-score {params.return_ctrl_raw_score}  \
+#             --flag-return-ctrl-norm-score {params.return_ctrl_norm_score}  
+#         """
+

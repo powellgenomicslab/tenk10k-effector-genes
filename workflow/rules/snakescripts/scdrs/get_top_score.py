@@ -1,7 +1,3 @@
-# Purpose: Identify top-scoring cells by percentile for scDRS analysis
-# Input: Preprocessed AnnData (pickle), cell score parquet, config YAML
-# Output: Top cell score statistics per cell type
-
 import scdrs
 import scanpy as sc
 import pandas as pd
@@ -54,4 +50,4 @@ counts_df = pd.concat(counts.values(), axis=1).reset_index()
 # Save counts to a file
 Path(str(OUTPUT)).parent.mkdir(parents=True, exist_ok=True)
 
-counts_df.to_csv(str(OUTPUT), sep="\t", index=False)
+counts_df.to_csv(str(OUTPUT), sep="\t", index=False)    

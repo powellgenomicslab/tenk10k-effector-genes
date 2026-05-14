@@ -1,6 +1,3 @@
-## Purpose: Prepare gene list from GTF annotation for SMR analysis
-## Input: GTF file
-## Output: Gene list text file
 library(rtracklayer)
 library(data.table)
 library(fs)
@@ -9,6 +6,8 @@ library(tidyverse)
 GTF <- snakemake@input[[1]]
 OUTPUT <- snakemake@output[[1]]
 
+# GTF <- "resources/smr_misc/tenk10k_phase1.gtf.gz"
+# OUTPUT <- "resources/smr_misc/tenk10k_phase1.genelist.txt"
 
 df_gtf <- readGFF(GTF)
 

@@ -1,7 +1,3 @@
-# Purpose: Compute scDRS cell scores for a given phenotype using preprocessed data and gene sets
-# Input: Preprocessed AnnData (pickle), gene set file, config YAML
-# Output: Cell score and cell type statistics files
-
 import scdrs
 import scanpy as sc
 import pandas as pd
@@ -21,11 +17,12 @@ OUT_CELLTYPE = OUTPUT['celltype']
 TRAIT = snakemake.wildcards.phenotype
 
 # Interactive test
-# REG_PKL = "resources/scdrs/h5ad/tenk10k_phase1.reg.h5ad.pkl" 
-# GS = "resources/scdrs/gs_chunked/tenk10k_phase1/crohns.gs"
-# CONFIG = "resources/scdrs/config/tenk10k_phase1.yaml"
-# OUT_CELL =  "results/scdrs/cell_score/tenk10k_phase1/crohns.cell_score.tsv.parquet.gz"
-# OUT_CELLTYPE =  "results/scdrs/cell_type_stats/tenk10k_phase1/crohns.cell_type_stats.tsv"
+# REG_PKL = "resources/scdrs/h5ad/immune_atlas.reg.h5ad.pkl" 
+# TRAIT = "crohns"
+# GS = "resources/scdrs/gs_chunked/immune_atlas/crohns.gs"
+# CONFIG = "resources/scdrs/config/immune_atlas.yaml"
+# OUT_CELL =  "results/scdrs/cell_score/immune_atlas/crohns.cell_score.tsv.parquet.gz"
+# OUT_CELLTYPE =  "results/scdrs/cell_type_stats/immune_atlas/crohns.cell_type_stats.tsv"
 # Load config
 with open(CONFIG, 'r') as f:
     config = yaml.safe_load(f)
@@ -33,6 +30,10 @@ with open(CONFIG, 'r') as f:
 # Load preprocessed pickled data
 with open(REG_PKL, 'rb') as f:
     adata = pickle.load(f)
+
+# computate neighborhood graph if not exist
+if 'connectivities' not in adata.obsp.keys():
+    sc.pp.neighbors(adata, n_neighbors=15, n_pcs=50)
 
 # Load geneset
 dict_gs = scdrs.util.load_gs(

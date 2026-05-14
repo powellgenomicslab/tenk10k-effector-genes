@@ -1,7 +1,3 @@
-# Purpose: Perform gene set enrichment analysis using Enrichr via gget
-# Input: MSMR significant genes, gene universe, gene set list
-# Output: Enrichment results per biosample/phenotype
-
 import gget
 import pandas as pd
 from gget.compile import PACKAGE_PATH

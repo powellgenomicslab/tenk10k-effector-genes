@@ -1,6 +1,5 @@
-## Purpose: Extract and summarize Open Targets association results
-## Input: Trait metadata, association datasets
-## Output: Association results in parquet format
+# extract association results
+# Using arrow / dplyr
 library(tidyverse)
 library(arrow)
 library(readxl)
@@ -9,6 +8,7 @@ INPUT <- snakemake@input
 OUTPUT <- snakemake@output
 PARAMS <- snakemake@params
 
+# read trait metadata
 df_trait_meta <- read_excel(INPUT$trait_metadata)
 
 # helper function to query a dataset

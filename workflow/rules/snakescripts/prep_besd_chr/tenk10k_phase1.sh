@@ -1,7 +1,4 @@
 #!/bin/bash -l
-# Purpose: Prepare BESD and EPI files for TenK10K phase1 analysis
-# Input: BESD source directory, GTF file
-# Output: Linked BESD/ESI files and processed EPI files per cell and chromosome
 
 # prepare BESD file for tenk10k phase1
 

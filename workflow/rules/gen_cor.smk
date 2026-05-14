@@ -1,11 +1,9 @@
+# run Genetic correlations analysis to get N independent traits
+
 rule ldak_calc_tag_file:
-    """
-    Calculate LDAK tag files for each chromosome.
-    Input: Genotype files (bed, bim, fam)
-    Output: Tagging file per chromosome
-    """
     input:
-        bfiles = expand("resources/genotypes/{{study}}/chr{{chr}}.{ext}", ext=["bed", "bim", "fam"], chr=range(1, 23)),
+        bfiles = expand("resources/genotypes/{{study}}/chr{{chr}}.{ext}",
+                        ext = ["bed", "bim", "fam"], chr = range(1, 23)),
     output:
         "resources/ldak/tagfiles/{study}/chr{chr}.tagging"
     params:
@@ -22,13 +20,9 @@ rule ldak_calc_tag_file:
         """
 
 rule ldak_join_tag_files:
-    """
-    Join LDAK tag files across all chromosomes.
-    Input: Tagging files per chromosome
-    Output: Merged taglist and tagging file
-    """
     input:
-        tags = expand("resources/ldak/tagfiles/{{study}}/chr{chr}.tagging", chr=range(1, 23)),
+        tags = expand("resources/ldak/tagfiles/{{study}}/chr{chr}.tagging",
+                      chr = range(1, 23)),
     output:
         taglist = "resources/ldak/tag_merged/{study}.taglist.txt",
         tagging = "resources/ldak/tag_merged/{study}.tagging"
@@ -38,16 +32,11 @@ rule ldak_join_tag_files:
     shell:
         """
         mkdir -p resources/ldak/tag_merged
-        echo {input.tags} | tr ' ' '\n' > {output.taglist}
+        echo {input.tags} | tr ' ' '\\n' > {output.taglist}
         ldak --join-tagging {params.out_prefix} --taglist {output.taglist}
         """
 
 rule ldak_format_ma_sumstats:
-    """
-    Format GWAS summary statistics for LDAK analysis.
-    Input: GWAS .ma file, trait metadata
-    Output: LDAK-formatted summary statistics
-    """
     input:
         ma = "resources/ma/{phenotype}.ma",
         trait_metadata = "resources/metadata/trait_metadata_curated.xlsx"
@@ -95,11 +84,17 @@ rule ldak_gen_cor:
             --allow-ambiguous {params.allow_ambiguous}
         """
 
+
+rule mk_trait_list:
+    output: "resources/ldak/trait_list/{study}.txt"
+    conda: "renv"
+    script: "snakescripts/prep_trait_list/{wildcards.study}.R"
+
 rule mk_pairwise_trait:
     """
     make pairwise combination of traits
     """
-    input: "resources/metadata/{study}.trait_list.txt"
+    input: "resources/ldak/trait_list/{study}.txt"
     output: "resources/ldak/misc/{study}.trait_pairs.gen_cor.txt"
     params:
         ldak_prefix = "results/gen_cor/{study}"
@@ -126,3 +121,42 @@ rule gencor_eigen:
     conda: "renv"
     log: "logs/gen_cor/{study}.eigen.log"
     script: "snakescripts/aggregate/gen_cor_eigen.R"
+
+# rule ldak_gen_cor_all:
+#     input: ldak_gen_cor_all
+#     output: touch("results/.done/gen_cor.{study}.done")
+#     shell: "mkdir -p $(dirname {output}) && touch {output}"
+
+# rule ldsc_munge_sumstats:
+#     input:
+#         script = "softwares/ldsc/munge_sumstats.py"
+#     output:
+#         "results/gen_cor/{trait}_munge_sumstats.txt"
+#     params:
+#         trait="{trait}"
+#     log:
+#         "logs/gen_cor/{trait}.log"
+#     shell:
+#         """
+#         echo "Running munge sumstats for {params.trait}" > {log}
+#         # Simulate the command for munge sumstats
+#         echo "Munged sumstats for {params.trait}" > {output}
+#         echo "Munge completed for {params.trait}" >> {log}
+#         """
+
+# rule ldsc_rho:
+#     input:
+#         script = "softwares/ldsc/ldsc.py"
+#     output:
+#         "results/gen_cor/{trait}_gen_cor.txt"
+#     params:
+#         trait="{trait}"
+#     log:
+#         "logs/gen_cor/{trait}.log"
+#     shell:
+#         """
+#         echo "Running genetic correlation analysis for {params.trait}" > {log}
+#         # Simulate the command for genetic correlation analysis
+#         echo "Genetic correlation results for {params.trait}" > {output}
+#         echo "Analysis completed for {params.trait}" >> {log}
+#         """

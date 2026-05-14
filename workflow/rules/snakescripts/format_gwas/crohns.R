@@ -36,6 +36,7 @@ gwas_df <- fread(gwas) %>%
            CHR = as.numeric(CHR)) %>%
     filter(!is.na(AF_NFE), CHR %between% c(1,22))
 
+
 # match with tenk10k variants
 df_tenk10k_freq <- fread("resources/genotypes_frq/tenk10k_phase1.frq")
 

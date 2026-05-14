@@ -1,7 +1,3 @@
-# Purpose: Perform phenotype-specific gene set enrichment analysis using Enrichr via gget
-# Input: MSMR significant genes, gene universe, gene set list, phenotype
-# Output: Enrichment results per phenotype
-
 import gget
 import pandas as pd
 from pathlib import Path

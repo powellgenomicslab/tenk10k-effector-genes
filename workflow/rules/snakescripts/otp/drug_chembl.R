@@ -1,7 +1,6 @@
-## Purpose: Summarize Open Targets drug evidence from ChEMBL
-## Input: Open Targets evidence dataset directory
-## Output: Drug evidence summary TSV file
+# quantify open targets target-disease evidence
 
+# Using arrow / dplyr
 library(tidyverse)
 library(arrow)
 
@@ -9,6 +8,10 @@ INPUT <- snakemake@input
 OUTPUT <- snakemake@output
 PARAMS <- snakemake@params
 
+# read trait metadata
+# INPUT <- list(
+#     otp_evidence_dir = "resources/nci/otp_output/25.06/evidence"
+# )
 
 ds <- open_dataset(INPUT$otp_evidence_dir)
 

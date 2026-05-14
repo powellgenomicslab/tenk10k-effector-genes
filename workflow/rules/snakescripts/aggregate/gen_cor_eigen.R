@@ -1,11 +1,10 @@
-## Purpose: Calculate genetic correlation matrix using eigen decomposition
-## Input: LDAK genetic correlation .tsv file
-## Output: Genetic correlation matrix .tsv
 library(tidyverse)
 
 INPUT <- snakemake@input
 OUTPUT <- snakemake@output
 
+# INPUT <- list("results/aggregate/tenk10k_phase1.gen_cor.ldak.tsv")
+# OUTPUT <- list("results/aggregate/tenk10k_phase1.gen_cor_eigen.tsv")
 
 df_all <- read_tsv(INPUT[[1]])
 

@@ -4,6 +4,7 @@ import pandas as pd
 import yaml
 from pathlib import Path
 import pickle
+import numpy as np
 
 INPUT = snakemake.input
 OUTPUT = snakemake.output
@@ -14,15 +15,19 @@ COV = INPUT['cov']
 OUT = OUTPUT[0]
 
 # Interactive test
-# H5AD = "resources/scdrs/h5ad/tenk10k_phase1.prep.h5ad"   
-# COV = "resources/scdrs/cov/tenk10k_phase1.cov.tsv"
-# CONFIG = "resources/scdrs/config/tenk10k_phase1.yaml"
-# OUT = "resources/scdrs/cov/tenk10k_phase1.reg.h5ad.pkl"
+# STUDY = "immune_atlas"
+# H5AD = f"resources/scdrs/h5ad/{STUDY}.prep.h5ad"   
+# COV = f"resources/scdrs/cov/{STUDY}.cov.tsv"
+# CONFIG = f"resources/scdrs/config/{STUDY}.yaml"
+# OUT = f"resources/scdrs/cov/{STUDY}.reg.h5ad.pkl"
 
 with open(CONFIG, 'r') as f:
     config = yaml.safe_load(f)
 
 df_cov = pd.read_csv(COV, sep="\t", index_col=0)
+
+df_cov = pd.get_dummies(df_cov, drop_first=True).astype(float)
+
 
 adata = scdrs.util.load_h5ad(
     h5ad_file=H5AD,

@@ -1,6 +1,3 @@
-## Purpose: Combine pairwise LDAK genetic correlation results
-## Input: List of pairwise LDAK .tsv files
-## Output: Combined genetic correlation .tsv
 library(tidyverse)
 library(data.table)
 

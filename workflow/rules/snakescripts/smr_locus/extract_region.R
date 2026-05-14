@@ -1,7 +1,3 @@
-## Purpose: Extract genomic region around probe for SMR locus analysis
-## Input: GTF file, probe ID, flank size, other resources
-## Output: Region of interest for downstream analysis
-
 library(rtracklayer)
 library(GenomicRanges)
 library(data.table)

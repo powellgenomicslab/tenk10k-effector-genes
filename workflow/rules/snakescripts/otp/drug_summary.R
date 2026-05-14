@@ -1,7 +1,6 @@
-## Purpose: Summarize known drug information from Open Targets
-## Input: Known drug dataset directory
-## Output: Drug summary TSV file
+# quantify open targets target-disease evidence
 
+# Using arrow / dplyr
 library(tidyverse)
 library(arrow)
 
@@ -9,6 +8,10 @@ INPUT <- snakemake@input
 OUTPUT <- snakemake@output
 PARAMS <- snakemake@params
 
+# read trait metadata
+# INPUT <- list(
+#     otp_drug_dir = "resources/nci/otp_output/25.03/known_drug"
+# )
 
 ds_drug <- open_dataset(INPUT$otp_drug_dir)
 

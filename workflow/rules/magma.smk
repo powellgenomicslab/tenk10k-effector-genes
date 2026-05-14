@@ -1,7 +1,8 @@
+# workflow to run magma
+# URL: https://cncr.nl/research/magma/
+
+
 rule magma_gene_annot:
-    """
-    Annotate genes using MAGMA from SNP and gene location files.
-    """
     input:
         snp_loc = "resources/genotypes/{geno_set}/chr{chr}.bim",
         gene_loc = "resources/magma/geneanno.loc"
@@ -20,16 +21,13 @@ rule magma_gene_annot:
 
 def get_n_trait(x):
     """
-    Get the number of samples for a given phenotype from metadata file.
+    Get the number of samples for a given pheno from metadata file
     """
     df_meta = pd.read_csv("resources/metadata/trait_metadata_n.tsv", encoding_errors = "ignore", sep="\t")
     n = df_meta.loc[df_meta['trait_id'] == x.pheno, 'n_eff'].values[0]
     return int(n)
 
 rule magma_calc_gene_assoc:
-    """
-    Calculate gene-level association statistics using MAGMA for each chromosome and phenotype.
-    """
     input:
         gwas_file = "resources/ma/{pheno}.ma",
         bfile = expand("resources/genotypes/{{geno_set}}/chr{{chr}}.{ext}", \
@@ -52,10 +50,8 @@ rule magma_calc_gene_assoc:
 	        --out {params.prefix_out}
         """
     
+# aggregate results
 rule magma_agg_gene_assoc:
-    """
-    Aggregate gene association results across all chromosomes for a given phenotype and genotype set.
-    """
     input:
         out = expand("results/magma/output/{{pheno}}/{{geno_set}}/chr{chr}.genes.out", \
                chr = range(1,23)),
@@ -70,10 +66,8 @@ rule magma_agg_gene_assoc:
         awk 'NR == FNR {{print; next}} FNR > 2' {input.raw} > {output.raw}
 		"""
 
+# update gene out with hgnc_symbols & fdr correction (with qvalue)
 rule magma_format_output:
-    """
-    Update gene output with HGNC symbols and FDR correction (qvalue).
-    """
     input:
         out = rules.magma_agg_gene_assoc.output.out,
         gene_loc = "resources/magma/geneanno.loc"
@@ -86,7 +80,7 @@ rule magma_format_output:
 # run results for all trait
 def get_trait_input(x):
     """
-    Get the input files for all traits for aggregation.
+    Get the input for all traits
     """
     df_meta = pd.read_csv("resources/metadata/trait_metadata_n.tsv", encoding_errors = "ignore", sep="\t")
     pheno_meta = df_meta['trait_id'].unique()
@@ -97,9 +91,6 @@ def get_trait_input(x):
     return files
 
 rule magma_all_trait:
-    """
-    Aggregate MAGMA results for all traits and output as parquet file.
-    """
     input: get_trait_input
     output: "results/aggregate/{geno_set}.magma.gz.parquet"
     conda: "renv"
