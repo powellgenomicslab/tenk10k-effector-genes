@@ -1,0 +1,4 @@
+[submodule "TenK10K_causal_inference_vs_IBDverse"]
+	path = TenK10K_causal_inference_vs_IBDverse
+	url = https://github.com/powellgenomicslab/TenK10K_causal_inference_vs_IBDverse
+	branch = main
