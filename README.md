@@ -78,7 +78,7 @@ For detailed instructions on each analysis step, see the README files in each su
 
 ## Data Availability
 
-Summary statistics for single-cell eQTL and MR results will be deposited on Zenodo following manuscript publication.
+Summary statistics for single-cell eQTL and MR results will be deposited on Zenodo and/or Hugging Face following manuscript publication.
 
 ## Citation
 
@@ -86,9 +86,9 @@ If you use this code or data in your research, please consider citing
 
 **Preprint**:
 
-Henry, A., Senabouth, A., et al. Single-cell genetics identifies cell type-specific causal mechanisms in complex traits and diseases. medRxiv 2025.08.28.25334614 (2025) doi:10.1101/2025.08.28.25334614
+Henry, A., Senabouth, A., Tyebally, R., et al. Single-cell genetics identifies cell type-specific causal mechanisms in complex traits and diseases. medRxiv 2025.08.28.25334614 (2025) doi:10.1101/2025.08.28.25334614
 
-[medRxiv link](https://www.medrxiv.org/content/10.1101/2025.08.28.25334614v1)
+[medRxiv link](https://www.medrxiv.org/content/10.1101/2025.08.28.25334614v2)
 
 See [`CITATION.md`](CITATION.md) for citations on specific methods / datasets used in this study.
 
@@ -96,6 +96,6 @@ See [`CITATION.md`](CITATION.md) for citations on specific methods / datasets us
 ## Acknowledgments
 
 - TenK10K study members and contributors
-- Data providers and consortia (eQTLGen, GWAS consortia)
+- Data providers and consortia (eQTLGen, IBDverse, GWAS consortia, STRING, Open Targets)
 - Software developers & maintainers (Snakemake, R/Bioconductor, R Tidyverse, Python scientific computing ecosystem, MAGMA, scDRS, PLINK)
 - Computational resources and support teams (Australia National Computing Infrastructure, Garvan Institute Data Science Platform)

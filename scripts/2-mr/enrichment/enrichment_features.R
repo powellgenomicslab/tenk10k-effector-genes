@@ -1,4 +1,4 @@
-# source("scripts/preprocess_strict.R")
+# source("scripts/0-preprocess/preprocess_results.R")
 library(data.table)
 library(tidyverse)
 library(ragg)

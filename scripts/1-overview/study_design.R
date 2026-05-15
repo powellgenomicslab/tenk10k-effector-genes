@@ -1,6 +1,6 @@
 # get numbers for manuscript writing
 
-source("scripts/preprocess_strict.R")
+source("scripts/0-preprocess/preprocess_results.R")
 
 library(patchwork)
 library(ragg)
@@ -146,23 +146,20 @@ df_gene[,n_distinct(Gene), by = gene_cat]
 
 
 # write supplementary table
-# googlesheets4::gs4_auth()
-source("scripts/util/helper.R")
-
-df_celltype <- df_gene %>% 
-  group_by(gene_cat, cell_type) %>% 
-  tally() %>% 
-  ungroup() %>% 
-  pivot_wider(names_from = gene_cat, values_from = n, values_fill = 0) %>% 
-  mutate(n_gene = `Protein-coding` + `Non-coding`) %>% 
+df_celltype <- df_gene %>%
+  group_by(gene_cat, cell_type) %>%
+  tally() %>%
+  ungroup() %>%
+  pivot_wider(names_from = gene_cat, values_from = n, values_fill = 0) %>%
+  mutate(n_gene = `Protein-coding` + `Non-coding`) %>%
   left_join(df_cell_map, by = "cell_type")
 
-write_gs(df_celltype, "celltype_summary", 1)
+writexl::write_xlsx(df_celltype, "tables/celltype_summary.xlsx")
 
-df_traits %>% 
+df_trait_summary <- df_traits %>%
   rename(trait_id = phenotype) %>%
   arrange(supercategory, pheno_cat, study, pheno_label) %>%
-  mutate(across(starts_with("n_"), as.numeric)) %>% 
-  write_gs("trait_summary", 2)
+  mutate(across(starts_with("n_"), as.numeric))
+writexl::write_xlsx(df_trait_summary, "tables/trait_summary.xlsx")
 
 

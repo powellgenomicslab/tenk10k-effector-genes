@@ -1,4 +1,9 @@
 #!/bin/bash -l
+# Purpose: Prepare BESD and EPI files for TenK10K phase1 analysis
+# Input: BESD source directory, GTF file
+# Output: Linked BESD/ESI files and processed EPI files per cell and chromosome
+# NOTE: Hardcoded paths below (/g/data/ei56/, /g/data/fy54/) are specific to NCI Gadi; update for other environments
+/bin/bash -l
 
 # prepare BESD file for tenk10k phase1
 

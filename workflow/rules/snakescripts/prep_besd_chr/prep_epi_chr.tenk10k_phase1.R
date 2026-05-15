@@ -1,3 +1,7 @@
+## Purpose: Prepare .epi files for BESD input from GTF annotation and cell-specific data
+## Input: GTF file, BESD source directory
+## Output: .epi files per cell and chromosome
+## NOTE: Hardcoded paths below (/g/data/fy54/, /g/data/ei56/) are specific to NCI Gadi; update for other environments
 library(rtracklayer)
 library(data.table)
 library(fs)

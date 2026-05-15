@@ -65,7 +65,7 @@ calc_spearman <- function(p1, p2){
 #  Data preprocessing  
 # ----------------------------------------------------------------------------------------------------------------------------------
 
-# source("scripts/preprocess_strict.R") #
+# source("scripts/0-preprocess/preprocess_results.R")
 df_msmr_strict <- read_parquet("/g/data/fy54/analysis/tenk10k-causal/results/preprocessed/tenk10k_phase1.v4.parquet.gz") %>%
     setDT()
 
