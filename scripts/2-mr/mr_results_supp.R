@@ -319,5 +319,5 @@ tab_gene_summary_by_pheno <- df_gene_summary_by_pheno %>%
     setDT()
 
 # write to supplementary table
-source("scripts/util/write_table")
+source("scripts/util/write_table.R")
 write_table(tab_gene_summary_by_pheno, "mr_gwas_eqtlgen", 4)
