@@ -8,7 +8,7 @@ library(patchwork)
 library(ragg)
 library(scales)
 
-source("scripts/preprocess_strict.R")
+source("scripts/preprocess_results.R")
 
 # ── 1. TenK10K: filter for CAD ──────────────────────────────────────────────
 

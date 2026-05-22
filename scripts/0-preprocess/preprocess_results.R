@@ -45,7 +45,7 @@ df_msmr_eqtlgen <- read_parquet("results/aggregate/eqtlgen2020.msmr.parquet.gz")
   mutate(
     qval_msmr_pheno = qvalue(p_SMR_multi)$qvalues,
     lfdr_msmr_pheno = qvalue(p_SMR_multi)$lfdr,
-    pbh_msmr_pheno  = p.adjust(p_SMR_multi, "BH"),
+    pbh_msmr_pheno = p.adjust(p_SMR_multi, "BH"),
     .by = "phenotype"
   ) %>%
   mutate(sig = lfdr_msmr_pheno < 0.05) %>%

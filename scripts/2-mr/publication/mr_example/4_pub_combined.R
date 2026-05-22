@@ -10,7 +10,7 @@ library(paletteer)
 library(geomtextpath)
 library(arrow)
 
-source("scripts/preprocess_strict.R")
+source("scripts/preprocess_results.R")
 
 df_msmr <- df_msmr_tenk10k |> 
   filter(mr == TRUE)

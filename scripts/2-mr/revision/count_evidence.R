@@ -1,5 +1,5 @@
 
-# source("scripts/preprocess_strict.R")
+# source("scripts/preprocess_results.R")
 suppressPackageStartupMessages(suppressWarnings({
   library(tidyverse)
   library(data.table)
