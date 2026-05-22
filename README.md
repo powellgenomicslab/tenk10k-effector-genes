@@ -1,6 +1,7 @@
 # TenK10K Phase1 causal inference manuscript
 
-![Static Badge](https://img.shields.io/badge/version-preprint-red)
+![Static Badge](https://img.shields.io/badge/version-preprint_v4-red)
+[![medRxiv](https://img.shields.io/badge/medRxiv-10.1101%2F2025.08.28.25334614-B31B1B)](https://www.medrxiv.org/content/10.1101/2025.08.28.25334614v4)
 
 > [!NOTE]
 > This repository is still under active development and will be updated from time to time
