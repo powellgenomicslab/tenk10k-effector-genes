@@ -32,7 +32,7 @@ This repository contains code, data, and workflows for the TenK10K causal infere
   - **`util/`** - Utility functions and helper scripts
 
 - **`sensitivity`**
-  Sensitivity Snakemake pipeline for running [IVW-MR]() and [MR-link-2](). This workflow reads in the intermediate results of the main MR pipeline to extract genes and instruments sets. sc-eQTL and GWAS summary statistics are also reformatted for use with sensitivity MR methods. 
+  Sensitivity Snakemake pipeline for running [IVW-MR](https://mrcieu.github.io/TwoSampleMR/index.html) and [MR-link-2](https://github.com/adriaan-vd-graaf/mrlink2). This workflow reads in the intermediate results of the main MR pipeline to extract genes and instruments sets. sc-eQTL and GWAS summary statistics are also reformatted for use with sensitivity MR methods. 
     
 - **`workflow/`**  
   Snakemake pipeline for reproducible data processing and analysis. The workflow handles data formatting, quality control, statistical analyses, and intermediate file generation.
@@ -80,6 +80,7 @@ For detailed instructions on each analysis step, see the README files in each su
 - [`scripts/3-polygenic/README.md`](scripts/3-polygenic/README.md) - Polygenic enrichment analysis
 - [`scripts/4-drug/README.md`](scripts/4-drug/README.md) - Drug target enrichment
 - [`scripts/5-crohns/README.md`](scripts/5-crohns/README.md) - Crohn's disease case study
+- [`sensitivity/README.md`](sensitivity/README.md) - Mendelian Randomization - Sensitivity analysis
 
 
 ## Data Availability
