@@ -31,6 +31,9 @@ This repository contains code, data, and workflows for the TenK10K causal infere
   - **`5-crohns/`** - Crohn's disease case study with matched single-cell data
   - **`util/`** - Utility functions and helper scripts
 
+- **`sensitivity`**
+  Sensitivity Snakemake pipeline for running [IVW-MR]() and [MR-link-2](). This workflow reads in the intermediate results of the main MR pipeline to extract genes and instruments sets. sc-eQTL and GWAS summary statistics are also reformatted for use with sensitivity MR methods. 
+    
 - **`workflow/`**  
   Snakemake pipeline for reproducible data processing and analysis. The workflow handles data formatting, quality control, statistical analyses, and intermediate file generation.
 
@@ -64,6 +67,8 @@ This repository contains code, data, and workflows for the TenK10K causal infere
    # Crohn's disease case study
    Rscript scripts/5-crohns/figures/Figure5-combined_Crohns_figure.R
    ```
+
+
 
 ### Detailed Instructions
 
