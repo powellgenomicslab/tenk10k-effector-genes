@@ -41,6 +41,7 @@ sensitivity/
 - Singularity (jobs run inside `mr.sif` container)
 - NCI Gadi access (project `fy54`)
 - Input data on `/g/data/fy54/` (see [Configuration](#configuration))
+- Singularity image: [Docker Hub](https://hub.docker.com/repository/docker/asenabouth/mendelianrandomization)
 
 ## Configuration
 
