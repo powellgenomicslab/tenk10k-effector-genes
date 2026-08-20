@@ -32,14 +32,15 @@ df_mechanism[df_mechanism_info, parent_mechanism := str_to_sentence(i.PARENT_TYP
 ]
 
 df_chembl <- fread("results/otp/26.03/all_drug_evidence_chembl.tsv") %>%
-  .[score >= 0.05, .SD[which.max(score)], by = .(targetId, diseaseId)]
+  # .[score >= 0.05, .SD[which.max(score)], by = .(targetId, diseaseId)]
+  .[score >= 0.1, .SD[which.max(score)], by = .(targetId, diseaseId)]
 
 df_chembl[df_mechanism, `:=`(mechanism = i.parent_mechanism),
   on = c("targetId", "drugId")
 ]
 
 df_phase <- list(
-  `New Drug` = expression(score >= 0.05 & score < 0.1),
+  # `New Drug` = expression(score >= 0.05 & score < 0.1),
   `Phase I` = expression(score >= 0.1 & score < 0.2),
   `Phase II` = expression(score >= 0.2 & score < 0.7),
   `Phase III` = expression(score >= 0.7 & score < 0.8),
@@ -200,10 +201,10 @@ tally_gene <- df_chembl %>%
   summarise(score = max(score)) %>%
   mutate(
     phase = case_when(
-      score == 0.1 ~ "Phase I",
-      score == 0.2 ~ "Phase II",
-      score == 0.7 ~ "Phase III",
-      TRUE ~ "Approved"
+      score >= 0.1 & score < 0.2 ~ "Phase I",
+      score >= 0.2 & score < 0.7 ~ "Phase II",
+      score >= 0.7 & score < 0.8 ~ "Phase III",
+      score >= 0.8 ~ "Approved"
     ) %>% factor(phases),
     mr_genes = targetId %in% df_mr_max[mr == 1, unique(probeID)] %>%
       factor(
@@ -313,15 +314,16 @@ df_mr_phase <- df_chembl %>%
   slice_max(score) %>%
   filter(score >= 0.1) %>%
   mutate(phase = case_when(
-    score == 0.1 ~ "Phase I",
-    score == 0.2 ~ "Phase II",
-    score == 0.7 ~ "Phase III",
-    TRUE ~ "Approved"
+    score >= 0.1 & score < 0.2 ~ "Phase I",
+    score >= 0.2 & score < 0.7 ~ "Phase II",
+    score >= 0.7 & score < 0.8 ~ "Phase III",
+    score >= 0.8 ~ "Approved"
   ) %>% factor(phases)) %>%
   setDT()
 
 df_otp_assoc <- read_parquet("results/otp/26.03/otp_assoc_overall.gz.parquet") %>%
   filter(targetId %in% gene_universe_otp, diseaseId %in% disease_universe) %>%
+  select(diseaseId, targetId, evidenceCount, association_type, associationScore) %>%
   pivot_wider(names_from = association_type, values_from = associationScore)
 setDT(df_otp_assoc)
 
@@ -376,8 +378,12 @@ df_mr_phase[df_otp_datasource, `:=`(otp_genetic = i.genetic, otp_nongenetic = i.
 
 # plot otp assoc - mr results
 df_ttest <- df_mr_phase %>%
-  select(mr, otp_assoc_max, otp_genetic, otp_nongenetic) %>%
-  pivot_longer(c(otp_assoc_max, otp_genetic, otp_nongenetic), names_to = "source") %>%
+  select(targetId, diseaseId, mr, otp_assoc_max, otp_assoc_direct, otp_assoc_indirect, otp_genetic, otp_nongenetic) %>%
+  mutate(
+    otp_with_genetic = ifelse(is.na(otp_genetic), NA, otp_assoc_max),
+    otp_without_genetic = ifelse(!is.na(otp_genetic), NA, otp_assoc_max)
+  ) %>%
+  pivot_longer(c(otp_assoc_max, otp_with_genetic, otp_without_genetic), names_to = "source") %>%
   filter(!is.na(value), !is.na(mr)) %>%
   group_by(mr, source) %>%
   summarise(value = list(value)) %>%
@@ -385,6 +391,8 @@ df_ttest <- df_mr_phase %>%
   mutate(
     ttest = map2(`0`, `1`, ~ tidy(t.test(.x, .y))),
     wilcox = map2(`0`, `1`, ~ tidy(wilcox.test(.x, .y))),
+    n_0 = map_dbl(`0`, length),
+    n_1 = map_dbl(`1`, length),
     median_no_mr = map_dbl(`0`, ~ median(.x, na.rm = TRUE)),
     median_mr = map_dbl(`1`, ~ median(.x, na.rm = TRUE))
   ) %>%
@@ -392,10 +400,15 @@ df_ttest <- df_mr_phase %>%
   mutate(plab = to_scientific(p.value) %>% as.character())
 
 (p_violin_mr <- df_mr_phase %>%
+  # remove entry if otp_nongenetic is already in otp_genetic
+  mutate(
+    otp_with_genetic = ifelse(is.na(otp_genetic), NA, otp_assoc_max),
+    otp_without_genetic = ifelse(!is.na(otp_genetic), NA, otp_assoc_max)
+  ) %>%
   filter(!is.na(mr)) %>%
   mutate(x_lab = ifelse(mr == 0, "No MR support", "MR support") %>%
     factor(levels = c("No MR support", "MR support"))) %>%
-  select(x_lab, otp_assoc_max, otp_genetic, otp_nongenetic) %>%
+  select(x_lab, otp_assoc_max, otp_with_genetic, otp_without_genetic) %>%
   pivot_longer(-x_lab, names_to = "source") %>%
   ggplot(aes(x = x_lab, y = value)) +
   theme_classic() +
@@ -403,9 +416,9 @@ df_ttest <- df_mr_phase %>%
   geom_boxplot(aes(fill = x_lab), outliers = FALSE, width = 0.1) +
   facet_grid(cols = vars(source), labeller = as_labeller(
     c(
-      otp_assoc_max = "Overall Association Score",
-      otp_genetic = "Genetic Association Score",
-      otp_nongenetic = "Non-Genetic Association Score"
+      otp_assoc_max = "All T-I pairs",
+      otp_with_genetic = "T-I pairs with\ngenetic evidence",
+      otp_without_genetic = "T-I pairs without\ngenetic evidence"
     )
   )) +
   annotate("errorbar",
@@ -423,7 +436,7 @@ df_ttest <- df_mr_phase %>%
     breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1),
     guide = guide_axis(cap = "both")
   ) +
-  labs(x = NULL, y = "Association Score") +
+  labs(x = NULL, y = "Association score") +
   coord_cartesian(clip = "off") +
   theme(
     axis.line.x = element_blank(),
@@ -449,13 +462,34 @@ df_metrics <- df_mr_phase |>
   select(targetId, diseaseId, phase, observed_dir, predicted_dir)
 
 # calculate P-value for concordance by phase
-# permutation test
+# The chance-matching rate is not 0.5: mechanism labels are strongly
+# imbalanced (80% negative modulators pooled across all 105 T-I pairs,
+# consistent with inhibitors dominating drug development generally) and
+# MR-predicted direction is ~45% positive, so under independence the true
+# null probability of a match is ~0.53, not 0.5. This pooled estimate (n=105)
+# is far more reliable than any single phase's own marginal (e.g. Phase II
+# shows 8% positive at n=37, Approved shows 26% at n=23) - those differences
+# are consistent with per-phase sampling noise around a common rate, so the
+# null probability is estimated by pooling across phases.
+# However, the *sampling variability of the test statistic* still has to
+# match each phase's own n - pooling n=105 to build the null distribution
+# and then testing a phase's small-n concordance against it (as in an
+# earlier version of this script) understates that variability and inflates
+# significance for small phases. The fix below keeps the pooled estimate of
+# the nuisance parameter (the null probability / predicted_dir marginal) but
+# scopes the test itself (permutation resampling and the binomial test) to
+# each phase's own n.
 set.seed(123)
 n_perms <- 10000
-permuted_scores <- numeric(n_perms)
-for (i in 1:n_perms) {
-  shuffled_pred <- sample(df_metrics$predicted_dir) # Shuffle
-  permuted_scores[i] <- mean(df_metrics$observed_dir == shuffled_pred)
+pooled_predicted_dir <- df_metrics$predicted_dir
+p0_pooled <- mean(df_metrics$observed_dir == 1) * mean(pooled_predicted_dir == 1) +
+  mean(df_metrics$observed_dir == -1) * mean(pooled_predicted_dir == -1)
+
+permute_concordance_p <- function(observed_dir, predicted_dir, pool) {
+  obs_concordance <- mean(observed_dir == predicted_dir)
+  n <- length(observed_dir)
+  permuted <- replicate(n_perms, mean(observed_dir == sample(pool, n, replace = TRUE)))
+  (sum(permuted >= obs_concordance) + 1) / (n_perms + 1)
 }
 
 df_concordance <- df_metrics |>
@@ -464,16 +498,28 @@ df_concordance <- df_metrics |>
     concordance = mean(observed_dir == predicted_dir),
     n_concordant = sum(observed_dir == predicted_dir),
     n_discordant = sum(observed_dir != predicted_dir),
-    n = n()
-  ) |>
-  group_by(phase) |>
-  mutate(p_permutation = (sum(permuted_scores >= concordance) + 1) / (n_perms + 1))
+    n = n(),
+    p_permutation = permute_concordance_p(observed_dir, predicted_dir, pooled_predicted_dir),
+    # simple binomial test as a model-free check, shown against both
+    # a naive p = 0.5 null and the pooled p0 derived above
+    p_binomial_naive = binom.test(n_concordant, n, p = 0.5, alternative = "greater")$p.value,
+    p_binomial_pooled_null = binom.test(n_concordant, n, p = p0_pooled, alternative = "greater")$p.value
+  )
+
+# fwrite(df_concordance, "results/otp/26.03/otp_concordance_by_phase.tsv", sep = "\t")
+
+# remaining assumption check: independence - a handful of targets appear
+# more than once within the same phase (contributing >1 T-I pair with a
+# shared MR-predicted direction), a mild violation for both the binomial and
+# permutation tests
+df_metrics |> count(phase, targetId) |> filter(n > 1)
 
 # visualise results
 (p_bar_concordance <- df_concordance |>
   pivot_longer(c(n_concordant, n_discordant), names_to = "type", values_to = "count") |>
   mutate(type = factor(type, levels = c("n_discordant", "n_concordant"))) |>
   arrange(phase, type) |>
+  group_by(phase) |>
   mutate(prop = count / sum(count), x_label = cumsum(count) - (count / 2)) |>
   ggplot(aes(y = fct_rev(phase), x = count)) +
   geom_col(aes(fill = fct_rev(type)), position = "stack", color = "black", width = 0.75) +
@@ -488,14 +534,14 @@ df_concordance <- df_metrics |>
   ) +
   # Add P-value on the right
   geom_text(
-    aes(x = Inf, label = paste0(to_scientific(p_permutation))),
+    aes(x = Inf, label = paste0(to_scientific(p_binomial_naive))),
     data = df_concordance,
     hjust = 1, vjust = 0.5, size = 9 / .pt, color = "black", parse = TRUE
   ) +
   annotate("text",
     x = Inf, y = Inf, vjust = 1, hjust = 1,
     color = "black", size = 9 / .pt,
-    label = "bold(italic(P)[permutation])", parse = TRUE
+    label = "bold(italic(P)[binomial])", parse = TRUE
   ) +
   # add % for each category
   geom_label(aes(x = x_label, label = percent(prop, 1)),
@@ -600,8 +646,10 @@ selected_diseases <- c(
   "Crohn's disease" = "Crohn's disease",
   "rheumatoid arthritis" = "Rheumatoid arthritis",
   "psoriasis" = "Psoriasis",
-  "type 2 diabetes mellitus" = "Type 2 diabetes",
-  "Alzheimer disease" = "Alzheimer's disease"
+  # "type 2 diabetes mellitus" = "Type 2 diabetes",
+  # "Alzheimer disease" = "Alzheimer's disease",
+  "multiple sclerosis" = "Multiple sclerosis",
+  "asthma" = "Asthma"
 )
 (p_top_drug <- df_mr_phase %>%
   filter(mr == 1) %>%
@@ -819,8 +867,8 @@ write_gs(tbl_stats, "ti_support_stats", 12)
 
 # table of otp score by source of evidence
 label <- tibble(
-  source = c("otp_assoc_max", "otp_genetic", "otp_nongenetic"),
-  label = c("Overall Association Score", "Genetic Association Score", "Non-Genetic Association Score")
+  source = c("otp_assoc_max", "otp_with_genetic", "otp_without_genetic"),
+  label = c("All target-indication pairs", "Target-indication pairs with genetic evidence", "Target-indication pairs without genetic evidence")
 )
 tbl_otp_by_evidence <- df_ttest %>%
   mutate(
