@@ -78,6 +78,7 @@ dist/
 
 # Ignore data files that should not be committed
 data/
+results/
 raw_data/
 *.bak
 *.backup
@@ -91,3 +92,6 @@ raw_data/
 tmp/
 temp/
 scratch/
+
+# Ignore .claude
+.claude/

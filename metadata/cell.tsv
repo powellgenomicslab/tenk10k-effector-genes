@@ -1,29 +1,29 @@
-wg2_scpred_prediction	color_material	color_biorender1	color_biorender2	color	cell_type	Description	major_cell_type	Sub lineage	n_cells	group_1	group_2	group_3
-CD4_TCM	#0C46A0FF	#AB728A	#9C85C3	#311A92FF	CD4 TCM	central memory CD4 positive T cells	CD4 T	CD4+ T cells	1064292	Lymphoid	T/NK progenitor	T
-CD4_Naive	#1976D2FF	#83576A	#605278	#512CA7FF	CD4 Naive	naive CD4 positive T cells	CD4 T	CD4+ T cells	944381	Lymphoid	T/NK progenitor	T
-CD4_TEM	#2096F2FF	#C4839E	#8773A8	#6639B7FF	CD4 TEM	effector memory CD4 positive T cells	CD4 T	CD4+ T cells	175569	Lymphoid	T/NK progenitor	T
-CD4_CTL	#64B4F6FF	#DA91B0	#B197DD	#9474CCFF	CD4 CTL	CD4 positive cytotoxic T lymphocytes	CD4 T	CD4+ T cells	102919	Lymphoid	T/NK progenitor	T
-Treg	#90CAF8FF	#F4BFE0	#DFB4EC	#B29DDAFF	Treg	Regulatory T cells	CD4 T	CD4+ T cells	101402	Lymphoid	T/NK progenitor	T
-CD4_Proliferating	#BADEFAFF	#DA91B0	#D4ACE1	#D1C4E9FF	CD4 Proliferating	proliferating CD4 positive T cells	CD4 T	CD4+ T cells	2385	Lymphoid	T/NK progenitor	T
-gdT	#817717FF	#A7B4D3	#DE94B4	#870D4EFF	gdT	gamma delta T cells	Unconventional T	Other T cells	90331	Lymphoid	T/NK progenitor	T
-MAIT	#AEB32BFF	#5D6E8D	#B0758E	#C1185AFF	MAIT	Mucosal-associated invariant T	Unconventional T	Other T cells	92038	Lymphoid	T/NK progenitor	T
-dnT	#CCDC39FF	#6A81B5	#EE9FC1	#E91E63FF	dnT	doublet negative T cells	Unconventional T	Other T cells	8801	Lymphoid	T/NK progenitor	T
-ILC	#DCE674FF	#CDDAE7	#BB7D97	#F06192FF	ILC	innate lymphoid cells	Unconventional T	Other T cells	3895	Lymphoid	T/NK progenitor	T
-CD8_TEM	#311A92FF	#749C93	#6A81B5	#0C46A0FF	CD8 TEM	effector memory CD8 positive T cells	CD8 T	CD8+ T cells	729139	Lymphoid	T/NK progenitor	T
-CD8_Naive	#5E34B1FF	#57736E	#5D6E8D	#1E87E5FF	CD8 Naive	naive CD8 positive T cells	CD8 T	CD8+ T cells	211164	Lymphoid	T/NK progenitor	T
-CD8_TCM	#7E57C1FF	#70B1A4	#A7B4D3	#41A5F4FF	CD8 TCM	central memory CD8 positive T cells	CD8 T	CD8+ T cells	152056	Lymphoid	T/NK progenitor	T
-CD8_Proliferating	#D1C4E9FF	#8BD1BF	#CDDAE7	#BADEFAFF	CD8 Proliferating	proliferating natural killer cells	CD8 T	CD8+ T cells	2357	Lymphoid	T/NK progenitor	T
-NK	#AC1357FF	#708A5F	#708A5F	#2D7D32FF	NK	natural killer cells	NK	NK cells	795387	Lymphoid	T/NK progenitor	NK
-NK_CD56bright	#E91E63FF	#96B980	#96B981	#4CAE50FF	NK CD56bright	CD56 bright natural killer cells	NK	NK cells	43582	Lymphoid	T/NK progenitor	NK
-NK_Proliferating	#F38EB1FF	#BAE49E	#BAE49E	#A5D6A6FF	NK Proliferating	proliferating natural killer cells	NK	NK cells	11864	Lymphoid	T/NK progenitor	NK
-B_naive	#F47F17FF	#EEE0B6	#EEE0B7	#F47F17FF	B naive	naive B cells	B	B cells	320331	Lymphoid	B	B
-B_intermediate	#FABF2CFF	#F8ED7D	#F8ED7D	#FABF2CFF	B intermediate	intermediate B cells	B	B cells	119893	Lymphoid	B	B
-B_memory	#FFEB3AFF	#E2D872	#E2D872	#FFEB3AFF	B memory	memory B cells	B	B cells	99596	Lymphoid	B	B
-Plasmablast	#FFF176FF	#B5AE5C	#B5AE5C	#FFF176FF	Plasmablast	Plasmablast	B	B cells	5769	Lymphoid	B	B
-CD14_Mono	#388D3BFF	#F3AF84	#F3AF84	#D84314FF	CD14 Mono	CD14 positive (classical) monocytes	Monocyte	Monocytes	226023	Myeloid	Monocyte	Monocyte
-CD16_Mono	#80C684FF	#DD9F78	#DD9F78	#FFAB91FF	CD16 Mono	CD16 positive (non-classical) monocytes	Monocyte	Monocytes	92931	Myeloid	Monocyte	Monocyte
-cDC2	#5D3F37FF	#9C4C49	#9C4C49	#5D3F37FF	cDC2	conventional dendritic cells type 2	Dendritic	Dendritic cells	26542	Myeloid	Dendritic	Dendritic
-pDC	#795447FF	#ED7470	#ED7470	#795447FF	pDC	Plasmacytoid dendritic cells	Dendritic	Dendritic cells	8695	Myeloid	Dendritic	Dendritic
-cDC1	#A0877FFF	#6E3634	#6E3634	#A0877FFF	cDC1	conventional dendritic cells type 1	Dendritic	Dendritic cells	1892	Myeloid	Dendritic	Dendritic
-ASDC	#D7CCC7FF	#CF6662	#CF6662	#D7CCC7FF	ASDC	AXL+ Siglec-6+ dendritic cells	Dendritic	Dendritic cells	1133	Myeloid	Dendritic	Dendritic
-HSPC	#BDBDBDFF	#A9A9A9	#A9A9A9	#BDBDBDFF	HSPC	hematopoietic stem and progenitor cells	HSPC	HSPC	4312	HSPC	HSPC	HSPC
+wg2_scpred_prediction	color_material	color_biorender1	color_biorender2	color	cell_type	Description	major_cell_type	Sub lineage	n_cells	group_1	group_2	group_3	revision_major_cell_type
+CD4_TCM	#0C46A0FF	#AB728A	#9C85C3	#311A92FF	CD4 TCM	central memory CD4 positive T cells	CD4 T	CD4+ T cells	1064292	Lymphoid	T/NK progenitor	T	CD4 T
+CD4_Naive	#1976D2FF	#83576A	#605278	#512CA7FF	CD4 Naive	naive CD4 positive T cells	CD4 T	CD4+ T cells	944381	Lymphoid	T/NK progenitor	T	CD4 T
+CD4_TEM	#2096F2FF	#C4839E	#8773A8	#6639B7FF	CD4 TEM	effector memory CD4 positive T cells	CD4 T	CD4+ T cells	175569	Lymphoid	T/NK progenitor	T	CD4 T
+CD4_CTL	#64B4F6FF	#DA91B0	#B197DD	#9474CCFF	CD4 CTL	CD4 positive cytotoxic T lymphocytes	CD4 T	CD4+ T cells	102919	Lymphoid	T/NK progenitor	T	CD4 T
+Treg	#90CAF8FF	#F4BFE0	#DFB4EC	#B29DDAFF	Treg	Regulatory T cells	CD4 T	CD4+ T cells	101402	Lymphoid	T/NK progenitor	T	CD4 T
+CD4_Proliferating	#BADEFAFF	#DA91B0	#D4ACE1	#D1C4E9FF	CD4 Proliferating	proliferating CD4 positive T cells	CD4 T	CD4+ T cells	2385	Lymphoid	T/NK progenitor	T	CD4 T
+gdT	#817717FF	#A7B4D3	#DE94B4	#870D4EFF	gdT	gamma delta T cells	Unconventional T	Other T cells	90331	Lymphoid	T/NK progenitor	T	Unconventional T
+MAIT	#AEB32BFF	#5D6E8D	#B0758E	#C1185AFF	MAIT	Mucosal-associated invariant T	Unconventional T	Other T cells	92038	Lymphoid	T/NK progenitor	T	Unconventional T
+dnT	#CCDC39FF	#6A81B5	#EE9FC1	#E91E63FF	dnT	doublet negative T cells	Unconventional T	Other T cells	8801	Lymphoid	T/NK progenitor	T	Unconventional T
+ILC	#DCE674FF	#CDDAE7	#BB7D97	#F06192FF	ILC	innate lymphoid cells	Unconventional T	NK cells	3895	Lymphoid	T/NK progenitor	T	NK
+CD8_TEM	#311A92FF	#749C93	#6A81B5	#0C46A0FF	CD8 TEM	effector memory CD8 positive T cells	CD8 T	CD8+ T cells	729139	Lymphoid	T/NK progenitor	T	CD8 T
+CD8_Naive	#5E34B1FF	#57736E	#5D6E8D	#1E87E5FF	CD8 Naive	naive CD8 positive T cells	CD8 T	CD8+ T cells	211164	Lymphoid	T/NK progenitor	T	CD8 T
+CD8_TCM	#7E57C1FF	#70B1A4	#A7B4D3	#41A5F4FF	CD8 TCM	central memory CD8 positive T cells	CD8 T	CD8+ T cells	152056	Lymphoid	T/NK progenitor	T	CD8 T
+CD8_Proliferating	#D1C4E9FF	#8BD1BF	#CDDAE7	#BADEFAFF	CD8 Proliferating	proliferating natural killer cells	CD8 T	CD8+ T cells	2357	Lymphoid	T/NK progenitor	T	CD8 T
+NK	#AC1357FF	#708A5F	#708A5F	#2D7D32FF	NK	natural killer cells	NK	NK cells	795387	Lymphoid	T/NK progenitor	NK	NK
+NK_CD56bright	#E91E63FF	#96B980	#96B981	#4CAE50FF	NK CD56bright	CD56 bright natural killer cells	NK	NK cells	43582	Lymphoid	T/NK progenitor	NK	NK
+NK_Proliferating	#F38EB1FF	#BAE49E	#BAE49E	#A5D6A6FF	NK Proliferating	proliferating natural killer cells	NK	NK cells	11864	Lymphoid	T/NK progenitor	NK	NK
+B_naive	#F47F17FF	#EEE0B6	#EEE0B7	#F47F17FF	B naive	naive B cells	B	B cells	320331	Lymphoid	B	B	B
+B_intermediate	#FABF2CFF	#F8ED7D	#F8ED7D	#FABF2CFF	B intermediate	intermediate B cells	B	B cells	119893	Lymphoid	B	B	B
+B_memory	#FFEB3AFF	#E2D872	#E2D872	#FFEB3AFF	B memory	memory B cells	B	B cells	99596	Lymphoid	B	B	B
+Plasmablast	#FFF176FF	#B5AE5C	#B5AE5C	#FFF176FF	Plasmablast	Plasmablast	B	Plasma B cells	5769	Lymphoid	B	B	Plasma B
+CD14_Mono	#388D3BFF	#F3AF84	#F3AF84	#D84314FF	CD14 Mono	CD14 positive (classical) monocytes	Monocyte	Monocytes	226023	Myeloid	Monocyte	Monocyte	Monocyte
+CD16_Mono	#80C684FF	#DD9F78	#DD9F78	#FFAB91FF	CD16 Mono	CD16 positive (non-classical) monocytes	Monocyte	Monocytes	92931	Myeloid	Monocyte	Monocyte	Monocyte
+cDC2	#5D3F37FF	#9C4C49	#9C4C49	#5D3F37FF	cDC2	conventional dendritic cells type 2	Dendritic	Dendritic cells	26542	Myeloid	Dendritic	Dendritic	Dendritic
+pDC	#795447FF	#ED7470	#ED7470	#795447FF	pDC	Plasmacytoid dendritic cells	Dendritic	Dendritic cells	8695	Myeloid	Dendritic	Dendritic	Dendritic
+cDC1	#A0877FFF	#6E3634	#6E3634	#A0877FFF	cDC1	conventional dendritic cells type 1	Dendritic	Dendritic cells	1892	Myeloid	Dendritic	Dendritic	Dendritic
+ASDC	#D7CCC7FF	#CF6662	#CF6662	#D7CCC7FF	ASDC	AXL+ Siglec-6+ dendritic cells	Dendritic	Dendritic cells	1133	Myeloid	Dendritic	Dendritic	Dendritic
+HSPC	#BDBDBDFF	#A9A9A9	#A9A9A9	#BDBDBDFF	HSPC	hematopoietic stem and progenitor cells	HSPC	HSPC	4312	HSPC	HSPC	HSPC	HSPC
