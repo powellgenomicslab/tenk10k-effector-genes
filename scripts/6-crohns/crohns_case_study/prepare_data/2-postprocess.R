@@ -23,7 +23,7 @@ library(arrow)
 crohns_dir <- here("resources/crohns_case_study/postprocess")
 
 # source preprocess script to get df_coloc, df_msmr_tenk10k, df_msmr_eqtlgen, df_gene_annot
-source(here("scripts/0-preprocess/preprocess_results.R"))
+source("scripts/0-preprocess/preprocess_results.R")
 
 # Save df_coloc 
 df_coloc <- df_coloc %>% rename("probeID" = gene)

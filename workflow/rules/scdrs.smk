@@ -12,7 +12,7 @@ rule magma_to_zscore:
     """
     input: "results/aggregate/{study}.magma.gz.parquet"
     output: "resources/scdrs/zscore/{study}.zscore.tsv"
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     log: "logs/scdrs/{study}.magma_to_zscore.log"
     script: "snakescripts/scdrs/magma_to_zscore.R"
 
@@ -22,7 +22,7 @@ rule scdrs_munge_gs:
     """
     input: "resources/scdrs/zscore/{study}.zscore.tsv"
     output: "resources/scdrs/gs/{study}.gs"
-    conda: "scverse"
+    conda: "../envs/scverse.yaml"
     log: "logs/scdrs/{study}.scdrs_munge_gs.log"
     params:
         fdr = 0.05,
@@ -51,7 +51,7 @@ rule h5ad_annot:
     output:
         raw = "results/scdrs/annot_sample/{study}.{annot}.raw.csv",
         format = "results/scdrs/annot_sample/{study}.{annot}.format.csv"
-    conda: "r-sc"
+    conda: "../envs/sc-renv.yaml"
     resources:
         ncpus = 8,
         mem =  "300G",
@@ -69,7 +69,7 @@ checkpoint chunk_gs:
         config = "resources/scdrs/config/{study}.yaml"
     output:
         directory("resources/scdrs/gs_chunked/{study}")
-    conda: "scverse"
+    conda: "../envs/scverse.yaml"
     log: "logs/scdrs/{study}.chunk_gs.log"
     shell:
         """
@@ -92,7 +92,7 @@ rule scdrs_prep_h5ad_cov:
     output:
         prep_h5ad = "resources/scdrs/h5ad/{study}.prep.h5ad",
         cov = "resources/scdrs/cov/{study}.cov.tsv"
-    conda: "scverse"
+    conda: "../envs/scverse.yaml"
     resources:
         ncpus = 16,
         mem =  "480G",
@@ -113,7 +113,7 @@ rule scdrs_regress_h5ad_cov:
     output:
         # save as pickle as cannot save with standard .h5ad
         "resources/scdrs/h5ad/{study}.reg.h5ad.pkl"
-    conda: "scverse"
+    conda: "../envs/scverse.yaml"
     resources:
         ncpus = 16,
         mem =  "64G"
@@ -131,7 +131,7 @@ rule scdrs_compute_score_api:
     output:
         cell = "results/scdrs/cell_score/{study}/{phenotype}.cell_score.tsv.parquet.gz",
         celltype = "results/scdrs/cell_type_stats/{study}/{phenotype}.cell_type_stats.tsv"
-    conda: "scverse"
+    conda: "../envs/scverse.yaml"
     resources:
         ncpus = 8,
         mem =  "64G"
@@ -148,7 +148,7 @@ rule scdrs_get_top_score:
         cell_score = "results/scdrs/cell_score/{study}/{phenotype}.cell_score.tsv.parquet.gz",
         config = "resources/scdrs/config/{study}.yaml"
     output: "results/scdrs/cell_type_top/{study}/{phenotype}.cell_type_top.tsv"
-    conda: "scverse"
+    conda: "../envs/scverse.yaml"
     params:
         percentiles = [90, 95,99]
     resources:
@@ -167,7 +167,7 @@ rule scdrs_annot_stats:
         config = "resources/scdrs/config/{study}.yaml",
         annot = "results/scdrs/annot_sample/{study}.{annot}.format.csv"
     output: "results/scdrs/cell_type_annot/{study}/{phenotype}.{annot}.stats.tsv"
-    conda: "scverse"
+    conda: "../envs/scverse.yaml"
     resources:
         ncpus = 8,
         mem =  "48G"
@@ -199,7 +199,7 @@ rule scdrs_aggregate_stat:
         ncpus = 8,
         mem =  "64G"
     log: "logs/aggregate/{study}.scdrs_cell_type_stat.log"
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     script: "snakescripts/aggregate/scdrs_cell_type.R"
     
 
@@ -221,7 +221,7 @@ rule scdrs_aggregate_stat_annot:
         ncpus = 8,
         mem =  "64G"
     log: "logs/aggregate/{study}.scdrs.{annot}.stats.log"
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     script: "snakescripts/aggregate/scdrs_custom_annot.R"
 
 def scdrs_aggregate_score(x):
@@ -247,7 +247,7 @@ rule scdrs_aggregate_score:
     output:
         scores  = "results/aggregate/{study}.scdrs.cell_score.tsv.parquet.gz",
         mcp  = "results/aggregate/{study}.scdrs.cell_mcp.tsv.parquet.gz"
-    conda: "scverse"
+    conda: "../envs/scverse.yaml"
     resources:
         ncpus = 16,
         mem =  "80G"
@@ -268,7 +268,7 @@ rule scdrs_aggregate_score:
 #     output:
 #         cov = "resources/scdrs/cov/{study}.cov.tsv"
 #         # regressed_h5ad = "resources/scdrs/h5ad/{geno_set}-{study}.regressed.h5ad"
-#     conda: "scverse"
+#     conda: "../envs/scverse.yaml"
 #     log: "logs/scdrs/prep_cov.{study}.log"
 #     resources:
 #         ncpus = 16,
@@ -294,7 +294,7 @@ rule scdrs_aggregate_score:
 #         cov = "resources/scdrs/cov/{study}.cov.tsv",
 #         config = "resources/scdrs/config/{study}.yaml"
 #     output: directory("results/scdrs/{study}")
-#     conda: "scverse"
+#     conda: "../envs/scverse.yaml"
 #     resources:
 #         ncpus = 24,
 #         mem =  "600G",

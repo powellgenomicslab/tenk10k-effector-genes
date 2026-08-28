@@ -67,20 +67,24 @@ maj_annot <- deg %>%
   mutate(tissue_specific = if_else(!major_cell_type %in% c("CD4 T", "CD8 T", "Unconventional T", "B", "Plasma B", "NK", "Dendritic", "Monocyte"), TRUE, FALSE))
 
 # Change the major cell type annotation for ILCs to NK instead of Unconventional T and for Plasmablast to Plasma B instead of B
-tenk_maj_annot <- read.delim("resources/metadata/cell_map.tsv") %>%
+tenk_maj_annot <- read.delim("metadata/cell.tsv") %>%
   mutate(major_cell_type = major_cell_type %>% dplyr::replace_when(cell_type == "ILC" ~ "NK", 
                                                                   cell_type == "Plasmablast" ~ "Plasma B")) %>%
   select(cell_type, wg2_scpred_prediction, major_cell_type)
 
 write_tsv(tenk_maj_annot, "resources/crohns_case_study/deg/tenk_maj_annot.tsv")
 
-# Save revised cell map
-revised_cell_map <- read.delim("resources/metadata/cell_map.tsv") %>%
+# Derive the revised major cell type annotation.
+# NOTE: metadata/cell.tsv is the tracked, authoritative cell map and already
+# carries the revision_major_cell_type column produced by this block, so the
+# derivation below is kept for transparency only and must not be written back
+# over its own input. It is emitted to the Crohn's working directory instead.
+revised_cell_map <- read.delim("metadata/cell.tsv") %>%
   mutate(revision_major_cell_type = major_cell_type) %>% 
   mutate(revision_major_cell_type = revision_major_cell_type %>% dplyr::replace_when(cell_type == "ILC" ~ "NK", 
                                                                    cell_type == "Plasmablast" ~ "Plasma B"))
 
-write_tsv(revised_cell_map, "resources/metadata/cell_map_revised.tsv")
+write_tsv(revised_cell_map, "resources/crohns_case_study/deg/cell_map_revised.tsv")
 ######## 
 
 deg <- deg %>% left_join(maj_annot, by = "gut_cell_type")

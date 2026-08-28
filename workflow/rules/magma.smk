@@ -23,7 +23,7 @@ def get_n_trait(x):
     """
     Get the number of samples for a given pheno from metadata file
     """
-    df_meta = pd.read_csv("resources/metadata/trait_metadata_n.tsv", encoding_errors = "ignore", sep="\t")
+    df_meta = pd.read_csv("metadata/trait.tsv", encoding_errors = "ignore", sep="\t")
     n = df_meta.loc[df_meta['trait_id'] == x.pheno, 'n_eff'].values[0]
     return int(n)
 
@@ -73,7 +73,7 @@ rule magma_format_output:
         gene_loc = "resources/magma/geneanno.loc"
     output:
         "results/magma/aggregate/{geno_set}/{pheno}.magma.tsv"
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     script:
         "snakescripts/magma_format_output.R"
 
@@ -82,7 +82,7 @@ def get_trait_input(x):
     """
     Get the input for all traits
     """
-    df_meta = pd.read_csv("resources/metadata/trait_metadata_n.tsv", encoding_errors = "ignore", sep="\t")
+    df_meta = pd.read_csv("metadata/trait.tsv", encoding_errors = "ignore", sep="\t")
     pheno_meta = df_meta['trait_id'].unique()
     input_dir = Path("resources/ma/")
     pheno = [f.stem for f in input_dir.glob("*.ma") \
@@ -93,6 +93,6 @@ def get_trait_input(x):
 rule magma_all_trait:
     input: get_trait_input
     output: "results/aggregate/{geno_set}.magma.gz.parquet"
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     log: "logs/aggregate/{geno_set}.magma.log"
     script: "snakescripts/aggregate/magma.R"

@@ -1,5 +1,5 @@
 
-# source("scripts/preprocess_results.R")
+# source("scripts/0-preprocess/preprocess_results.R")
 suppressPackageStartupMessages(suppressWarnings({
   library(tidyverse)
   library(data.table)
@@ -11,7 +11,7 @@ suppressPackageStartupMessages(suppressWarnings({
   library(ggforce)
 }))
 
-df_msmr_tenk10k <- read_parquet("results/preprocessed/tenk10k_phase1.v2.parquet.gz")
+df_msmr_tenk10k <- read_parquet("results/preprocessed/tenk10k_phase1.v5.parquet.gz")
 evidence_criteria <- list(
   mr = expression(lfdr_msmr_pheno < 0.05),
   sensitivity = expression(p_HEIDI >= 0.05 | phet_ivw >= 0.05 | psigmay_mrlink2 >= 0.05),

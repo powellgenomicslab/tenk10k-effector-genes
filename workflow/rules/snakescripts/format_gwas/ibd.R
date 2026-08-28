@@ -22,7 +22,7 @@ setDTthreads(threads)
 # bOR and P-value are from the inverse-variance-weighted fixed-effect meta-analysis (two-tailed) 
 # including all EAS samples. cNearest gene to the index variant. EA, effect allele; EAF, effect allele frequency.
 
-df_trait_meta <- readxl::read_xlsx(trait_metadata)
+df_trait_meta <- fread(trait_metadata)
 setDT(df_trait_meta)
 
 # Make alleles uppercase

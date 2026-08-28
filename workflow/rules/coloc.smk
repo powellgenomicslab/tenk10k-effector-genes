@@ -11,7 +11,7 @@ configfile: "workflow/config/mvcoloc.yaml"
 checkpoint prep_coloc_input:
     """Prepare coloc input files (eQTL data)"""
     output: directory("resources/coloc/{study}/")
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     script: "snakescripts/prep_coloc_input/{wildcards.study}.R"
 
 
@@ -21,17 +21,22 @@ rule run_coloc:
         eqtl = ancient("resources/coloc/{study}/{biosample}/common_egenes/chr{chr}.fst"),
         gwas = "resources/ma_by_chr/{pheno}/chr{chr}.ma",
         gene_loc = ancient("resources/misc/gencode.v44.gene_type.tsv"),
-        pheno_metadata = ancient("resources/metadata/trait_metadata_n.tsv")
+        pheno_metadata = ancient("metadata/trait.tsv")
     output:
         coloc = temp("results/coloc/{study}/{biosample}/{pheno}/chr{chr}.coloc.tsv")
-    threads: 4
+    # Serial workload: the per-gene loop is map_df(egene_list, run_coloc) and
+    # coloc.abf is single-threaded, so extra cores sit idle. Measured on the
+    # ASDC/sle pilot: 16 CPU-seconds against 39 wall-seconds on 4 requested
+    # cores (<0.5 core used). Requesting 4 cores charged ~4x the SU for nothing.
+    # Peak memory was 2.9 GB, so 8G is kept as headroom for larger biosamples.
+    threads: 1
     log: "logs/coloc/{study}/{biosample}/{pheno}/chr{chr}.log"
     resources:
         mem = "8G",
-        ncpus = 4
+        ncpus = 1
     params:
         window_bp = 100000
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     script: "snakescripts/coloc/run_coloc_test.R"
 
 
@@ -45,7 +50,33 @@ rule concat_coloc_chr:
     output:
         coloc = "results/coloc/{study}/{biosample}/{pheno}/all_chr.coloc.tsv"
     shell:
-        "awk 'NR == 1 || FNR > 1' {input.coloc} > {output.coloc}"
+        # Header-aware concat. The previous `awk 'NR == 1 || FNR > 1'` emitted
+        # only the first chromosome's header and then appended rows of any
+        # width, so files written by different versions of run_coloc_test.R were
+        # silently interleaved (12- vs 13-column layouts) and the SNP count
+        # ended up in an unnamed field. Fail loudly instead.
+        # NB: literal awk braces must be doubled - snakemake runs the shell
+        # string through str.format() (same as split_ma_by_chr in format_gwas.smk).
+        r"""
+        awk -F'\t' '
+            FNR == 1 {{
+                if (NR == 1) {{ header = $0; print }}
+                else if ($0 != header) {{
+                    printf "ERROR: header mismatch in %s\n  expected: %s\n  found:    %s\n", \
+                        FILENAME, header, $0 > "/dev/stderr"
+                    exit 1
+                }}
+                next
+            }}
+            {{ print }}
+            END {{
+                if (header == "") {{
+                    print "ERROR: no header found - all inputs were empty" > "/dev/stderr"
+                    exit 1
+                }}
+            }}
+        ' {input.coloc} > {output.coloc}
+        """
 
 
 def target_coloc(x, coloc_ext):
@@ -63,8 +94,15 @@ def target_coloc(x, coloc_ext):
 rule concat_coloc_all:
     """Aggregate coloc results for all biosamples and phenotypes"""
     input: lambda x: target_coloc(x, "coloc")
-    output: "results/aggregate/coloc/{study}.coloc.parquet.gz"
-    conda: "renv"
+    # NOTE: this rule produces the `v2` aggregate. The published summary
+    # statistics are built from `v3`, which is `v2` plus coloc recomputed for the
+    # 34 traits whose GWAS carried zero-SE or duplicate-ID SNPs (11,930,730 rows
+    # -> 15,434,261 rows; see CHANGELOG.v5.md). That recomputation was run out of
+    # band and has no rule here, so re-running this arm reproduces v2, not v3.
+    output: "results/aggregate/coloc/{study}.coloc.v2.parquet.gz"
+    params:
+        schema_helper = "workflow/rules/snakescripts/aggregate/coloc_schema.R"
+    conda: "../envs/renv.yaml"
     log: "logs/aggregate/{study}.concat_coloc.log"
     resources:
         mem = "64G",
@@ -94,7 +132,7 @@ rule make_ld_eqtl:
         ncpus = 8
     params:
         window_bp = 100000
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     script: "snakescripts/make_ld/eqtl/{wildcards.study}.R"
 
 
@@ -112,7 +150,7 @@ checkpoint generate_susie_gwas_cmds:
     """
     input:
         gene_loc = ancient("resources/misc/gencode.v44.gene_type.tsv"),
-        pheno_metadata = ancient("resources/metadata/trait_metadata_n.tsv"),
+        pheno_metadata = ancient("metadata/trait.tsv"),
         dir_bfile = ancient("resources/genotypes/{study}"),
         script = "workflow/rules/snakescripts/coloc/run_susie_gwas_cli.R",
         gwas = expand("resources/ma_by_chr/{t}/chr{c}.ma", t=TRAITS, c=range(1, 23))
@@ -127,7 +165,7 @@ checkpoint generate_susie_gwas_cmds:
         runsusie_maxit = 200,
         runsusie_repeat = False,
         nthreads = 1
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     shell:
         r"""
         PROJECT_ROOT=$(pwd)
@@ -238,7 +276,7 @@ rule rerun_susie_gwas:
         ncores_per_task        = 2,  
         ncores_per_numanode     = 12, # 48  → ppr
         timeout         = 7200
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     shell:
         """
         module load nci-parallel/1.0.0a 2>> {log}
@@ -284,7 +322,7 @@ rule susie_gwas_rds_check:
         done = "results/susie_gwas/{study}/.done"  
     output:
         rds = "results/susie_gwas/{study}/{pheno}/chr{chr}.susie.rds"
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     shell:
         """
         # Force NFS cache refresh before checking
@@ -334,7 +372,7 @@ rule generate_mvcoloc_cmds:
         coloc_timeout = 180,
         p12 = 1e-5,
         nthreads = 1
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     shell:
         r"""
         PROJECT_ROOT=$(pwd)
@@ -450,7 +488,7 @@ rule run_mv_coloc_debug:
         ld_eqtl = ancient("resources/ld/eqtl/{study}/chr{chr}"),
         gwas = "resources/ma/{pheno}.ma",
         gene_loc = ancient("resources/misc/gencode.v44.gene_type.tsv"),
-        pheno_metadata = ancient("resources/metadata/trait_metadata_n.tsv"),
+        pheno_metadata = ancient("metadata/trait.tsv"),
         dir_bfile = ancient("resources/genotypes/{study}")
     output:
         coloc = "results/mvcoloc/{study}/chr{chr}/{pheno}/debug.mvcoloc.tsv"
@@ -467,7 +505,7 @@ rule run_mv_coloc_debug:
         p12 = 1e-5,
         runsusie_maxit = 200,
         runsusie_repeat = False
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     script: "snakescripts/coloc/run_multivariant_coloc.R"
 
 
@@ -485,7 +523,7 @@ rule concat_mv_coloc_all:
     input: _target_mvcoloc_tsv
     output:
         "results/aggregate/coloc/{study}.mvcoloc.parquet.gz"
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     log: "logs/aggregate/{study}.concat_mvcoloc.log"
     threads: 8
     resources:

@@ -11,9 +11,9 @@ rm(combined)
 rm(combined_summary)
 
 #########################################################################################################################
-source("scripts/crohns_case_study/supplementary/2-prepare_crohns_annotated_results.R")
-source("scripts/crohns_case_study/supplementary/2-prepare_supplementary_table_cd_genes_in_immune_diseases.R")
-source("scripts/crohns_case_study/supplementary/2-prepare_supplementary_table_mr_deg.R")
+source("scripts/6-crohns/crohns_case_study/supplementary/2-prepare_crohns_annotated_results.R")
+source("scripts/6-crohns/crohns_case_study/supplementary/2-prepare_supplementary_table_cd_genes_in_immune_diseases.R")
+source("scripts/6-crohns/crohns_case_study/supplementary/2-prepare_supplementary_table_mr_deg.R")
 load("resources/crohns_case_study/revision/IBDverse_pi1_tables.RData")
 # pi1_results <- pi1_summary
 # data used to generate fig 6e
@@ -36,7 +36,7 @@ pi1_results <- pi1_combined %>%
 
 # data for figure 6e
 OR <- readRDS("resources/crohns_case_study/revision/OR_IBDverse_coloc_genes_in_CD_MR_genes.RDS")
-source("scripts/crohns_case_study/supplementary/2-prepare_annot.R")
+source("scripts/6-crohns/crohns_case_study/supplementary/2-prepare_annot.R")
 ###########################################################################################
 
 df_list_names <- c("15-Annotated CD MR Associations", "16-CD Associations in Immune", "17-CD MR-DEG Comparison", "18-IBDverse eQTL Replication", "19-IBDverse-MR Effector Gene OR", "20-All Literature Annotations")

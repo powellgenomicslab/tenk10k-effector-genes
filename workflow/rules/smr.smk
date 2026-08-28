@@ -9,7 +9,7 @@ rule prep_smr_input:
     output: directory("resources/smr/{study}/")
     params:
         script = "snakescripts/prep_smr_input/{study}.R"
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     script: "{params.script}"
 
 rule prep_besd_chr:
@@ -19,7 +19,7 @@ rule prep_besd_chr:
     input: "workflow/rules/snakescripts/prep_besd_chr/{study}.sh"
     output: directory("resources/besd/{study}/")
     threads: 8
-    conda: "pydata"
+    conda: "../envs/pydata.yaml"
     params:
         script = "snakescripts/prep_besd_chr/{study}.sh"
     log: "logs/prep_besd_chr/{study}.log"
@@ -38,7 +38,7 @@ rule prep_besd_chr:
 #         pthresh = "resources/smr/{study}/pthresh_eqtl/{biosample}.tsv",
 #         meqtl = expand("resources/matrix_eqtl/{{study}}/{{biosample}}/chr{chr}.{ext}",
 #                chr = range(1,23), ext = ["epi", "esi", "meqtl"])
-#     conda: "renv"
+#     conda: "../envs/renv.yaml"
 #     script: "snakescripts/mk_matrix_eqtl.R"
 
 # checkpoint smr_chr:
@@ -147,7 +147,7 @@ rule concat_smr_all:
     output:
         msmr = "results/aggregate/{study}.msmr.parquet.gz",
         snps = "results/aggregate/{study}.snps4msmr.parquet.gz"
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     log: "logs/aggregate/{study}.msmr.log"
     resources:
         mem="64G",
@@ -161,13 +161,13 @@ rule smr_to_parquet:
     """
     input: "TenK10K_SMR_brenner/results/combined/smr_all_traits_with_egene_specificity.csv"
     output: "results/smr/smr_combined_specificity.gz.parquet"
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     script: "snakescripts/smr_to_parquet.R"
 
 rule smr_prepare_genelist:
     input: "resources/smr_misc/{study}.gtf.gz"
     output: "resources/smr_misc/{study}.genelist.txt"
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     script: "snakescripts/smr/prep_genelist.R"
 
 rule smr_extract_locus:
@@ -198,7 +198,7 @@ rule get_gene_universe:
     """gene universe: egene in magma and gwas"""
     output:
         gene_universe = "results/enrichment/{study}/gene_universe.txt"
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     script: "snakescripts/enrichment/get_gene_universe/{wildcards.study}.R"
 
 rule msmr_sig:
@@ -211,7 +211,7 @@ rule msmr_sig:
         gene_universe = "results/enrichment/{study}/gene_universe.txt"
     output:
         msmr_sig = "results/aggregate/msmr_sig/{study}~q_{q_thresh}~heidi_{heidi_thresh}.msmr_sig.tsv"
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     script: "snakescripts/aggregate/msmr_sig.R"
 
 rule locus_zoom_extract:
@@ -232,7 +232,7 @@ rule locus_zoom_extract:
         ld = "results/smr_locus/{study}/{biosample}/{pheno}/{probe}.ld"
     threads: 8
     log: "logs/smr_locus/{study}/{biosample}/{pheno}.{probe}.locus_zoom.log"
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     params:
         probe_flank_kb = 500
     script:

@@ -1,0 +1,26 @@
+# Seurat-based R environment for rule h5ad_annot (`conda: "sc-renv"`).
+#
+# Three packages this rule needs are not available from conda and must be
+# installed into the environment by hand after it is created:
+#
+#   R -e 'pak::pak(c("powellgenomicslab/scPred",
+#                    "powellgenomicslab/HierscPred",
+#                    "cellgeni/schard",
+#                    "bnprks/BPCells/r"))'
+#
+# snakescripts/scdrs/annot/{scpred,hierscpred}.R will not run without them.
+name: sc-renv
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-base
+  - r-tidyverse
+  - r-data.table
+  - r-pak
+  - r-seurat
+  - r-signac
+  - r-hdf5r
+  - bioconductor-ensdb.hsapiens.v86
+  - bioconductor-biovizbase
+  - bioconductor-glmgampoi

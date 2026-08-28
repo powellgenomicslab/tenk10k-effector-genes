@@ -23,7 +23,7 @@ df_disease_annot <- fread("results/otp/26.03/all_disease.tsv") %>%
   summarise(area_label = list(area_label))
 
 # df_drug <- read_parquet("results/otp/26.03/otp_drug.gz.parquet")
-# df_drug_summary <- read_parquet("results/otp/25.03/otp_drug_summary.gz.parquet")
+# df_drug_summary <- read_parquet("results/otp/26.03/otp_drug_summary.gz.parquet")
 
 df_mechanism <- fread("results/otp/26.03/all_drug_mechanism_chembl.tsv")
 df_mechanism_info <- fread("resources/misc/chembl_action_type.tsv")
@@ -843,7 +843,7 @@ ggsave("figures/strict/otp/otp_ti_mr_all.png",
 )
 
 # write supplementary tables
-source("scripts/util/helper.R")
+source("scripts/util/write_table.R")
 
 
 # table of max MR evidence & max clinical dev per target
@@ -851,7 +851,7 @@ tbl_tally_gene <- tally_gene %>%
   left_join(df_gene_annot[, .(targetId = ensembl_gene_id, hgnc_symbol)]) %>%
   arrange(desc(phase), mr_genes)
 
-write_gs(tbl_tally_gene, "target_otp", 11)
+write_table(tbl_tally_gene, "target_otp", 11)
 
 # table of TI support estimate
 tbl_stats <- df_stats_overall %>%
@@ -863,7 +863,7 @@ tbl_stats <- df_stats_overall %>%
   ) %>%
   unnest(stats)
 
-write_gs(tbl_stats, "ti_support_stats", 12)
+write_table(tbl_stats, "ti_support_stats", 12)
 
 # table of otp score by source of evidence
 label <- tibble(
@@ -877,7 +877,7 @@ tbl_otp_by_evidence <- df_ttest %>%
   ) %>%
   left_join(label) %>%
   rename(source_id = source, source = label)
-write_gs(tbl_otp_by_evidence, "otp_by_evidence", 13)
+write_table(tbl_otp_by_evidence, "otp_by_evidence", 13)
 
 
 # table of TI support with MR
@@ -903,4 +903,4 @@ tbl_ti <- df_mr_phase %>%
       TRUE ~ "Undetermined"
     )
   )
-write_gs(tbl_ti, "ti_drug_mr", 14)
+write_table(tbl_ti, "ti_drug_mr", 14)

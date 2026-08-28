@@ -1,0 +1,24 @@
+# Mapping of site-local files to symlink into the working directory.
+#
+# Read at parse time by get_file_map() in workflow/rules/init.smk (rule
+# init_file_brenner), so this file must exist before any rule can be evaluated.
+# Replace the `source` paths with the locations on your own system; `target`
+# paths are relative to the working directory and should be left as they are.
+#
+# Both entries come from the TenK10K Phase 1 sc-eQTL mapping (Cuomo et al.,
+# medRxiv 2025.03.20.25324352) rather than from this pipeline. They are the
+# origin of resources/brenner/tenk10k_phase1/common_eqtl.tsv, which
+# prep_smr_input/ and prep_coloc_input/ both read.
+
+files:
+  # Common eQTL / eGene results from SAIGE-QTL, TenK10K Phase 1
+  common_variant_eqtl:
+    source: /path/to/tenk10k/ms_tables/all_eqtls_fdr_5pct.tsv
+    target: resources/brenner/tenk10k_phase1/common_eqtl.tsv
+
+  # Pairwise cell-type specificity analysis for common eQTLs, TenK10K Phase 1.
+  # Reports the scenario for a given eGene / eQTL-cell type pair across the
+  # other cell types.
+  pairwise_scenario:
+    source: /path/to/tenk10k_phase1/pairwise_scenario_table.tsv
+    target: resources/brenner/tenk10k_phase1/pairwise_scenario_common_eqtl.tsv

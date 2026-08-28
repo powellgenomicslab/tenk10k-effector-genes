@@ -106,5 +106,5 @@ ggsave("figures/revision2/otp/otp_power_projection_pvalue.png", plots,
 
 # write to supplementary files
 
-source("scripts/util/helper.R")
-write_gs(df_power, "otp_power")
+source("scripts/util/write_table.R")
+write_table(df_power, "otp_power")

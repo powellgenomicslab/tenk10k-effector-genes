@@ -26,7 +26,9 @@
 # You can explicitly label the SNP used for MR and not indicate the index SNP. 
 
 ####################### Load packages and connect db for locuszoomr functions #######################
-setwd("/g/data/fy54/rt3501/repos/tenk10k-causal")
+# Run from the working directory that holds resources/ and results/ (see README).
+# Previously this script setwd() into a specific user's checkout, which silently
+# relocated every relative path below it.
 
 library(locuszoomr)
 library(tidyverse)
