@@ -16,8 +16,7 @@
 # flank can either be a single number or a vector of 2 numbers if different down/upstream flanking lengths are required. 
 # Alternatively a fixed genomic window (eg. 1 Mb) centred on the gene of interest can be specified using the argument fix_window. The locus can be specified manually by specifying the chromosome using seqname and genomic position range using xrange. 
 # Finally, a region can be specified by naming the index_snp, in which case the object data is searched for the coordinates of that SNP and the size of the region defined using fix_window or flank.
-# You need an access token emailed to you to use the LDlinkR API (token = "3593e031216b"). However, they require SNPs in either chrCHR:BP format or rsID format, and they use the 1000 Genomes reference which may not have your SNPs.
-# Therefore, it is easier to simply run PLINK using the genotype files on your index SNPs
+# It is easier to simply run PLINK using the genotype files on your index SNPs
 
 # By default, running the locus() function assigns a SNP as the index SNP (access it through locus$index_snp)
 # Calculate the r2 for all SNPs in the region to the index SNP
