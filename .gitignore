@@ -31,7 +31,8 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# Ignore results and intermediate files
+# Ignore results and intermediate files (assumed available locally)
+resources/
 results/
 logs/
 *.gz
