@@ -9,11 +9,11 @@ library(paletteer)
 library(scales)
 library(geomtextpath)
 
-df_msmr_tenk10k <- read_parquet("results/preprocessed/tenk10k_phase1.v3.parquet.gz")
+df_msmr_tenk10k <- read_parquet("results/preprocessed/tenk10k_phase1.v5.parquet.gz")
 # calculate N phenotype / phenotype category
 
-df_gene_annot <- fread("resources/misc/gencode.v44.gene_type.tsv")
-df_cell_map <- fread("resources/metadata/cell_map.tsv")
+df_gene_annot <- fread("metadata/gencode.v44.gene_type.tsv.gz")
+df_cell_map <- fread("metadata/cell.tsv")
 INPUT <- list(
   gen_cor = "results/aggregate/tenk10k_phase1.gen_cor.ldak.tsv",
   mr_rrho = "results/rrho/spearman_corr_all_trait_combos_strictmr.tsv"
@@ -343,9 +343,7 @@ label_data <- plot_data %>%
 # disease_category_cols <- setNames(color_df$value[which(color_df$name %in% unique(plot_data$pheno_cat))], color_df$name[which(color_df$name %in% unique(plot_data$pheno_cat))])
 # # bio_category_cols <- setNames(color_df$value[which(color_df$name %in% unique(bio_trait_meta$pheno_cat))], color_df$name[which(color_df$name %in% unique(bio_trait_meta$pheno_cat))])
 
-cat_order <- read_xlsx("resources/metadata/trait_metadata_curated.xlsx",
-  sheet = "trait_category_order"
-) %>%
+cat_order <- fread("metadata/trait_category.tsv") %>%
   pull(cat_order)
 
 trait_cat_col <- paletteer_d("ggthemes::Tableau_10", 10) %>%

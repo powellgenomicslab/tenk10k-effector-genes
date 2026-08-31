@@ -95,3 +95,16 @@ scratch/
 
 # Ignore .claude
 .claude/
+# --- Exceptions -------------------------------------------------------------
+# The blanket data patterns above (*.tsv, *.csv, *.xlsx, *.gz, *.parquet) exist
+# to keep results and bulk data out of the repository. The directories below
+# hold small, tracked configuration and metadata that the code needs in order
+# to run, so they must be exempt; without these lines the next `git add` will
+# silently drop them.
+!metadata/**
+!config/**
+!resources/misc/**
+!resources/scdrs/config/**
+!workflow/config/**
+!workflow/envs/**
+!sensitivity/config/**

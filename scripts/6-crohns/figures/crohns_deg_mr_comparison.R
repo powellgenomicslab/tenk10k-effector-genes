@@ -106,7 +106,7 @@ ggsave("figures/crohns/crohns_deg_mr_cross_plot.png", p_cross,
 
 
 # #add the "tenk10k harmonised" cell types - basically their cell type groups 
-# cell_map <- read.delim("resources/metadata/cell_map.tsv")
+# cell_map <- read.delim("metadata/cell.tsv")
 # major_cell_types_tenk <-  unique(cell_map$major_cell_type)
 # 
 # deg$major_cell_type <- deg_cell_map$major_cell_type[match(deg$scRNAseq_cellid, deg_cell_map$scRNAseq_cellid)]

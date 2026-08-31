@@ -14,14 +14,13 @@ library(glue)
 library(geomtextpath)
 library(paletteer)
 
-df_cell_map <- fread("resources/metadata/cell_map_revised.tsv") %>% 
+df_cell_map <- fread("metadata/cell.tsv") %>% 
   mutate(cell_type = factor(cell_type, unique(cell_type)))
 
-df_trait_map <- read_excel("resources/metadata/trait_metadata_curated.xlsx") %>% 
+df_trait_map <- fread("metadata/trait.tsv") %>% 
   filter(include) %>% 
   setDT()
-df_trait_cat <- read_excel("resources/metadata/trait_metadata_curated.xlsx",
-                           sheet = "trait_category_order") %>% 
+df_trait_cat <- fread("metadata/trait_category.tsv") %>% 
   setDT() 
 
 df_stats <- list(

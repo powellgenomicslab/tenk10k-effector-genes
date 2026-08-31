@@ -13,24 +13,22 @@ major_cell_type_order <- c(
   "CD4 T", "CD8 T", "Unconventional T", "NK", "Plasma B", "B", "Monocyte", "Dendritic", "HSPC"
 )
 
-df_cell_map <- fread("resources/metadata/cell_map_revised.tsv") |>
+df_cell_map <- fread("metadata/cell.tsv") |>
   select(-major_cell_type) |>
   rename(major_cell_type = revision_major_cell_type) |>
   mutate(major_cell_type = factor(major_cell_type, levels = major_cell_type_order))
 
-df_trait_map_all <- read_xlsx("resources/metadata/trait_metadata_curated.xlsx")
+df_trait_map_all <- fread("metadata/trait.tsv")
 df_trait_map <- filter(df_trait_map_all, include)
-df_gene_annot <- fread("resources/misc/gencode.v44.gene_type.tsv")
+df_gene_annot <- fread("metadata/gencode.v44.gene_type.tsv.gz")
 
 setDT(df_trait_map)
 phenotypes <- df_trait_map$trait_id
 
-cat_order <- read_xlsx("resources/metadata/trait_metadata_curated.xlsx",
-  sheet = "trait_category_order"
-) %>%
+cat_order <- fread("metadata/trait_category.tsv") %>%
   pull(cat_order)
 
-df_msmr_tenk10k <- read_parquet("results/preprocessed/tenk10k_phase1.v4.parquet.gz")
+df_msmr_tenk10k <- read_parquet("results/preprocessed/tenk10k_phase1.v5.parquet.gz")
 
 df_magma_all <- read_parquet("results/aggregate/tenk10k_phase1.magma.gz.parquet")
 
@@ -69,7 +67,7 @@ df_msmr_tenk10k[, eqtlgen_mr := FALSE]
 df_msmr_tenk10k[df_msmr_eqtlgen, eqtlgen_mr := i.sig, on = c("probeID", "phenotype")]
 
 # coloc
-df_coloc <- read_parquet("results/aggregate/coloc/tenk10k_phase1.coloc.parquet.gz") %>%
+df_coloc <- read_parquet("results/aggregate/coloc/tenk10k_phase1.coloc.v3.parquet.gz") %>%
   mutate(across(c(PP.H0.abf:PP.H4.abf), as.numeric)) %>%
   mutate(
     pp_h3_h4 = PP.H3.abf + PP.H4.abf,

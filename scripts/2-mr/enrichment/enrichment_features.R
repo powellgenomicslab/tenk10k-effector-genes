@@ -11,16 +11,14 @@ library(graphlayouts)
 library(tidytext)
 library(ggrepel)
 
-df_msmr_tenk10k <- read_parquet("results/preprocessed/tenk10k_phase1.v2.parquet.gz")
-df_trait_map <- readxl::read_excel("resources/metadata/trait_metadata_curated.xlsx") |> 
+df_msmr_tenk10k <- read_parquet("results/preprocessed/tenk10k_phase1.v5.parquet.gz")
+df_trait_map <- fread("metadata/trait.tsv") |> 
   filter(include) |> 
   setDT()
-df_cell_map <- fread("resources/metadata/cell_map.tsv")
-cat_order <- readxl::read_xlsx("resources/metadata/trait_metadata_curated.xlsx",
-  sheet = "trait_category_order"
-) %>%
+df_cell_map <- fread("metadata/cell.tsv")
+cat_order <- fread("metadata/trait_category.tsv") %>%
   pull(cat_order)
-df_gene_annot <- fread("resources/misc/gencode.v44.gene_type.tsv")
+df_gene_annot <- fread("metadata/gencode.v44.gene_type.tsv.gz")
 # count independent phenotypes
 
 INPUT <- list(

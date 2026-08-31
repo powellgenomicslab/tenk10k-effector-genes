@@ -10,7 +10,7 @@ OUTPUT <- snakemake@output
 PARAMS <- snakemake@params
 
 # read trait metadata
-df_trait_meta <- read_excel(INPUT$trait_metadata)
+df_trait_meta <- fread(INPUT$trait_metadata)
 
 # helper function to query a dataset
 

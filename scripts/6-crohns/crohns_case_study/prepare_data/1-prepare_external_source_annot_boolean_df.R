@@ -10,7 +10,7 @@ library(here)
 library(tidyverse)
 
 # Gene annotation table 
-df_gene_annot <- data.table::fread("resources/misc/gencode.v44.gene_type.tsv")
+df_gene_annot <- data.table::fread("metadata/gencode.v44.gene_type.tsv.gz")
 
 ############# For every source, generate a dataframe with the column name "Gene"############
 

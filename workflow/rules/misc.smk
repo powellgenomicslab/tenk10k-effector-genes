@@ -7,7 +7,7 @@ rule preprocess_results:
     """
     output:
         "results/preprocessed/{study}.{version}.parquet.gz"
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     resources:
         mem = "64GB",
         ncpus = 16

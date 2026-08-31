@@ -188,7 +188,7 @@ gene_abname_4 <- "MRPL51"
 gene_name_5 <- "ENSG00000010292"
 gene_abname_5 <- "NCAPD2"
 
-df_gene_annot <- fread("resources/misc/gencode.v44.gene_type.tsv")
+df_gene_annot <- fread("metadata/gencode.v44.gene_type.tsv.gz")
 # df_msmr_ins <- fread("results/aggregate/tenk10k_phase1.snps")
 
 genes <- c(gene_name_1, gene_name_2, gene_name_3, gene_name_4, gene_name_5)
@@ -364,7 +364,7 @@ cell_types <- tribble(
 gene_name   <- "ENSG00000153064"
 gene_abname <- "BANK1"
 
-df_gene_annot <- fread("resources/misc/gencode.v44.gene_type.tsv")
+df_gene_annot <- fread("metadata/gencode.v44.gene_type.tsv.gz")
 
 # --- load eQTL and LD data per cell type ---
 

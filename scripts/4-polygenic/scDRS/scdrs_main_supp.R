@@ -24,7 +24,7 @@ df_stats <- fread("results/aggregate/tenk10k_phase1.scdrs.cell_type_stats.tsv") 
     filter(phenotype %in% df_trait_map$trait_id)
 df_top <- fread("results/aggregate/tenk10k_phase1.scdrs.cell_type_top.tsv")
 
-df_cell_map <- fread("resources/misc/cell_map.tsv") %>%
+df_cell_map <- fread("metadata/cell.tsv") %>%
     mutate(cell_type = factor(cell_type, unique(cell_type)))
 df_cells <- read_parquet("results/aggregate/tenk10k_phase1.scdrs.cell_score.tsv.parquet.gz")
 

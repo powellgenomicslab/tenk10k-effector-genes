@@ -1,0 +1,17 @@
+# General Python environment for the Enrichr / STRING rules and for the shell
+# helpers in prep_besd_chr (`conda: "pydata"`).
+name: pydata
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - pandas
+  - numpy
+  - pyarrow
+  - python-igraph
+  - requests
+  - pyyaml
+  - pip
+  - pip:
+    # gget provides the Enrichr client used by snakescripts/enrichment/
+    - gget

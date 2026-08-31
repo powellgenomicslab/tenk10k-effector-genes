@@ -8,7 +8,7 @@ new_annot <- data.table(
   old = c("Canonical or Drug Pathway", "Differentially Expressed in Crohn's Disease"),
   new = c("Canonical or Drug Pathway", "Differentially Expressed in Crohn's Disease")
 )
-load("resources/crohns_case_study/heatmap_objects.RData")
+load("resources/crohns_case_study/figures/heatmap_objects.RData")
 
 canon_pathway_deg_genes <- c("ENSG00000100365", "ENSG00000245532", "ENSG00000206503",
                              "ENSG00000188906", "ENSG00000115232", "ENSG00000096968")
@@ -20,8 +20,8 @@ plot_data[probeID %in% canon_pathway_deg_genes, Gene := paste0(mark, Gene)]
 
 plot_data[, annot := factor(annot, levels = c(new_annot$new))]
 
-source("scripts/preprocess.R")
-source("scripts/5-crohns/figures/Crohns_example_locus_zoom.R")
+source("scripts/0-preprocess/preprocess_results.R")
+source("scripts/6-crohns/figures/Crohns_example_locus_zoom.R")
 
 max_ptransform <- max(abs(plot_data$p_transform), na.rm = TRUE)
 

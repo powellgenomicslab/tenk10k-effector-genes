@@ -31,7 +31,7 @@ data_dir = "resources/crohns_case_study/deg"
 figs = "resources/crohns_case_study/figures/deg"
 
 # get Helvetica 
-font_path = '/g/data/ei56/rt3501/miniforge3/envs/scanpy/fonts/Helvetica.ttf'  # Your font path goes here
+font_path = os.environ.get('HELVETICA_TTF', '')  # set HELVETICA_TTF to a Helvetica .ttf, or leave unset for the matplotlib default  # Your font path goes here
 font_manager.fontManager.addfont(font_path)
 prop = font_manager.FontProperties(fname=font_path)
 plt.rcParams['font.family'] = 'sans-serif'

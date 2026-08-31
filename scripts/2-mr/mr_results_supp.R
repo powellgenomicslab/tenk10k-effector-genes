@@ -320,4 +320,10 @@ tab_gene_summary_by_pheno <- df_gene_summary_by_pheno %>%
 
 # write to supplementary table
 source("scripts/util/write_table.R")
-write_table(tab_gene_summary_by_pheno, "mr_gwas_eqtlgen", 4)
+# metadata/table_column_names.xlsx splits this table across two sheets, one per
+# `annotation` group: mr_magma takes the *.gwas.* columns, mr_eqtlgen the
+# *.eqtlgen.* ones. write_table() selects by the sheet's label -> name mapping,
+# so the same wide table is passed to both. NB: confirm the table order numbers
+# against the final supplementary numbering.
+write_table(tab_gene_summary_by_pheno, "mr_magma", 4)
+write_table(tab_gene_summary_by_pheno, "mr_eqtlgen", 4)

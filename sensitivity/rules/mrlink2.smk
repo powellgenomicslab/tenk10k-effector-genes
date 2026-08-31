@@ -119,7 +119,8 @@ rule run_mrlink2:
     singularity:
         config.get("mr_singularity_image", "")
     shell:
-        """
+        # raw string: the shell must receive \t and \; verbatim
+        r"""
         while IFS= read -r CELL_TYPE || [ -n "$CELL_TYPE" ]; do
             [ -z "$CELL_TYPE" ] && continue
             GENES_FILE={params.mrlink2_output}/inputs/exposures/phenotypes/{wildcards.trait}/${{CELL_TYPE}}_mrlink2_genes.tsv
@@ -185,7 +186,8 @@ rule combine_mrlink2_results:
     singularity:
         config.get("mr_singularity_image", "")
     shell:
-        """
+        # raw string: the shell must receive \t and \; verbatim
+        r"""
         mkdir -p {params.mrlink2_output}/results
         Rscript sensitivity/rules/snakescripts/mrlink2/combine_mrlink2_results.R \
             {params.mrlink2_output}/outputs \

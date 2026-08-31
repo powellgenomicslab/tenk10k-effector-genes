@@ -4,7 +4,7 @@ library(patchwork)
 
 mr <- readRDS("resources/crohns_case_study/postprocess/tenk_crohns_sig.RDS")
 mr_all <- readRDS("resources/crohns_case_study/postprocess/tenk_crohns_all.RDS")
-cell_map <- read_tsv("resources/metadata/cell_map.tsv")
+cell_map <- read_tsv("metadata/cell.tsv")
 colours <- cell_map %>% select(cell_type, color) %>% deframe()
 
 

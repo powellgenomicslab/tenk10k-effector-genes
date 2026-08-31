@@ -19,8 +19,13 @@ The script applies several QC filters:
 - Applies trait inclusion criteria from metadata
 
 ### Subdirectories
-- `gwas/` - Contains preprocessing scripts and metadata for GWAS summary statistics
-- `tenk10k-eqtl/` - Contains preprocessing scripts for TenK10K Phase 1 single-cell eQTL data
+
+Both hold a README only. The code they describe lives in the Snakemake pipeline,
+and each README points at it:
+- [`gwas/`](gwas/README.md) - where GWAS harmonisation happens, and how
+  `resources/ma/` is assembled
+- [`tenk10k-eqtl/`](tenk10k-eqtl/README.md) - how SAIGE-QTL output enters the
+  pipeline, and what you must supply
 
 ## Dependencies
 
@@ -35,14 +40,19 @@ library(qvalue)        # Multiple testing correction
 
 ## Input Files
 
-The script expects the following input files in specific locations:
-- `metadata/cell_map.tsv` - Cell type mapping information
-- `metadata/trait_map.tsv` - Trait mapping and inclusion criteria
-- `metadata/trait_category.tsv` - Trait category definitions
-- `resources/misc/gencode.v44.gene_type.tsv` - Gene annotations
+Tracked in this repository (no action needed):
+- `metadata/cell.tsv` - cell-type mapping, colours and ordering
+- `metadata/trait.tsv` - trait definitions, sample sizes and inclusion flags
+- `metadata/trait_category.tsv` - trait category ordering and colours
+- `metadata/gencode.v44.gene_type.tsv.gz` - gene annotation
+
+From the data release, under the working directory:
+- `results/preprocessed/tenk10k_phase1.v5.parquet.gz` - the integrated MR /
+  sensitivity / coloc evidence table (see [`../../CHANGELOG.v5.md`](../../CHANGELOG.v5.md))
 - `results/aggregate/tenk10k_phase1.magma.gz.parquet` - MAGMA results
-- `results/aggregate/tenk10k_phase1.msmr.gz.parquet` - TenK10K mSMR results
-- `results/aggregate/eqtlgen2020.msmr.gz.parquet` - eQTLGen mSMR results
+- `results/aggregate/eqtlgen2020.msmr.parquet.gz` - eQTLGen mSMR results
+- `results/aggregate/coloc/tenk10k_phase1.coloc.v3.parquet.gz` and
+  `tenk10k_phase1.mvcoloc.parquet.gz` - colocalisation results
 
 ## Usage
 

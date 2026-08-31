@@ -5,12 +5,12 @@ library(ggrepel)
 library(readxl)
 library(RColorBrewer)
 
-df_msmr_strict <- read_parquet("/g/data/fy54/analysis/tenk10k-causal/results/preprocessed/tenk10k_phase1.v2.parquet.gz") %>%
+df_msmr_strict <- read_parquet("results/preprocessed/tenk10k_phase1.v5.parquet.gz") %>%
     setDT()
 
 # Match trait + cell-type ordering used in other plots (see scripts/preprocess.R).
 pheno_order_strict <- df_msmr_strict[, .N, by = pheno_label][order(-N), as.character(pheno_label)]
-df_cell_map <- fread("resources/metadata/cell_map.tsv")
+df_cell_map <- fread("metadata/cell.tsv")
 cell_type_order <- df_cell_map$cell_type
 
 # get just genes in the MYRF / FADS locus
@@ -40,9 +40,7 @@ label_data <- plot_data %>%
   filter(mr & supercategory == "disease") %>%
   mutate(mid_x = max(x) / 2, .by = c(Gene, cell_type))
 
-cat_order <- read_xlsx("resources/metadata/trait_metadata_curated.xlsx",
-  sheet = "trait_category_order"
-) %>%
+cat_order <- fread("metadata/trait_category.tsv") %>%
   pull(cat_order)
 
 trait_cat_col <- brewer.pal(max(3, min(length(cat_order), 12)), "Paired")[seq_along(cat_order)] %>%

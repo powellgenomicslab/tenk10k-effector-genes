@@ -1,0 +1,18 @@
+# Single-cell Python environment for the scDRS rules (`conda: "scverse"`).
+name: scverse
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - scanpy
+  - anndata
+  - python-igraph
+  - leidenalg
+  - pyarrow
+  - numpy
+  - pandas
+  - pyyaml
+  - pip
+  - pip:
+    # scDRS is not packaged for conda
+    - scdrs==1.0.3

@@ -197,7 +197,7 @@ mat_pvalue <- mat_pvalue[rownames(mat_spearman), colnames(mat_spearman)]
 # mat_pvalue  <- mat_pvalue[rownames(mat_jaccard), colnames(mat_jaccard)]
 
 # Get the trait metadata to include as annotation bars
-trait_meta <- fread("resources/metadata/trait_metadata_n.tsv") %>% 
+trait_meta <- fread("metadata/trait.tsv") %>% 
     filter(include==TRUE)
 # source("scripts/mr_overview/temp.R") # run this way until the file above is fixed 
 trait_meta <- trait_meta %>% as.data.frame() %>% column_to_rownames("label")

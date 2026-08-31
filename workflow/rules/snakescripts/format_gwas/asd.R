@@ -41,7 +41,7 @@ trait_metadata    <- snakemake@input[["trait_metadata"]]
 # liftover_script <- "workflow/rules/snakescripts/hg19tohg38.R"
 # trait_metadata  <- "resources/metadata/trait_metadata_curated.xlsx"
 
-df_trait_meta <- readxl::read_xlsx(trait_metadata)
+df_trait_meta <- fread(trait_metadata)
 setDT(df_trait_meta)
 
 gwas_df <- fread(gwas_file) %>%

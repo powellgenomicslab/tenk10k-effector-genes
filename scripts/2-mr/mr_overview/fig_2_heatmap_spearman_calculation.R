@@ -66,7 +66,7 @@ calc_spearman <- function(p1, p2){
 # ----------------------------------------------------------------------------------------------------------------------------------
 
 # source("scripts/0-preprocess/preprocess_results.R")
-df_msmr_strict <- read_parquet("/g/data/fy54/analysis/tenk10k-causal/results/preprocessed/tenk10k_phase1.v4.parquet.gz") %>%
+df_msmr_strict <- read_parquet("results/preprocessed/tenk10k_phase1.v5.parquet.gz") %>%
     setDT()
 
 # start with the full mr result list - not filtered for sig only 
@@ -184,7 +184,7 @@ spearmancorr_results_summary %>%
 
 # Calculate stats for the manuscript
 
-trait_meta <- fread("resources/metadata/trait_metadata_n.tsv")
+trait_meta <- fread("metadata/trait.tsv")
 disease_trait_labels <- trait_meta[supercategory == "disease", label]
 
 disease_corrs <- spearmancorr_results_summary %>%
