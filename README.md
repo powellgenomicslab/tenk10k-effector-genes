@@ -117,8 +117,7 @@ Henry, A., Senabouth, A., Tyebally, R., et al. Single-cell genetics identifies c
 
 [medRxiv link](https://www.medrxiv.org/content/10.1101/2025.08.28.25334614v2)
 
-See [`CITATION.md`](CITATION.md) for citations on specific methods / datasets used in this study.
-
+See *References* section in the manuscript for additional citations of methods and data sources.
 
 ## Acknowledgments
 
