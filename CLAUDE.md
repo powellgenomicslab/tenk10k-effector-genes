@@ -18,11 +18,9 @@ Changes flow **from** `tenk10k-causal` **to** here, not the other way (see commi
 
 ## Layout and duplication
 
-`README.md` covers the directory structure, with two caveats worth knowing before you trust it.
+`README.md` covers the directory structure and is current: the `scripts/` tree is `0-preprocess`, `1-overview`, `2-mr`, `3-comparison`, `4-polygenic`, `5-drug`, `6-crohns`, `util`. Earlier revisions referred to `3-polygenic`, `4-drug` and `5-crohns`, which no longer exist; if you see those names anywhere, they are stale.
 
-The section numbering in `README.md` is stale. The tree is `0-preprocess`, `1-overview`, `2-mr`, `3-comparison`, `4-polygenic`, `5-drug`, `6-crohns`, `util`; the README still refers to `3-polygenic`, `4-drug` and `5-crohns`.
-
-The root `Snakefile` and `rules/` are byte-identical duplicates of their counterparts under `sensitivity/`, so an edit to one must be mirrored in the other. Note, however, that both `Snakefile`s hardcode `configfile: "sensitivity/config/gadi.yaml"` and `Rscript sensitivity/scripts/preparePhenotypeList.R`, while `include:` resolves relative to each `Snakefile`'s own directory. The root `config/gadi.yaml` is therefore never read by either entry point, and `scripts/preparePhenotypeList.R` has been removed as an unreferenced duplicate.
+There is one entry point per pipeline. `sensitivity/` used to be duplicated verbatim at the repository root (`Snakefile`, `rules/`, `config/gadi.yaml`, `scripts/preparePhenotypeList.R`), which let you run `snakemake` from the root without `--snakefile`. That duplicate has been removed: the root `Snakefile` pulled in the root `rules/` but hardcoded `configfile: "sensitivity/config/gadi.yaml"`, so it ran duplicated code against the other copy's configuration, and the root `config/gadi.yaml` was never read at all. Do not reintroduce it. `config/` now holds only `config/path/{nci,brenner}.yaml`, the parse-time file maps for the main workflow.
 
 ## Parse-time configuration
 
@@ -75,14 +73,14 @@ Figures are written by `ggsave`/`ragg::agg_png` into per-topic subdirectories of
 Two pipelines, both driven from the working repository root:
 
 - `workflow/snakefile` is the main pipeline: GWAS formatting and liftover, BESD/SMR preparation, SMR and SMR-multi, MAGMA, coloc and multi-variant coloc, scDRS, genetic correlation via LDAK, gene-set enrichment (Enrichr/g:Profiler/STRING), and Open Targets Platform queries. Rule files live in `workflow/rules/*.smk`, with the code they call in `workflow/rules/snakescripts/`.
-- `sensitivity/Snakefile` (duplicated at the root) runs the sensitivity MR methods, IVW-LD and MR-link-2, inside the `mr.sif` Singularity container. It reads the main pipeline's SMR-multi Parquet output, so the main pipeline must have completed first. Targets are `all_ivw` and `all_mrlink2`; a checkpoint, `prepare_phenotype_list`, resolves the trait list dynamically.
+- `sensitivity/Snakefile` runs the sensitivity MR methods, IVW-LD and MR-link-2, inside the `mr.sif` Singularity container. It reads the main pipeline's SMR-multi Parquet output, so the main pipeline must have completed first. Targets are `all_ivw` and `all_mrlink2`; a checkpoint, `prepare_phenotype_list`, resolves the trait list dynamically.
 
 Conventions to follow when adding rules:
 
 - A rule that dispatches to a per-study script does so through `params.script` with a wildcard in the path, e.g. `params: script = "snakescripts/prep_smr_input/{study}.R"` then `script: "{params.script}"`. Add a new study by dropping in a file named after it, not by editing the rule.
 - Conda environments are defined in `workflow/envs/{renv,scverse,pydata,sc-renv}.yaml` and referenced from rules by relative path (`conda: "../envs/renv.yaml"`, resolved relative to the `.smk` file). Versions were captured from the environment that produced the published results (R 4.4.1). `sc-renv` additionally needs four GitHub-only packages installed by hand; its header says which. The top-level `environment.yml` describes an unrelated environment and is not what the pipeline uses.
 - `workflow/profiles/default/` contains only `config.v8+.yaml`, with no `config.yaml` fallback, so the main pipeline requires Snakemake 8 or newer despite `environment.yml` asking for `>=7`. It submits to PBS on NCI Gadi via `cluster-generic`, project `fy54`, and needs `-l storage` to cover `gdata/ei56`, `gdata/fy54` and the matching scratch filesystems.
-- Sensitivity rules run under Singularity with fixed bind mounts (`/data`, `/genotypes`, `/workspace`, `/eqtl`); container-internal paths are configured separately under `container_paths` in `config/gadi.yaml`, distinct from the host paths under `key_files`. When adding a rule there, both must be set.
+- Sensitivity rules run under Singularity with fixed bind mounts (`/data`, `/genotypes`, `/workspace`, `/eqtl`); container-internal paths are configured separately under `container_paths` in `sensitivity/config/gadi.yaml`, distinct from the host paths under `key_files`. When adding a rule there, both must be set. Two shell blocks in `sensitivity/rules/mrlink2.smk` are raw strings (`r"""`) because the shell must receive `\t` and `\;` verbatim; keep them raw.
 - A good deal of commented-out rule code is retained in the `.smk` files as a record of superseded approaches. Leave it be unless asked.
 
 Snakemake is not on `PATH` in a bare login shell on Gadi; it comes from a module or conda environment that must be loaded first.

@@ -85,7 +85,7 @@ Singularity bind mounts (configured in `gadi.yaml`):
 
 ## Running the Pipeline
 
-The pipeline must be run from the **repository root** (not from inside `sensitivity/`), because Snakemake rule scripts use paths relative to the root.
+The pipeline must be run from the **repository root** (not from inside `sensitivity/`), because Snakemake rule scripts use paths relative to the root. `sensitivity/Snakefile` is the only entry point; pass it with `--snakefile`.
 
 ### Run IVW-LD only
 
