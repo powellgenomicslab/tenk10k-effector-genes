@@ -1,0 +1,66 @@
+# Environment for the manuscript figure and table scripts in scripts/
+# (referenced from scripts/Snakefile as "../workflow/envs/figures.yaml").
+#
+# R 4.4.1 matches the environment that produced the published results (see
+# renv.yaml). Package set derived from the library() and pkg:: calls in
+# scripts/**/*.R. Exact versions are pinned in figures.<platform>.pin.txt,
+# which Snakemake uses automatically; regenerate them with `make lock`.
+#
+# Not on conda: sciscales (GitHub only) is installed by figures.post-deploy.sh.
+# The MoMAColors and MexBrewer palettes are bundled with paletteer.
+name: figures
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-base=4.4.1
+  # core data handling
+  - r-tidyverse
+  - r-data.table
+  - r-arrow
+  - r-readxl
+  - r-writexl
+  - r-glue
+  - r-fs
+  - r-here
+  - r-janitor
+  - r-broom
+  - r-formattable
+  - r-tidytext
+  # statistics
+  - bioconductor-qvalue
+  # plotting
+  - r-ggplot2
+  - r-patchwork
+  - r-cowplot
+  - r-ggrepel
+  - r-ggnewscale
+  - r-ggtext
+  - r-ggthemes
+  - r-ggsci
+  - r-ggprism
+  - r-ggridges
+  - r-ggforce
+  - r-ggrastr
+  - r-geomtextpath
+  - r-paletteer
+  - r-metbrewer
+  - r-rcolorbrewer
+  - r-viridislite
+  - r-scales
+  - r-labeling
+  - bioconductor-complexheatmap
+  - r-circlize
+  - r-ggraph
+  - r-tidygraph
+  - r-graphlayouts
+  - r-ragg
+  - r-svglite
+  - r-png
+  # locus plots
+  - r-locuszoomr
+  - r-ldlinkr
+  - bioconductor-ensdb.hsapiens.v86
+  - bioconductor-annotationhub
+  # Fig. 1 layout
+  - typst

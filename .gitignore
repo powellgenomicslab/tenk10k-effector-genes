@@ -31,9 +31,10 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# Ignore results and intermediate files (assumed available locally)
+# Ignore results and intermediate files (assumed available locally); `results`
+# without a slash also covers a symlink to a data tree
 resources/
-results/
+/results
 logs/
 *.gz
 *.parquet
