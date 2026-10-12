@@ -6,96 +6,15 @@ library(ragg)
 library(scales)
 library(qvalue)
 library(paletteer)
-library(ggnewscale)
+# library(ggnewscale)
 library(geomtextpath)
 library(arrow)
+library(ggrastr)
 
 source("scripts/0-preprocess/preprocess_results.R")
 
-df_msmr <- df_msmr_tenk10k |> 
-  filter(mr == TRUE)
-
-gene_universe <- unique(df_msmr_tenk10k$probeID)
-
-df_msmr[df_magma, magma := i.lfdr < 0.05, on = c("probeID" = "GENE", "phenotype" = "phenotype")]
-df_msmr[df_msmr_eqtlgen, mr_eqtlgen := i.lfdr_msmr_pheno < 0.05, on = c("probeID", "phenotype")]
-df_msmr[is.na(mr_eqtlgen), mr_eqtlgen := FALSE]
-
-
-mk_plot_tally <- function(group_col, label = list(mr_only = "MR only", mr_other = "MR & MAGMA"),
-                          p_title = NULL,
-                          col_scheme = list(mr_only = "#A4ABB0FF", mr_other = "#4C6C94FF")){
-  df_tally <- df_msmr %>% 
-    filter(!is.na({{group_col}})) %>%
-    group_by(probeID, phenotype, {{group_col}}) %>%
-    tally(name = "n_celltypes") %>%
-    group_by(n_celltypes, {{group_col}}) %>%
-    tally(name = "n") %>% 
-    ungroup() %>% 
-    complete(n_celltypes, {{group_col}}, fill = list(n = 0)) %>%  
-    mutate(sum_n = sum(n), prop = n / sum_n, .by = n_celltypes) %>% 
-    mutate(prop_scaled = rescale(prop, from = c(0, 1), to = range(sum_n)))
-  
-  ggplot(df_tally, aes(x = n_celltypes, y = n)) +
-    geom_col(aes(fill = {{group_col}}), width = 1, linewidth = 0.5,
-             position = "stack", color = "black") +
-    scale_fill_manual(values = c(col_scheme$mr_only, col_scheme$mr_other),
-                      name = NULL,
-                      label = c("FALSE" = label$mr_only,
-                                "TRUE" = label$mr_other),
-                      guide = guide_legend(ncol = 1)) +
-    theme_classic() +
-    labs(y = "N gene-trait MR associations",
-         x = "N cell types with MR associations",
-         title = p_title
-         ) +
-    geom_line(aes(group = {{group_col}}, color = {{group_col}}, y = prop_scaled),
-              data = ~filter(.x, !{{group_col}})) +
-    geom_textline(aes(group = {{group_col}},
-                      label = paste("%", ifelse({{group_col}}, label$mr_other, label$mr_only)),
-                      color = {{group_col}}, y = prop_scaled),
-                  data = ~filter(.x, !{{group_col}}),
-                  size = 9/.pt,
-                  vjust = -1, hjust = 0.4) +
-    geom_point(aes(color = {{group_col}}, y = prop_scaled), data = ~filter(.x, !{{group_col}})) +
-    scale_color_manual(values = c("red3", "red3"),
-                       guide = "none") +
-    scale_x_continuous(breaks = seq(1,28,2),
-                       expand = expansion(add = 0.25)) +
-    scale_y_continuous(labels = ~ifelse(.x <1e3, .x, number(.x / 1e3, 1, suffix = "k")),
-                       n.breaks = 10,
-                       expand = expansion(mult = c(0, 0.05)),
-                       sec.axis = sec_axis(
-                         ~rescale(., to = c(0,1)),
-                         name = NULL,
-                         labels = label_percent()),
-                       guide = guide_axis(cap = "none")) +
-    coord_cartesian(clip = "off") +
-    theme(legend.position.inside = c(0.95,1),
-          legend.position = "inside",
-          plot.title = element_text(size = 10, hjust = 0),
-          axis.title = element_text(size = 9),
-          legend.text = element_text(margin = margin(l = 2)),
-          legend.justification = c(1, 1),
-          legend.key.size = unit(0.75, "lines"),
-          legend.key.spacing.y = unit(0.5, "lines"),
-          axis.text = element_text(size = 8),
-          # plot.margin = margin(t = 2, unit = "lines"),
-          axis.line.y.right = element_line(color = "red3"),
-          axis.text.y.right = element_text(color = "red3"),
-          axis.ticks.y.right = element_line(color = "red3"),
-          axis.title.y.right = element_text(color = "red3"),
-          panel.grid.major.y = element_line(color = "grey90", linewidth = 0.5)
-    )
-}
-
-df_msmr <- df_msmr_tenk10k |> filter(mr == TRUE)
-
-(p_mr_gwas <- mk_plot_tally(magma_gene, p_title = "TenK10K single-cell MR vs. MAGMA"))
-(p_mr_eqtlgen <- mk_plot_tally(mr_eqtlgen, 
-                              p_title = "TenK10K single-cell MR vs. eQTLgen bulk whole blood MR",
-                        label = list(mr_only = "TenK10K only", mr_other = "TenK10K & eQTLgen"))
-)
+# Fig. 3: gene examples. The MR overlap panels (previously a and d) are now an
+# Extended Data figure, see 5_pub_mr_overlap.R
 
 # Example: MAGMA (eczema)
 # helper function for plotting
@@ -127,11 +46,11 @@ make_plot_locus <- function(
       ggplot(aes(x = pos, y = -log10(p))) +
       theme_minimal() +
       # plot non-lead SNPs
-      geom_point(aes(color = r2_top_var, 
+      geom_point_rast(aes(color = r2_top_var,
                      fill = after_scale(alpha(color, 0.6))),
                  data = ~.x[ins == FALSE],
-                 shape = "circle filled",
-                 size = 1.5, stroke = 0.5) +
+                 shape = 21,
+                 size = 1.5, stroke = 0.5, raster.dpi = 300) +
       # plot lead SNPs
       geom_vline(xintercept = lead_var_pos, color = col_lead_var, linewidth = 0.5,
                  linetype = "longdash") + 
@@ -258,7 +177,7 @@ list_plot <- c(
           label = glue("{cell_type_print}:<br>*{gene}*"),
           vjust = 1, hjust = 0,
           size = 10 / .pt, color = col,
-          fill = "white", label.size = 0
+          fill = "white", label.size = NA
         ) + theme(axis.text.x = element_blank(),
                   legend.position = if (gene == "VAMP1") "inside" else "none")
   }),
@@ -337,7 +256,7 @@ plots_example_magma <- wrap_plots(
   heights = c(5, 1),
   guides = "keep"
 )  +
-  plot_annotation(tag_levels = list(c("b", "", "", "", "", "", "", "c"))) &
+  plot_annotation(tag_levels = list(c("a", "", "", "", "", "", "", "b"))) &
   theme(plot.tag = element_text(size = 12, face = "bold"),
         plot.tag.position = c(0,1))
 
@@ -407,7 +326,7 @@ df_ct <- df_ct |>
             vjust = 1, hjust = {if (ct_print %in% c("CD4 TCM", "CD8 TEM")) 1 else 0},
             x = {if (ct_print %in% c("CD4 TCM", "CD8 TEM")) Inf else -Inf},
             size = 10 / .pt, color = col,
-            fill = "white", label.size = 0
+            fill = "white", label.size = NA
           ) +
           theme(axis.text.x = element_blank(), legend.position = "none") +
           scale_y_continuous(expand = expansion(mult = c(0, 0.2)))
@@ -501,30 +420,27 @@ list_plot <- c(
 
 plots_example_specificity <- (wrap_elements(full = p_locus, clip = FALSE) / p_plot_mr) +
   plot_layout(heights = c(5, 1)) +
-  plot_annotation(tag_levels = list(c("e", "f"))) &
+  plot_annotation(tag_levels = list(c("c", "d"))) &
   theme(plot.tag = element_text(size = 12, face = "bold"),
         plot.tag.position = c(0,1))
 
 # Assemble all together
 plots_combined <- wrap_plots(
   list(
-    wrap_elements(full = p_mr_gwas),
-    wrap_elements(full = p_mr_eqtlgen),
     wrap_elements(full = plots_example_magma),
     wrap_elements(full = plots_example_specificity)
   ),
   ncol = 2,
   byrow = TRUE,
-  guides = "keep",
-  heights = c(1, 5)
-) +
-  plot_annotation(tag_levels = list(c("a", "d", "", "")))  &
-  theme(plot.tag = element_text(size = 12, face = "bold"),
-        plot.tag.position = c(0,1))
+  guides = "keep"
+)
 
-ggsave("figures/publication/mr_example/combined.png", plots_combined, width = 8, height = 10,
-       device = ragg::agg_png, scaling = 0.8)
-
+# Fig. 3
+dir.create("figures", recursive = TRUE, showWarnings = FALSE)
+ggsave("figures/fig-m3.pdf", plots_combined, width = 8, height = 10 * 5/6,
+       device = cairo_pdf, scale = 1.25)
+ggsave("figures/fig-m3.png", plots_combined, width = 8, height = 10 * 5/6,
+       device = ragg::agg_png, dpi = 300, scale = 1.25)
 
 # fill in data
 # N gene trait not in MAGMA
@@ -576,3 +492,6 @@ summary(tab_eqtlgen_tenk10k_by_pheno[eqtlgen == 0, N])
 
 tab_eqtlgen_tenk10k[eqtlgen == TRUE & !is.na(tenk10k)] |> 
   mutate(prop = N / sum(N))
+
+# The cell-type-exclusive association plot (Supplementary Fig. 4) that SOURCE appended here
+# now lives in scripts/1-overview/celltype_exclusive_assoc.R.
