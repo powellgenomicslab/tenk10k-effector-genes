@@ -1,4 +1,4 @@
-# 0-preprocess: Data Preprocessing
+# 0-preprocess: shared loader and figure inputs
 
 This directory contains scripts and data for preprocessing GWAS summary statistics, eQTL, and the main MAGMA & Mendelian randomization analysis results for downstream analyses.
 
@@ -27,6 +27,14 @@ and each README points at it:
 - [`tenk10k-eqtl/`](tenk10k-eqtl/README.md) - how SAIGE-QTL output enters the
   pipeline, and what you must supply
 
+### Figure-input bundle
+- `download_figure_bundle.sh`: run by `make data`. It downloads the public bundle of summary-level inputs, verifies every checksum, and unpacks it into `results/` and `resources/`.
+- `link_figure_inputs.sh`: run by `make link-data DATA_DIR=...`. It links each file in `config/figure_inputs.txt` from an existing results tree, one file at a time.
+- `make_figure_bundle.sh`: builds the bundle for deposit. Run it on Gadi from the data root.
+  - It packs only the files listed in `config/figure_inputs.txt`.
+  - It refuses raw single-cell, genotype and read files.
+  - It skips files tagged `REVIEW` unless you pass `--include-review`, after confirming they may be shared. These are cell-level scDRS scores, in-sample LD and third-party tables.
+
 ## Dependencies
 
 ### R packages
@@ -48,7 +56,7 @@ Tracked in this repository (no action needed):
 
 From the data release, under the working directory:
 - `results/preprocessed/tenk10k_phase1.v5.parquet.gz` - the integrated MR /
-  sensitivity / coloc evidence table (see [`../../CHANGELOG.v5.md`](../../CHANGELOG.v5.md))
+  sensitivity / coloc evidence table
 - `results/aggregate/tenk10k_phase1.magma.gz.parquet` - MAGMA results
 - `results/aggregate/eqtlgen2020.msmr.parquet.gz` - eQTLGen mSMR results
 - `results/aggregate/coloc/tenk10k_phase1.coloc.v3.parquet.gz` and
@@ -56,7 +64,7 @@ From the data release, under the working directory:
 
 ## Usage
 
-Run the preprocessing script from the repository root:
+Nearly every script in `scripts/` sources the loader, so it does not need to be run on its own. To load the shared objects interactively, run it from the repository root:
 
 ```bash
 Rscript scripts/0-preprocess/preprocess_results.R
