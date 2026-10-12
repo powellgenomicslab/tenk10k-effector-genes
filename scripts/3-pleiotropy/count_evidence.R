@@ -11,30 +11,32 @@ suppressPackageStartupMessages(suppressWarnings({
   library(ggforce)
 }))
 
+dir.create("figures/panels/3-pleiotropy", recursive = TRUE, showWarnings = FALSE)
+
 df_msmr_tenk10k <- read_parquet("results/preprocessed/tenk10k_phase1.v5.parquet.gz")
-evidence_criteria <- list(
-  mr = expression(lfdr_msmr_pheno < 0.05),
-  sensitivity = expression(p_HEIDI >= 0.05 | phet_ivw >= 0.05 | psigmay_mrlink2 >= 0.05),
-  coloc = expression(coloc_pph4 >= 0.8 | mvcoloc_pph4 >= 0.8),
-  mr_sens = expression(mr & sensitivity),
-  mr_coloc = expression(mr & coloc),
-  mr_sens_coloc = expression(mr & sensitivity & coloc)
-)
+# evidence_criteria <- list(
+#   mr = expression(lfdr_msmr_pheno < 0.05),
+#   sensitivity = expression(p_HEIDI >= 0.05 | phet_ivw >= 0.05 | psigmay_mrlink2 >= 0.05),
+#   coloc = expression(coloc_pph4 >= 0.8 | mvcoloc_pph4 >= 0.8),
+#   mr_sens = expression(mr & sensitivity),
+#   mr_coloc = expression(mr & coloc),
+#   mr_sens_coloc = expression(mr & sensitivity & coloc)
+# )
 
-# Create columns for evidence criteria and count
-for (e in names(evidence_criteria)) {
-  df_msmr_tenk10k[, (e) := eval(evidence_criteria[[e]])]
-}
+# # Create columns for evidence criteria and count
+# for (e in names(evidence_criteria)) {
+#   df_msmr_tenk10k[, (e) := eval(evidence_criteria[[e]])]
+# }
 
-df_msmr_tenk10k[, `:=`(
-    max_evidence = case_when(
-      mr_sens_coloc ~ "mr_sens_coloc",
-      mr_coloc      ~ "mr_coloc",
-      mr_sens       ~ "mr_sens",
-      mr            ~ "mr"
-    ) |> factor(levels = c("mr", "mr_sens", "mr_coloc", "mr_sens_coloc"))
-  )
-]
+# df_msmr_tenk10k[, `:=`(
+#     max_evidence = case_when(
+#       mr_sens_coloc ~ "mr_sens_coloc",
+#       mr_coloc      ~ "mr_coloc",
+#       mr_sens       ~ "mr_sens",
+#       mr            ~ "mr"
+#     ) |> factor(levels = c("mr", "mr_sens", "mr_coloc", "mr_sens_coloc"))
+#   )
+# ]
 
 # add individual evidence expression
 evidence <- list(
@@ -116,7 +118,7 @@ evidence_cat_blocks <- df_evidence_category |>
 
 cat_fill_cols <- c(MR = "#4E9B8F40", Sensitivity = "#E8A02540", Coloc = "#7B5EA740")
 
-(p_tile <- df_set_tally |> 
+p_tile <- df_set_tally |> 
   filter(as.numeric(set) > 0) |> 
   pivot_longer(all_of(names(evidence))) |>
   left_join(df_evidence_category, by = c(name = "evidence")) |>
@@ -149,8 +151,10 @@ cat_fill_cols <- c(MR = "#4E9B8F40", Sensitivity = "#E8A02540", Coloc = "#7B5EA7
            hjust = 0.5, angle = 90, vjust = 1,
            fill = "white",
            fontface = "bold",
+           size = 6 / .pt,
+           family = "Nimbus Sans",
            color = c("#2E7B70", "#A06A10", "#5A3E87")) +
-  theme_void(base_size = 8, base_family = "Helvetica") +
+  theme_void(base_size = 8, base_family = "Nimbus Sans") +
   scale_y_discrete(
     breaks = names(evidence),
     labels = evidence_label,
@@ -159,19 +163,19 @@ cat_fill_cols <- c(MR = "#4E9B8F40", Sensitivity = "#E8A02540", Coloc = "#7B5EA7
   scale_x_discrete(expand = expansion(add = c(2.5, 0.5))) +
   theme(panel.grid = element_line(color = "grey90"),
         panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
-        axis.text.y = element_text(hjust = 1, margin = margin(r = 4)),
-        plot.margin = margin(l = 40)))
+        axis.text.y = element_text(size = 5, hjust = 1, margin = margin(r = 4)),
+        plot.margin = margin(l = 40))
 
 p_set_tally <- df_set_tally |> 
   filter(as.numeric(set) > 0) |> 
   ggplot(aes(x = fct_reorder(set, -N), y = N)) +
   geom_col(aes(fill = max_evidence), color = "black", width = 0.65) +
-  geom_text(aes(label = number(N, big.mark = ",", prefix = " ")), nudge_y = 200, angle = 90, hjust = 0, vjust = 0.5) +
+  geom_text(aes(label = number(N, big.mark = ",", prefix = " ")), nudge_y = 200, angle = 90, hjust = 0, vjust = 0.5, size = 5 / .pt, family = "Nimbus Sans") +
   scale_fill_viridis_d(na.translate = FALSE, guide = "none") +
-  scale_y_continuous(expand = expansion(c(0, 0.5))) +
+  scale_y_continuous(expand = expansion(c(0, 0.35))) +
   coord_cartesian(clip = "off") +
   layer_scales(p_tile)$x +
-  theme_void(base_size = 8, base_family = "Helvetica")
+  theme_void(base_size = 8, base_family = "Nimbus Sans")
 
 df_evidence_tally <- df_set_tally |> 
   pivot_longer(all_of(names(evidence))) |>
@@ -186,12 +190,12 @@ p_evidence_tally <- df_evidence_tally |>
   scale_x_continuous(expand = expansion(c(0, 1.5))) +
   coord_cartesian(clip = "off") +
   layer_scales(p_tile)$y +
-  theme_void(base_size = 8, base_family = "Helvetica") +
+  theme_void(base_size = 8, base_family = "Nimbus Sans") +
   # add label
-  geom_text(aes(label = number(n_sig, big.mark = ",")), hjust = -0.1)
+  geom_text(aes(label = number(n_sig, big.mark = ",")), hjust = -0.1, size = 5 / .pt, family = "Nimbus Sans")
 
 # p evidence count tally
-(p_evidence_count_tally <- df_evidence_summary |> 
+p_evidence_count_tally <- df_evidence_summary |> 
   group_by(max_evidence) |> 
   tally() |> 
   ggplot(aes(y = factor(max_evidence), x = n, fill = factor(max_evidence))) +
@@ -200,13 +204,12 @@ p_evidence_tally <- df_evidence_tally |>
   scale_x_continuous(expand = expansion(c(0, 0.3))) +
   scale_y_discrete(expand = expansion(c(0, 0)), breaks = names(max_evidence_label), labels = max_evidence_label) +
   coord_cartesian(clip = "off") +
-  theme_void(base_size = 8, base_family = "Helvetica") +
+  theme_void(base_size = 8, base_family = "Nimbus Sans") +
   # add label
-  geom_text(aes(label = number(n, big.mark = ",", prefix = " ")), vjust = 0.5, hjust = 0) +
+  geom_text(aes(label = number(n, big.mark = ",", prefix = " ")), vjust = 0.5, hjust = 0, size = 5 / .pt, family = "Nimbus Sans") +
   labs(y = NULL) +
-  theme(axis.text.y = element_text(hjust = 1, margin = margin(r = 4)),
+  theme(axis.text.y = element_text(size = 5, hjust = 1, margin = margin(r = 4)),
         axis.title.y = element_text(angle = 90, margin = margin(r = 6)))
-)
 # combine plots
 p_combined <- p_set_tally + plot_spacer() + p_tile + p_evidence_tally + plot_layout(ncol = 2, widths = c(3,1)) &
     theme(plot.margin = margin())
@@ -214,12 +217,8 @@ p_combined <- p_set_tally + plot_spacer() + p_tile + p_evidence_tally + plot_lay
 p_combined <- wrap_elements(full = p_combined) +
   inset_element(p_evidence_count_tally, left = 0.35, bottom = 0.65, right = 0.85, top = 0.9, align_to = "full")
 
-ggsave("figures/strict/evidence_tally_v2.png",
-       p_combined,
-       device = ragg::agg_png, scaling = 0.8,
-       width = 8, height = 4, units = "in", res = 300)
-
-saveRDS(p_combined, "figures/strict/evidence_tally_plot.rds")
+# Fig. 2c-d panel, assembled by scripts/2-trait/overview_combined.R
+saveRDS(p_combined, "figures/panels/3-pleiotropy/evidence_tally_plot.rds")
 
 # Individual trait breakdown of max evidence
 
@@ -231,7 +230,7 @@ df_evidence_by_cat <- df_msmr_tenk10k[mr == TRUE] %>%
   mutate(cat_totals = sum(n), .by = c(pheno_cat, max_evidence)) |> 
   mutate(max_evidence = factor(max_evidence, levels = rev(names(max_evidence_label))))
 
-(p_evidence_by_cat <- df_evidence_by_cat %>%
+p_evidence_by_cat <- df_evidence_by_cat %>%
   ggplot(aes(x = cell_type, y = n, fill = max_evidence)) +
   facet_wrap(~pheno_cat, ncol = 2, scales = "free_y") +
   geom_col() +
@@ -246,7 +245,7 @@ df_evidence_by_cat <- df_msmr_tenk10k[mr == TRUE] %>%
   guides(y = guide_axis(cap = "both"),
          fill = guide_legend(theme = theme(legend.key.size = unit(0.5, "lines")),
                              direction = "horizontal")) +
-  theme_classic(base_family = "Helvetica") +
+  theme_classic(base_family = "Nimbus Sans") +
   theme(
     axis.text.x = element_text(angle = 90, size = 7, hjust = 1, vjust = 0.5),
     axis.text.y = element_text(angle = 0, size = 7),
@@ -261,8 +260,12 @@ df_evidence_by_cat <- df_msmr_tenk10k[mr == TRUE] %>%
     axis.title = element_text(size = 9),
     strip.text = element_text(size = 9, hjust = 0),
   )
-)
-ggsave("figures/strict/supp/evidence_by_category.png",
+# Extended Data Fig. 2
+ggsave("figures/fig-e2.png",
        p_evidence_by_cat,
        device = ragg::agg_png, scaling = 1,
        width = 8, height = 6, units = "in", res = 300)
+ggsave("figures/fig-e2.pdf",
+       p_evidence_by_cat,
+       device = cairo_pdf,
+       width = 8, height = 6, units = "in")
