@@ -96,6 +96,35 @@ scratch/
 
 # Ignore .claude
 .claude/
+
+# Generated figures and tables (rebuilt by `make`); only the BioRender study
+# design image is tracked
+figures/*
+!figures/biorender/
+tables/
+
+# Never commit credentials, single-cell data, R objects or container images
+.env
+*.env
+*.token
+.huggingface/
+.netrc
+*.pem
+*.key
+*.rds
+*.RDS
+*.Rds
+*.rda
+*.h5seurat
+*.loom
+*.mtx
+*.sif
+*.bam
+*.fastq
+*.fq
+*.vcf
+*.bgen
+*.pgen
 # --- Exceptions -------------------------------------------------------------
 # The blanket data patterns above (*.tsv, *.csv, *.xlsx, *.gz, *.parquet) exist
 # to keep results and bulk data out of the repository. The directories below
@@ -104,7 +133,7 @@ scratch/
 # silently drop them.
 !metadata/**
 !config/**
-!resources/misc/**
+!resources/misc/target_phenotypes.txt
 !resources/scdrs/config/**
 !workflow/config/**
 !workflow/envs/**
