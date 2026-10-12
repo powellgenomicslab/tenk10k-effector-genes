@@ -16,7 +16,7 @@ diseases*. It holds code and small metadata tables only, with no data or
 results. Its two parts are:
 
 - **Analysis pipelines** (`workflow/`, `sensitivity/`). These are Snakemake pipelines that turn GWAS and single-cell eQTL summary statistics into Mendelian randomisation (MR), sensitivity, colocalisation, MAGMA, scDRS, enrichment and Open Targets results. They need the TenK10K data and an HPC cluster.
-- **Display items** (`scripts/`). These are the R, Python and Typst scripts that turn those results into every figure and table in the manuscript. Each item can be rebuilt with one command from the public summary statistics.
+- **Display items** (`scripts/`). These are the R, Python and Typst scripts that turn those results into every figure and table in the manuscript. Each item has a single command that rebuilds it from summary-level inputs.
 
 ## Contents
 
@@ -34,7 +34,7 @@ results. Its two parts are:
 
 ## Reproducing the display items
 
-**Requirements:** [conda](https://github.com/conda-forge/miniforge) and [Snakemake](https://snakemake.readthedocs.io) ≥ 8. Everything else is installed automatically.
+**Requirements:** [conda](https://github.com/conda-forge/miniforge) and [Snakemake](https://snakemake.readthedocs.io) ≥ 9 (tested with 9.27), on Linux (x86-64) or macOS (Apple Silicon). Everything else is installed automatically.
 
 ```bash
 git clone https://github.com/powellgenomicslab/tenk10k-effector-genes.git
@@ -50,6 +50,11 @@ The first build installs a pinned R 4.4.1 environment, which takes a few minutes
 > [!NOTE]
 > The summary-statistics download will be released with the published
 > manuscript. Until then, `make data` reports that it is not yet available.
+> Which inputs are included is still being finalised:
+> `config/figure_inputs.txt` lists every input, and marks with `REVIEW` the
+> cell-level scDRS scores, in-sample LD and third-party tables whose release
+> is under review. Items that depend on a file left out of the download will
+> not build from it.
 
 **Targets:**
 
@@ -75,17 +80,18 @@ Dependencies between scripts are resolved automatically. For example, `make fig-
 | Identifying disease-relevant biological pathways | ED Fig. 5; Supp. Figs. 12–13; Supp. Table 8 | [`5-pathways`](scripts/5-pathways/README.md) |
 | Polygenic enrichment reveals trait-relevant immune cell types | Fig. 4; ED Fig. 6; Supp. Figs. 14, 29; Supp. Tables 9–10 | [`6-polygenic`](scripts/6-polygenic/README.md) |
 | Single-cell MR supports drug target discovery | Fig. 5; ED Fig. 8; Supp. Fig. 16; Supp. Tables 11–15 | [`7-drug`](scripts/7-drug/README.md) |
-| Triangulation of evidence prioritises effector genes for Crohn's disease | Fig. 6a–c; ED Fig. 9; Supp. Figs. 17, 25, 30; Supp. Tables 16–21 | [`8-crohns`](scripts/8-crohns/README.md) |
+| Triangulation of evidence prioritises effector genes for Crohn's disease | Fig. 6a–c; ED Fig. 9; Supp. Figs. 17, 25, 30 (raw data only); Supp. Tables 16–21 | [`8-crohns`](scripts/8-crohns/README.md) |
 
 Some items are not produced by code in this repository:
 - **Fig. 1a** is BioRender artwork, provided in `figures/biorender/`.
 - **Fig. 6** is assembled by hand from panels a–c (`make fig-m6`) and panel d.
 - **Fig. 6d and Supp. Fig. 24** come from the [`TenK10K_causal_inference_vs_IBDverse`](TenK10K_causal_inference_vs_IBDverse) submodule.
 - **ED Fig. 7 and Supp. Fig. 15** come from scDeepID, in a separate repository.
+- **Supp. Figs. 18–23 and 26–28** are not yet linked to a script.
 
 ### Options
 
-- **Container.** `make fig-m2 SDM="conda apptainer"` runs inside the published container image instead of building the environment locally. Apptainer is available on most HPC systems.
+- **Container.** Once the container image is published, `make fig-m2 SDM="conda apptainer"` will run inside it instead of building the environment locally. Apptainer is available on most HPC systems. The image is built from the `Dockerfile`.
 - **Your own software.** `make fig-m2 SDM=` uses the R and Python already on your `PATH`. The packages needed are listed in `workflow/envs/figures.yaml`.
 - **Existing results tree.** If you already have the results (for example on NCI Gadi), run `make link-data DATA_DIR=/path/to/results/root` instead of `make data`. It links each input file listed in `config/figure_inputs.txt` and does not modify the source.
 - **Raw-data steps.** Two kinds of step read individual-level data, which is not shared:

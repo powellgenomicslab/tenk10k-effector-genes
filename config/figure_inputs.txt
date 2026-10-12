@@ -33,8 +33,6 @@ results/aggregate/tenk10k_phase1.scdrs.cell_mcp.tsv.parquet.gz	# REVIEW: cell-le
 results/aggregate/tenk10k_phase1.scdrs.cell_score.tsv.parquet.gz	# REVIEW: cell-level scDRS scores; confirm cell-level data may be shared
 results/aggregate/tenk10k_phase1.scdrs.cell_type_stats.tsv
 results/aggregate/tenk10k_phase1.scdrs.cell_type_top.tsv
-results/aggregate/tenk10k_phase1/scdrs.cell_mcp.tsv.parquet.gz	# REVIEW: cell-level scDRS scores; confirm cell-level data may be shared
-results/aggregate/tenk10k_phase1/scdrs.cell_score.tsv.parquet.gz	# REVIEW: cell-level scDRS scores; confirm cell-level data may be shared
 results/enrichment/tenk10k_phase1_mr_strict/mr_strict/CD4_CTL.string_rank_api.bipartite.tsv
 results/enrichment/tenk10k_phase1_mr_strict/mr_strict/CD4_CTL.string_rank_api.ppi_network.tsv
 results/enrichment/tenk10k_phase1_mr_strict/mr_strict/CD4_CTL.string_rank_api.tsv
@@ -42,7 +40,6 @@ results/gwas_locus/eczema/tenk10k_phase1/12_6339001_6631955.gwas.tsv
 results/gwas_locus/eczema/tenk10k_phase1/12_6339001_6631955.ld	# REVIEW: LD estimated from TenK10K genotypes (in-sample); confirm it may be shared
 results/gwas_locus/sle/tenk10k_phase1/4_101311286_102174812.gwas.tsv
 results/gwas_locus/sle/tenk10k_phase1/4_101311286_102174812.ld	# REVIEW: LD estimated from TenK10K genotypes (in-sample); confirm it may be shared
-results/misc/tenk10k_prop_sample.crohns.cell_score.tsv.parquet.gz	# REVIEW: cell-level scDRS scores; confirm cell-level data may be shared
 results/otp/26.03/all_disease.tsv
 results/otp/26.03/all_drug_evidence_chembl.tsv
 results/otp/26.03/all_drug_mechanism_chembl.tsv

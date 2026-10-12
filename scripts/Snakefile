@@ -817,12 +817,12 @@ rule compare_scdrs_aifi:
 rule scdrs_supp_sampling:
     input:
         SCDRS_STATS,
-        ext(
-            "results/aggregate/tenk10k_phase1/scdrs.cell_score.tsv.parquet.gz",
-            "results/aggregate/tenk10k_phase1/scdrs.cell_mcp.tsv.parquet.gz",
-            "results/misc/tenk10k_prop_sample.crohns.cell_score.tsv.parquet.gz",
-            review=REVIEW_CELL,
-        ),
+        # Not in the bundle manifest: these paths (kept as in tenk10k-causal) do
+        # not match the current scDRS outputs, and the rule only makes uncited
+        # figures (make unnumbered).
+        "results/aggregate/tenk10k_phase1/scdrs.cell_score.tsv.parquet.gz",
+        "results/aggregate/tenk10k_phase1/scdrs.cell_mcp.tsv.parquet.gz",
+        "results/misc/tenk10k_prop_sample.crohns.cell_score.tsv.parquet.gz",
         ext("metadata/cell.tsv"),
     output:
         UNNUMBERED[2:],
