@@ -6,7 +6,8 @@
 # scripts/**/*.R. Exact versions are pinned in figures.<platform>.pin.txt,
 # which Snakemake uses automatically; regenerate them with `make lock`.
 #
-# Not on conda: sciscales (GitHub only) is installed by figures.post-deploy.sh.
+# Not on conda: sciscales (GitHub) and oaqc (CRAN, needed by the "backbone"
+# graph layout) are installed by figures.post-deploy.sh.
 # The MoMAColors and MexBrewer palettes are bundled with paletteer.
 name: figures
 channels:
@@ -17,6 +18,8 @@ dependencies:
   # core data handling
   - r-tidyverse
   - r-data.table
+  - r-r.utils        # fread() of .gz files
+  - r-bit64          # fread() of integer64 columns
   - r-arrow
   - r-readxl
   - r-writexl
@@ -64,3 +67,6 @@ dependencies:
   - bioconductor-annotationhub
   # Fig. 1 layout
   - typst
+  # compiling oaqc in figures.post-deploy.sh
+  - cxx-compiler
+  - make

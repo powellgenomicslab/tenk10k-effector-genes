@@ -1,9 +1,9 @@
 FROM condaforge/miniforge3:latest
 LABEL io.github.snakemake.containerized="true"
-LABEL io.github.snakemake.conda_env_hash="ee8060b2e467dc37a926a462fbbba95d817e8c4a49affef371aaecf7cb104b4f"
+LABEL io.github.snakemake.conda_env_hash="d3ac4f34b874b4a1c92bfa2e23bb236c9fa6490bc34144463dc422eeac8e5e00"
 # Conda environment:
 #   source: workflow/envs/figures.yaml
-#   prefix: /conda-envs/cb8d994f9505899ead03dc9e5aecd4aa
+#   prefix: /conda-envs/ea3f31ab236339d4586f37013b407426
 #   # Environment for the manuscript figure and table scripts in scripts/
 #   # (referenced from scripts/Snakefile as "../workflow/envs/figures.yaml").
 #   #
@@ -12,7 +12,8 @@ LABEL io.github.snakemake.conda_env_hash="ee8060b2e467dc37a926a462fbbba95d817e8c
 #   # scripts/**/*.R. Exact versions are pinned in figures.<platform>.pin.txt,
 #   # which Snakemake uses automatically; regenerate them with `make lock`.
 #   #
-#   # Not on conda: sciscales (GitHub only) is installed by figures.post-deploy.sh.
+#   # Not on conda: sciscales (GitHub) and oaqc (CRAN, needed by the "backbone"
+#   # graph layout) are installed by figures.post-deploy.sh.
 #   # The MoMAColors and MexBrewer palettes are bundled with paletteer.
 #   name: figures
 #   channels:
@@ -23,6 +24,8 @@ LABEL io.github.snakemake.conda_env_hash="ee8060b2e467dc37a926a462fbbba95d817e8c
 #     # core data handling
 #     - r-tidyverse
 #     - r-data.table
+#     - r-r.utils        # fread() of .gz files
+#     - r-bit64          # fread() of integer64 columns
 #     - r-arrow
 #     - r-readxl
 #     - r-writexl
@@ -70,10 +73,13 @@ LABEL io.github.snakemake.conda_env_hash="ee8060b2e467dc37a926a462fbbba95d817e8c
 #     - bioconductor-annotationhub
 #     # Fig. 1 layout
 #     - typst
-RUN mkdir -p /conda-envs/cb8d994f9505899ead03dc9e5aecd4aa
-COPY workflow/envs/figures.yaml /conda-envs/cb8d994f9505899ead03dc9e5aecd4aa/environment.yaml
-COPY workflow/envs/figures.linux-64.pin.txt /conda-envs/cb8d994f9505899ead03dc9e5aecd4aa/pin.txt
-COPY workflow/envs/figures.post-deploy.sh /conda-envs/cb8d994f9505899ead03dc9e5aecd4aa/post-deploy.sh
+#     # compiling oaqc in figures.post-deploy.sh
+#     - cxx-compiler
+#     - make
+RUN mkdir -p /conda-envs/ea3f31ab236339d4586f37013b407426
+COPY workflow/envs/figures.yaml /conda-envs/ea3f31ab236339d4586f37013b407426/environment.yaml
+COPY workflow/envs/figures.linux-64.pin.txt /conda-envs/ea3f31ab236339d4586f37013b407426/pin.txt
+COPY workflow/envs/figures.post-deploy.sh /conda-envs/ea3f31ab236339d4586f37013b407426/post-deploy.sh
 # Conda environment:
 #   source: workflow/envs/scverse.yaml
 #   prefix: /conda-envs/92849e4d31ff556d5f4bc6bad124e02b
@@ -98,7 +104,7 @@ COPY workflow/envs/figures.post-deploy.sh /conda-envs/cb8d994f9505899ead03dc9e5a
 RUN mkdir -p /conda-envs/92849e4d31ff556d5f4bc6bad124e02b
 COPY workflow/envs/scverse.yaml /conda-envs/92849e4d31ff556d5f4bc6bad124e02b/environment.yaml
 
-RUN conda create --yes --prefix /conda-envs/cb8d994f9505899ead03dc9e5aecd4aa --file /conda-envs/cb8d994f9505899ead03dc9e5aecd4aa/pin.txt && \
-    conda run --prefix /conda-envs/cb8d994f9505899ead03dc9e5aecd4aa bash /conda-envs/cb8d994f9505899ead03dc9e5aecd4aa/post-deploy.sh && \
+RUN conda create --yes --prefix /conda-envs/ea3f31ab236339d4586f37013b407426 --file /conda-envs/ea3f31ab236339d4586f37013b407426/pin.txt && \
+    conda run --prefix /conda-envs/ea3f31ab236339d4586f37013b407426 bash /conda-envs/ea3f31ab236339d4586f37013b407426/post-deploy.sh && \
     conda env create --prefix /conda-envs/92849e4d31ff556d5f4bc6bad124e02b --file /conda-envs/92849e4d31ff556d5f4bc6bad124e02b/environment.yaml && \
     conda clean --all -y
