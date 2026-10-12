@@ -139,3 +139,6 @@ tables/
 !workflow/config/**
 !workflow/envs/**
 !sensitivity/config/**
+
+# default R graphics device output from scripts run non-interactively
+Rplots.pdf
