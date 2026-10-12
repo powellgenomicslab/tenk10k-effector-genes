@@ -16,24 +16,24 @@ df_gene_annot <- fread("metadata/gencode.v44.gene_type.tsv.gz")
 df_cell_map <- fread("metadata/cell.tsv")
 INPUT <- list(
   gen_cor = "results/aggregate/tenk10k_phase1.gen_cor.ldak.tsv",
-  mr_rrho = "results/rrho/spearman_corr_all_trait_combos_strictmr.tsv"
+  mr_spearman = "results/rrho/spearman_corr_all_trait_combos_strictmr.tsv"
 )
 # Create phenotype correlation matrix (same as in calc_indep_clust.R)
-# similar analysis using RRHO correlation estimates
-df_rrho <- read_tsv(INPUT[["mr_rrho"]]) %>% 
+# using pairwise spearman correlations of MR results between traits
+df_spearman <- read_tsv(INPUT[["mr_spearman"]]) %>% 
   select(trait1 = p1, trait2 = p2, value = spearman_corr)
 
 # Build square symmetric matrix with 1s on the diagonal
-rrho_traits <- union(df_rrho$trait1, df_rrho$trait2)
+spearman_traits <- union(df_spearman$trait1, df_spearman$trait2)
 mat_cor <- bind_rows(
-    df_rrho,
-    rename(df_rrho, trait1 = trait2, trait2 = trait1),
-    tibble(trait1 = rrho_traits, trait2 = rrho_traits, value = 1)
+    df_spearman,
+    rename(df_spearman, trait1 = trait2, trait2 = trait1),
+    tibble(trait1 = spearman_traits, trait2 = spearman_traits, value = 1)
   ) %>%
   pivot_wider(names_from = trait2, values_from = value) %>%
   column_to_rownames("trait1") %>%
   data.matrix() %>%
-  .[rrho_traits, rrho_traits]
+  .[spearman_traits, spearman_traits]
 
 gene_summary <- df_msmr_tenk10k[mr == TRUE, .(
   n_phenotypes = length(unique(pheno_label)),
@@ -97,18 +97,18 @@ mhc_genes <- df_gene_annot[chr == 6 & start < 33400644 & end > 25726063, hgnc_sy
 
 gene_summary[,.N, by = n_celltypes]
 
-(p_top_pleiotropic_genes <- 
+p_top_pleiotropic_genes <- 
   gene_summary |> 
   filter(n_celltypes == 1) |> 
   ggplot(aes(x = fct_reorder(gene, n_effective_phenotypes),
          y = n_effective_phenotypes)) +
   geom_point(aes(fill = factor(n_pheno_cat)), shape = "circle filled", alpha = 1) +
-  theme_bw(base_family = "Helvetica") +
+  theme_bw(base_family = "Nimbus Sans") +
   geom_text_repel(
     aes(label = ifelse(frank(-n_effective_phenotypes) < 30, gene, "")),
     size = 8/.pt, direction = "y", force = 4,
     xlim = c(NA, 1000), ylim = c(NA, NA),
-    max.overlaps = Inf, fontface = "italic", segment.size = 0.1,
+    max.overlaps = Inf, fontface = "italic", family = "Nimbus Sans", segment.size = 0.1,
   ) +
   scale_fill_viridis_d(name = "Number of\nPhenotype Categories", direction = -1) +
   theme(panel.grid = element_blank()) +
@@ -121,47 +121,80 @@ gene_summary[,.N, by = n_celltypes]
   legend.justification.inside = c(0, 1),
   legend.background = element_blank(),
   strip.background = element_blank()
-))
+)
 
 
 # Top 10 pleiotropic non-MHC genes for labelling (panel B)
 label_genes_b <- gene_summary[n_celltypes == 1 & !gene %in% mhc_genes][order(-n_effective_phenotypes)][1:10, gene]
+# print the top of the n_celltypes == 1 column: y-axis value, cell type and
+# label/MHC status, to check labelled points against what is drawn above them
+print(gene_summary[n_celltypes == 1][order(-n_effective_phenotypes)][1:20, .(
+  gene,
+  n_effective_phenotypes,
+  cell_type = unlist(celltypes),
+  labelled = gene %in% label_genes_b,
+  mhc = gene %in% mhc_genes
+)])
 # quantify average pleiotropy (for text)
 gene_summary[,median(n_effective_phenotypes)]
 
 
-(p_cell_phenotypes <- gene_summary |>
+# manual label layout for panel b: right-aligned column at x = -2, evenly spaced in y and ordered like the
+# points so the leader segments (text right edge -> point) do not cross.
+# NB the x expansion below is added beyond this x = -2, not beyond the first box.
+label_data_b <- gene_summary |>
+  filter(n_celltypes == 1, gene %in% label_genes_b) |>
+  arrange(n_effective_phenotypes) |>
+  mutate(y_label = seq(5, 35, length.out = n()))
+
+p_cell_phenotypes <- gene_summary |>
   # filter(min_p_HEIDI > 0.05 | min_phet_ivw > 0.05 | min_psigmay_mrlink2 > 0.05) |>
   # mutate(decile = ntile(n_effective_phenotypes, 10)) |>
   ggplot(aes(x = n_celltypes, y = n_effective_phenotypes, group = n_celltypes)) +
-  geom_boxplot(fill = "gray", outliers = FALSE, data = ~.x[n_celltypes == 1]) +
-  geom_boxplot(fill = "gray", outliers = TRUE, data = ~.x[n_celltypes > 1]) +
+  geom_boxplot(fill = "gray", outliers = FALSE, data = gene_summary |> filter(n_celltypes == 1)) +
+  geom_boxplot(fill = "gray", outliers = TRUE, outlier.size = 0.6, data = gene_summary |> filter(n_celltypes > 1)) +
+  # leader segments drawn before the points so the dots sit on top of the segment ends
+  geom_segment(data = label_data_b,
+    aes(x = -1.5, y = y_label, xend = n_celltypes, yend = n_effective_phenotypes),
+    color = "grey50", linewidth = 0.3) +
   # Unlabelled outlier points (behind)
-  geom_point(data = ~.x[n_celltypes == 1 & !gene %in% label_genes_b][
-      which(n_effective_phenotypes %in% boxplot(n_effective_phenotypes, plot=FALSE)$out)],
+  geom_point(data = gene_summary |>
+      filter(n_celltypes == 1, !gene %in% label_genes_b) |>
+      filter(n_effective_phenotypes %in% boxplot(n_effective_phenotypes, plot = FALSE)$out),
     aes(fill = unlist(celltypes)), shape = "circle filled",
-     alpha = 0.8, size = 2) +
+     size = 1.1) +
   # Labelled points plotted on top for accurate color
-  geom_point(data = ~.x[n_celltypes == 1 & gene %in% label_genes_b],
+  geom_point(data = gene_summary |> filter(n_celltypes == 1, gene %in% label_genes_b) |> arrange(n_effective_phenotypes),
     aes(fill = unlist(celltypes)), shape = "circle filled",
-     alpha = 0.8, size = 2) +
+     size = 1.1) +
   # Label top pleiotropic non-MHC region genes (1 cell type)
-  geom_text_repel(
-    data = ~.x[n_celltypes == 1 & gene %in% label_genes_b],
-    aes(label = gene),
-    size = 6/.pt, direction = "y", force = 3,
-    xlim = c(NA, -2), ylim = c(NA, NA), hjust = 1,
-    nudge_x = -4, segment.color = "grey50", point.padding = 0.3,
-    box.padding = unit(0.25, "lines"),
-    max.overlaps = Inf, fontface = "italic", segment.size = 0.1,
-  ) +
-  theme_bw(base_family = "Helvetica") +
+  # colored-label version (labels + segments colored by cell type):
+  # geom_text_repel(
+  #   data = gene_summary |> filter(n_celltypes == 1, gene %in% label_genes_b),
+  #   aes(label = gene, color = unlist(celltypes)),
+  #   size = 6/.pt, family = "Nimbus Sans", fontface = "italic",
+  #   force = 0.5,
+  #   nudge_x = -6,
+  #   direction = "y",
+  #   hjust = 1,
+  #   segment.size = 0.3,
+  #   max.overlaps = Inf
+  # ) +
+  geom_text(data = label_data_b,
+    aes(x = -2, y = y_label, label = gene),
+    size = 5/.pt, family = "Nimbus Sans", fontface = "italic", hjust = 1) +
+  theme_bw(base_family = "Nimbus Sans") +
   scale_fill_manual(
     name = "Cell Type",
+    breaks = df_cell_map$wg2_scpred_prediction, # legend in cell map (lineage) order; absent types are dropped
     values = deframe(df_cell_map[,.(wg2_scpred_prediction, color)]),
     labels = deframe(df_cell_map[,.(wg2_scpred_prediction, cell_type)])) +
-  guides(fill = guide_legend(ncol = 3, override.aes = list(size = 3))) +
-  scale_x_continuous(breaks = c(0, 10, 20), expand = expansion(add = c(13, 0.5))) +
+  # scale for the colored-label version above:
+  # scale_color_manual(
+  #   values = deframe(df_cell_map[,.(wg2_scpred_prediction, color)]),
+  #   guide = "none") +
+  guides(fill = guide_legend(ncol = 3, override.aes = list(size = 1.8))) +
+  scale_x_continuous(breaks = c(0, 10, 20), expand = expansion(add = c(16, 0.5))) +
   scale_y_continuous(limits = c(0, NA), breaks = function(x) c(0, labeling::extended(x[1], x[2], 5)), expand = expansion(mult = c(0, 0.05))) +
   labs(x = "Number of Cell Types", y = "Number of\nIndependent Phenotypes") +
   theme(panel.grid = element_blank(),
@@ -172,19 +205,100 @@ gene_summary[,median(n_effective_phenotypes)]
         legend.key.size = unit(0.5, "lines"),
         legend.key.spacing.x = unit(0.3, "lines"),
         legend.key.spacing.y = unit(0.2, "lines"),
-        legend.margin = margin(0, 0, 0, 0)))
+        legend.margin = margin(0, 0, 0, 0))
 
-ggsave("figures/mr_overview/top_pleiotropic_genes.png",
-      p_top_pleiotropic_genes, width = 9, height = 5, device = ragg::agg_png)
-ggsave("figures/mr_overview/n_phenotypes_by_n_celltypes_filtered_pleio.png",
-      p_cell_phenotypes, width = 9, height = 5, device = ragg::agg_png)
 
-saveRDS(p_top_pleiotropic_genes, "figures/mr_overview/top_pleiotropic_genes.rds")
-saveRDS(p_cell_phenotypes, "figures/mr_overview/n_phenotypes_by_n_celltypes.rds")
+# Alternative version: genes in 1 cell type split by cell type (top, labelled) over genes in 2+ cell types
+# by number of cell types (bottom, boxes only). Free y axes, outlier points coloured by extended-MHC (HLA)
+# membership (grey = HLA, black = non-HLA; one shared legend), and the same 5 / 6 pt text treatment as Fig 2.
+hla_colours <- c(`TRUE` = "#D55E00", `FALSE` = "#0072B2") # Okabe-Ito vermillion / blue
+hla_labels <- c(`TRUE` = "HLA region gene", `FALSE` = "non-HLA region gene")
 
+one_celltype <- gene_summary |>
+  filter(n_celltypes == 1) |>
+  mutate(cell_type = fct_reorder(unlist(celltypes), n_effective_phenotypes, .desc = TRUE),
+         hla = gene %in% mhc_genes)
+
+# boxplot outliers drawn as a separate layer so they can carry the HLA colour
+one_celltype_outliers <- one_celltype |>
+  filter(n_effective_phenotypes %in% boxplot.stats(n_effective_phenotypes)$out, .by = cell_type)
+
+# labels in two rows above the data, positions hard-coded (row 1 = lower, row 2 = upper; x_label = left edge of
+# the text in x-axis positions), placed so no upper-row leader passes through a lower-row label. All positions are
+# precomputed columns so the saved plot has no free variables. Genes missing from this table are not labelled.
+label_pos_one <- tribble(
+  ~gene,             ~row, ~x_label, ~x_segment, # x_segment: where the leader leaves the bottom of the text
+  "INKA1",              1,      1,       2.75,
+  "RPL6",               1,    4.8,        6.2,
+  "ERBB2",              1,    8.3,         10,
+  "PGAP3",              1,   15.8,       17.5,
+  "P4HA2",              1,     20,       21.75,
+  "HECTD4",             2,      1,        4.6,
+  "MAPT",               2,    5.7,        8.1,
+  "MYRF",               2,   10.5,       12.9,
+  "GPBAR1",             2,     14,       16.1,
+  "ENSG00000254936",    2,   18.3,       26.8
+)
+y_top_one <- max(one_celltype$n_effective_phenotypes)
+label_data_one <- one_celltype |>
+  filter(gene %in% label_genes_b) |>
+  as_tibble() |>
+  inner_join(label_pos_one, by = "gene") |>
+  mutate(y_label = y_top_one * c(1.14, 1.38)[row], # rows far enough apart that a leader stub shows under the upper row before it passes behind the lower row
+         y_segment = y_label - 0.05 * y_top_one)
+
+p_cell_phenotypes_one <- one_celltype |>
+  ggplot(aes(x = cell_type, y = n_effective_phenotypes)) +
+  geom_boxplot(outliers = FALSE) +
+  geom_point(data = one_celltype_outliers, aes(colour = hla), size = 0.6) +
+  geom_segment(data = label_data_one,
+    aes(x = x_segment, xend = as.integer(cell_type), y = y_segment, yend = n_effective_phenotypes),
+    colour = "grey50", linewidth = 0.15) +
+  geom_point(data = label_data_one, size = 0.6, colour = hla_colours[["FALSE"]]) +
+  geom_text(data = label_data_one, aes(x = x_label, y = y_label, label = gene),
+    size = 5/.pt, family = "Nimbus Sans", fontface = "italic", hjust = 0) +
+  scale_colour_manual(values = hla_colours, labels = hla_labels, name = NULL) +
+  scale_x_discrete(labels = deframe(df_cell_map[,.(wg2_scpred_prediction, cell_type)])) +
+  scale_y_continuous(limits = c(0, NA), breaks = function(x) c(0, labeling::extended(x[1], x[2], 5)), expand = expansion(mult = c(0, 0.05))) +
+  labs(title = "Genes with MR evidence in 1 cell type", x = "Cell type", y = "Number of\nIndependent Phenotypes") +
+  theme_classic(base_size = 6, base_family = "Nimbus Sans") +
+  theme(axis.text = element_text(size = 5),
+        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+        plot.title = element_text(size = 6, face = "bold"))
+
+multi_celltype <- gene_summary |>
+  filter(n_celltypes > 1) |>
+  mutate(hla = gene %in% mhc_genes)
+
+multi_celltype_outliers <- multi_celltype |>
+  filter(n_effective_phenotypes %in% boxplot.stats(n_effective_phenotypes)$out, .by = n_celltypes)
+
+p_cell_phenotypes_multi <- multi_celltype |>
+  ggplot(aes(x = n_celltypes, y = n_effective_phenotypes, group = n_celltypes)) +
+  geom_boxplot(outliers = FALSE) +
+  geom_point(data = multi_celltype_outliers, aes(colour = hla), size = 0.6) +
+  scale_colour_manual(values = hla_colours, labels = hla_labels, name = NULL) +
+  scale_x_continuous(breaks = c(2, 10, 20)) +
+  scale_y_continuous(limits = c(0, NA), breaks = function(x) c(0, labeling::extended(x[1], x[2], 5)), expand = expansion(mult = c(0, 0.05))) +
+  labs(title = "Genes with MR evidence in 2+ cell types", x = "Number of cell types", y = "Number of\nIndependent Phenotypes") +
+  theme_classic(base_size = 6, base_family = "Nimbus Sans") +
+  theme(axis.text = element_text(size = 5),
+        plot.title = element_text(size = 6, face = "bold"))
+
+# stacked vertically to fit the Fig 2 panel b slot (2.35 x 3.9 in); identical y axis titles and the HLA legend are merged
+p_cell_phenotypes_split <- p_cell_phenotypes_one / p_cell_phenotypes_multi +
+  plot_layout(axis_titles = "collect", guides = "collect") &
+  theme(legend.position = "bottom",
+        legend.text = element_text(size = 5),
+        legend.key.size = unit(0.5, "lines"),
+        legend.margin = margin(0, 0, 0, 0))
+
+# Fig 2 panel b, assembled by scripts/2-trait/overview_combined.R
+dir.create("figures/panels/2-trait", recursive = TRUE, showWarnings = FALSE)
+saveRDS(p_cell_phenotypes_split, "figures/panels/2-trait/n_phenotypes_by_n_celltypes_split.rds")
 
 # ------------------------------------------------------------------------------------------------
-# Plot n_celltypes vs heterogeneity 
+# Plot n_celltypes vs heterogeneity
 # ------------------------------------------------------------------------------------------------
 
 # gene_summary[, gene_heterogeneity := if_else(min_p_HEIDI > 0.05 | min_phet_ivw > 0.05 | min_psigmay_mrlink2 > 0.05, "Not heterogeneous", "Heterogeneous")]
@@ -212,7 +326,7 @@ saveRDS(p_cell_phenotypes, "figures/mr_overview/n_phenotypes_by_n_celltypes.rds"
 #   geom_point(aes(y = prop_scaled),
 #              data = ~filter(.x, gene_heterogeneity == "Heterogeneous"),
 #              color = "red3") +
-#   theme_classic(base_family = "Helvetica") +
+#   theme_classic(base_family = "Nimbus Sans") +
 #   labs(x = "Number of Cell Types", y = "Number of MR genes") +
 #   scale_x_continuous(breaks = seq(1, 28, 4),
 #                      expand = expansion(add = 0.25)) +
@@ -267,7 +381,7 @@ saveRDS(p_cell_phenotypes, "figures/mr_overview/n_phenotypes_by_n_celltypes.rds"
 #   geom_point(aes(y = prop_scaled),
 #              data = ~filter(.x, gene_heterogeneity == "Heterogeneous"),
 #              color = "red3") +
-#   theme_classic(base_family = "Helvetica") +
+#   theme_classic(base_family = "Nimbus Sans") +
 #   labs(x = "Number of Effective Phenotypes", y = "Number of MR genes") +
 #   scale_x_continuous(expand = expansion(add = 0.25)) +
 #   scale_y_continuous(labels = label_comma(),
@@ -378,13 +492,14 @@ p_scatter_pleiotropic <- plot_data %>%
       max.overlaps = Inf,
       segment.size = 0.1,
       force = 4,
+      family = "Nimbus Sans",
       show.legend = FALSE
     ) +
     geom_text(data = facet_label_data,
       aes(x = Inf, y = Inf, label = label),
       parse = TRUE, inherit.aes = FALSE,
       hjust = 1.05, vjust = 1.3,
-      size = 8 * 1.3 / .pt, family = "Helvetica") +
+      size = 8 * 1.3 / .pt, family = "Nimbus Sans") +
     scale_y_continuous(expand = expansion(mult = c(0.2, 0.2))) +
     guides(
       y = guide_axis(cap = "none"),
@@ -393,7 +508,7 @@ p_scatter_pleiotropic <- plot_data %>%
       shape = guide_legend(ncol = 1, override.aes = list(fill = "black"))
     ) +
     coord_cartesian(clip = "off") +
-    theme_classic(base_size = 8, base_family = "Helvetica") +
+    theme_classic(base_size = 8, base_family = "Nimbus Sans") +
     theme(
         # axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         axis.ticks.x = element_blank(),
@@ -401,11 +516,18 @@ p_scatter_pleiotropic <- plot_data %>%
         panel.grid.minor.x = element_blank()
     ) +
     # centre on zero
-    labs(y = expression(sign(beta)%*%-log[10](p[SMR_multi]))) +
+    labs(y = expression(sign(beta)%*%-log[10](P[MR]))) +
     scale_color_manual(values = disease_category_cols) +
     scale_fill_manual(values = disease_category_cols) +
     # MR : circle, MR+ : diamond, not significant : cross
     scale_shape_manual(
+      name = "Evidence",
+      labels = c(
+        "Not significant" = "No evidence",
+        "mr" = "MR only",
+        "mr_sens" = "MR + Sensitivity",
+        "mr_coloc" = "MR + Coloc",
+        "mr_sens_coloc" = "MR + Sensitivity + Coloc"),
       values = c(
         "Not significant" = 3,
         "mr" = 1,
@@ -425,12 +547,6 @@ p_scatter_pleiotropic <- plot_data %>%
         axis.line.x = element_blank(),
         strip.clip = "off")
 
-p_scatter_pleiotropic %>% 
-  ggsave(filename = "fig_pub/fig_1_pleiotropic_genes_scatter.png", width = 2 * length(unique(plot_data$Gene)), height = 8, limitsize = FALSE)
-
-p_scatter_pleiotropic %>%
-  ggsave(filename = "fig_pub/fig_1_pleiotropic_genes_scatter.pdf", width = 2 * length(unique(plot_data$Gene)), height = 8, limitsize = FALSE)
-
 # Apply combined-figure theme adjustments before saving RDS
 p_scatter_pleiotropic <- p_scatter_pleiotropic +
   guides(
@@ -446,7 +562,8 @@ p_scatter_pleiotropic <- p_scatter_pleiotropic +
     plot.title = element_blank(),
   )
 
-p_scatter_pleiotropic %>% saveRDS("fig_pub/fig_1_pleiotropic_genes_scatter.rds")
+# Extended Data Fig 1, saved by scripts/2-trait/overview_combined.R
+p_scatter_pleiotropic %>% saveRDS("figures/panels/2-trait/fig_1_pleiotropic_genes_scatter.rds")
 
 # ------------------------------------------------------------------------------------------------
 # Volcano plot: beta_SMR vs -log10(p_SMR_multi)
@@ -480,14 +597,14 @@ p_scatter_pleiotropic %>% saveRDS("fig_pub/fig_1_pleiotropic_genes_scatter.rds")
 #     )
 
 # p_volcano %>%
-#   ggsave(filename = "fig_pub/volcano_pleiotropic_genes.png",
+#   ggsave(filename = "figures/volcano_pleiotropic_genes.png",
 #     width = 6 * length(unique(plot_data$Gene)), height = 6, limitsize = FALSE)
 
 # p_volcano %>%
-#   ggsave(filename = "fig_pub/volcano_pleiotropic_genes.pdf",
+#   ggsave(filename = "figures/volcano_pleiotropic_genes.pdf",
 #     width = 6 * length(unique(plot_data$Gene)), height = 6, limitsize = FALSE)
 
-# p_volcano %>% saveRDS("fig_pub/volcano_pleiotropic_genes.rds")
+# p_volcano %>% saveRDS("figures/volcano_pleiotropic_genes.rds")
 
 # # ------------------------------------------------------------------------------------------------
 # # Lollipop plot: b_SMR with point size = -log10(p_SMR_multi)
@@ -549,11 +666,11 @@ p_scatter_pleiotropic %>% saveRDS("fig_pub/fig_1_pleiotropic_genes_scatter.rds")
 #     )
 
 # p_lollipop %>%
-#   ggsave(filename = "fig_pub/lollipop_pleiotropic_genes.png",
+#   ggsave(filename = "figures/lollipop_pleiotropic_genes.png",
 #     width = 4 * length(unique(plot_data$Gene)), height = 3 * length(unique(plot_data$Gene)), limitsize = FALSE)
 
 # p_lollipop %>%
-#   ggsave(filename = "fig_pub/lollipop_pleiotropic_genes.pdf",
+#   ggsave(filename = "figures/lollipop_pleiotropic_genes.pdf",
 #     width = 4 * length(unique(plot_data$Gene)), height = 3 * length(unique(plot_data$Gene)), limitsize = FALSE)
 
-# p_lollipop %>% saveRDS("fig_pub/lollipop_pleiotropic_genes.rds")
+# p_lollipop %>% saveRDS("figures/lollipop_pleiotropic_genes.rds")

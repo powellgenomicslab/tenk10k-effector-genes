@@ -12,6 +12,9 @@ suppressPackageStartupMessages({
     library(paletteer)
 })
 
+# fixed sort order so trait pairs (p1 < p2) match the saved correlation tables regardless of IDE/terminal locale
+Sys.setlocale("LC_COLLATE", "C")
+
 
 # [] create separate similarity heatmap for the biological traits
 # [x] plot the two heatmaps together 
@@ -20,7 +23,7 @@ suppressPackageStartupMessages({
 # Plot Parameters 
 # ----------------------------------------------------------------------------------------------------------------------------------
 
-PLOT_SIZE <- 0.825  # scale factor: multiply to resize entire plot proportionally
+PLOT_SIZE <- 0.7  # scale factor: multiply to resize entire plot proportionally
 print(glue("Plot size scale factor: {PLOT_SIZE}"))
 
 cell_size_cm <- unit(0.2 * PLOT_SIZE, "cm")
@@ -172,13 +175,15 @@ spearman_corrs <- fread("results/rrho/spearman_corr_all_trait_combos_strictmr.ts
 plot_data_trait_level <- plot_data_trait_level %>% left_join(spearman_corrs, by = c("p1", "p2"))
 plot_data_trait_level %>% filter(is.na(spearman_corr))
 
-# add the RRHO p-values (calculated in fig_2_heatmap_rrho_calculation.R)
-rrho_pval <- fread("results/rrho/rrho_pvalues_all_trait_combos_two.sided.tsv")
+# # add the RRHO p-values (calculated in fig_2_heatmap_rrho_calculation.R)
+# rrho_pval <- fread("results/rrho/rrho_pvalues_all_trait_combos_two.sided.tsv")
 
-plot_data_trait_level <- plot_data_trait_level %>%
-    left_join(rrho_pval, by = c("p1", "p2")) %>% 
-    # reverse -log10 transformation to get the BY p-values
-    mutate(max_p_value_BY = 10^(-max_p_value_BY))
+# plot_data_trait_level <- plot_data_trait_level %>%
+#     left_join(rrho_pval, by = c("p1", "p2")) %>% 
+#     # reverse -log10 transformation to get the BY p-values
+#     mutate(max_p_value_BY = 10^(-max_p_value_BY))
+# The RRHO p-values only fed mat_pvalue, which is used solely in commented-out code
+# below, and the script that produced them is retired; they are not read.
 
 
 
@@ -188,8 +193,8 @@ plot_data_trait_level <- plot_data_trait_level %>%
 
 # make the full matrices
 mat_spearman <- prepare_ct_matrices(plot_data_trait_level, spearman_corr, is_pvalue = FALSE)
-mat_pvalue <- prepare_ct_matrices(plot_data_trait_level, max_p_value_BY, is_pvalue = TRUE)
-mat_pvalue <- mat_pvalue[rownames(mat_spearman), colnames(mat_spearman)]
+# mat_pvalue <- prepare_ct_matrices(plot_data_trait_level, max_p_value_BY, is_pvalue = TRUE)
+# mat_pvalue <- mat_pvalue[rownames(mat_spearman), colnames(mat_spearman)]
 
 # mat_jaccard <- prepare_ct_matrices(data = plot_data_trait_level, value_col = jaccard_index, is_pvalue = FALSE)
 # mat_overlap_coef <- prepare_ct_matrices(data = plot_data_trait_level, value_col = overlap_coefficient, is_pvalue = FALSE)
@@ -281,7 +286,7 @@ disease_bottom_ha <- HeatmapAnnotation(
     show_legend = FALSE,
     show_annotation_name = TRUE,
     annotation_name_side = "left",
-    annotation_name_gp = gpar(fontsize = 7 * PLOT_SIZE, fontfamily = "Helvetica")
+    annotation_name_gp = gpar(fontsize = 5, fontfamily = "Helvetica")
 )
 
 bio_bottom_ha <- HeatmapAnnotation(
@@ -295,7 +300,7 @@ bio_bottom_ha <- HeatmapAnnotation(
     show_legend = FALSE,
     show_annotation_name = TRUE,
     annotation_name_side = "left",
-    annotation_name_gp = gpar(fontsize = 7 * PLOT_SIZE, fontfamily = "Helvetica")
+    annotation_name_gp = gpar(fontsize = 5, fontfamily = "Helvetica")
 )
 
 # ----------------------------------------------------------------------------------------------------------------------------------
@@ -308,8 +313,8 @@ legend_disease  <- packLegend(
         Legend(
             col_fun = col_fun,
             title = expression("Spearman's" ~ rho),
-            title_gp = gpar(fontsize = 8 * PLOT_SIZE, fontfamily = "Helvetica"),
-            labels_gp = gpar(fontsize = 7 * PLOT_SIZE, fontfamily = "Helvetica"),
+            title_gp = gpar(fontsize = 6, fontfamily = "Helvetica"),
+            labels_gp = gpar(fontsize = 5, fontfamily = "Helvetica"),
             grid_height = unit(0.3 * PLOT_SIZE, "cm"),
             grid_width = unit(0.3 * PLOT_SIZE, "cm"),
             legend_height = unit(length(disease_category_cols) * 0.3 * PLOT_SIZE, "cm"),
@@ -318,8 +323,8 @@ legend_disease  <- packLegend(
              labels = names(disease_category_cols),
              legend_gp = gpar(fill = disease_category_cols),
              title = "Trait category",
-             title_gp = gpar(fontsize = 8 * PLOT_SIZE, fontfamily = "Helvetica"),
-             labels_gp = gpar(fontsize = 7 * PLOT_SIZE, fontfamily = "Helvetica"),
+             title_gp = gpar(fontsize = 6, fontfamily = "Helvetica"),
+             labels_gp = gpar(fontsize = 5, fontfamily = "Helvetica"),
              grid_height = unit(0.3 * PLOT_SIZE, "cm"),
              grid_width = unit(0.3 * PLOT_SIZE, "cm"),
         ),
@@ -367,20 +372,20 @@ disease_heatmap <- Heatmap(
     bottom_annotation = disease_bottom_ha,
 
     # Labels
-    column_title = " ",
+    column_title = character(0), # a blank " " title still reserves ~5 mm of padding below the column names
     column_title_side = "bottom",
     column_title_gp = gpar(fontsize = 0),
-    row_names_gp = gpar(fontsize = 7 * PLOT_SIZE, fontfamily = "Helvetica"),
+    row_names_gp = gpar(fontsize = 5, fontfamily = "Helvetica"),
     row_names_side = "left",
     row_labels = disease_trait_meta$name,    # Use nice names for rows
     column_labels = disease_trait_meta$name,
-    column_names_gp = gpar(fontsize = 7 * PLOT_SIZE, fontfamily = "Helvetica"),
+    column_names_gp = gpar(fontsize = 5, fontfamily = "Helvetica"),
 
     # Dendrograms
     column_dend_side = "bottom",
     row_dend_width = dend_height,
     column_dend_height = dend_height,
-    # show_row_dend = FALSE,
+    show_row_dend = FALSE,
     show_column_dend = FALSE,
 
     # Legend
@@ -392,8 +397,8 @@ legend_bio <- packLegend(
         Legend(
             col_fun = col_fun,
             title = expression("Spearman's" ~ rho),
-            title_gp = gpar(fontsize = 8 * PLOT_SIZE, fontfamily = "Helvetica"),
-            labels_gp = gpar(fontsize = 7 * PLOT_SIZE, fontfamily = "Helvetica"),
+            title_gp = gpar(fontsize = 6, fontfamily = "Helvetica"),
+            labels_gp = gpar(fontsize = 5, fontfamily = "Helvetica"),
             grid_height = unit(0.3 * PLOT_SIZE, "cm"),
             grid_width = unit(0.3 * PLOT_SIZE, "cm"),
             legend_height = unit(length(bio_category_cols) * 0.3 * PLOT_SIZE, "cm"),
@@ -402,8 +407,8 @@ legend_bio <- packLegend(
             title = "Trait category",
             labels = names(bio_category_cols),
             legend_gp = gpar(fill = bio_category_cols),
-            title_gp = gpar(fontsize = 8 * PLOT_SIZE, fontfamily = "Helvetica"),
-            labels_gp = gpar(fontsize = 7 * PLOT_SIZE, fontfamily = "Helvetica"),
+            title_gp = gpar(fontsize = 6, fontfamily = "Helvetica"),
+            labels_gp = gpar(fontsize = 5, fontfamily = "Helvetica"),
             grid_height = unit(0.3 * PLOT_SIZE, "cm"),
             grid_width = unit(0.3 * PLOT_SIZE, "cm"),
         ),
@@ -454,11 +459,11 @@ bio_heatmap <- Heatmap(
     column_title = " ",
     column_title_side = "bottom",
     column_title_gp = gpar(fontsize = 0),
-    row_names_gp = gpar(fontsize = 7 * PLOT_SIZE, fontfamily = "Helvetica"),
+    row_names_gp = gpar(fontsize = 5, fontfamily = "Helvetica"),
     row_names_side = "left",
     row_labels = bio_trait_meta$name,    # Use nice names for rows
     column_labels = bio_trait_meta$name,
-    column_names_gp = gpar(fontsize = 7 * PLOT_SIZE, fontfamily = "Helvetica"),
+    column_names_gp = gpar(fontsize = 5, fontfamily = "Helvetica"),
 
     # Dendrograms
     column_dend_side = "bottom",
@@ -479,38 +484,12 @@ bio_heatmap <- Heatmap(
 pdf_width_in <- as.numeric((ncol(disease_mat_spearman) * cell_size_cm) + unit(7 * PLOT_SIZE, "cm"))/2.54
 pdf_height_in <- as.numeric((nrow(disease_mat_spearman) * cell_size_cm) + unit(6 * PLOT_SIZE, "cm"))/2.54
 
-pdf(glue("fig_pub/figure_2_heatmap_all_cell_types_disease_only.pdf"), width = pdf_width_in, height = pdf_height_in)
-
-draw(disease_heatmap, show_heatmap_legend = FALSE)
-decorate_heatmap_body("Spearman", {
-    draw(legend_disease, x = unit(1, "npc"), y = unit(1, "npc"), just = c("right", "top"))
-})
-dev.off()
-
-disease_heatmap %>% saveRDS("fig_pub/figure_2_heatmap_disease_only.rds")
-legend_disease %>% saveRDS("fig_pub/figure_2_heatmap_legend_disease.rds")
+# panel a of Fig 2 is drawn by scripts/2-trait/overview_combined.R from these objects
+dir.create("figures/panels/2-trait", recursive = TRUE, showWarnings = FALSE)
+disease_heatmap %>% saveRDS("figures/panels/2-trait/figure_2_heatmap_disease_only.rds")
+legend_disease %>% saveRDS("figures/panels/2-trait/figure_2_heatmap_legend_disease.rds")
 
 
-# ----------------------------------------------------------------------------------------------------------------------------------
-# Draw separate disease  and biologic trait heatmaps
-# ----------------------------------------------------------------------------------------------------------------------------------
-
-
-# heatmap_list <- bio_heatmap + disease_heatmap
-
-pdf_width_in <- as.numeric((ncol(disease_mat_spearman + disease_mat_spearman) * cell_size_cm) + unit(35 * PLOT_SIZE, "cm"))/2.54
-pdf_height_in <- as.numeric((nrow(disease_mat_spearman) * cell_size_cm) + unit(10 * PLOT_SIZE, "cm"))/2.54
-
-ht_opt$DENDROGRAM_PADDING = unit(1.05 * PLOT_SIZE, "cm") # increase padding to fit in long labels
-p1 = grid.grabExpr(draw(disease_heatmap))
-ht_opt$DENDROGRAM_PADDING = unit(2.1 * PLOT_SIZE, "cm") # increase padding to fit in long labels
-p2 = grid.grabExpr(draw(bio_heatmap))
-
-pdf(glue("fig_pub/figure_2_heatmap_all_cell_types_disease_and_biological_separate.pdf"), width = pdf_width_in, height = pdf_height_in)
-
-cowplot::plot_grid(p1, p2)
-
-dev.off()
 
 
 
@@ -659,7 +638,7 @@ dev.off()
 # ht_opt$DENDROGRAM_PADDING = unit(6, "cm") # increase padding to fit in long labels 
 # p2 = grid.grabExpr(draw(bio_heatmap_simpson))
 
-# pdf(glue("fig_pub/figure_2_heatmap_all_cell_types_disease_and_biological_separate_simpson_index.pdf"), width = pdf_width_in, height = pdf_height_in)
+# pdf(glue("figures/figure_2_heatmap_all_cell_types_disease_and_biological_separate_simpson_index.pdf"), width = pdf_width_in, height = pdf_height_in)
 
 # cowplot::plot_grid(p1, p2)
 
@@ -722,7 +701,7 @@ dev.off()
 # mat_pvalue  <- mat_pvalue[rownames(mat_jaccard), colnames(mat_jaccard)]
 
 # # Get the trait metadata to include as annotation bars
-# # trait_meta <- fread("resources/misc/trait_metadata_n.tsv")
+# # trait_meta <- fread("metadata/trait.tsv")
 # source("scripts/mr_overview/temp.R") # run this way until the file above is fixed 
 # trait_meta <- trait_meta %>% as.data.frame() %>% column_to_rownames("trait_id")
 # trait_meta_ordered <- trait_meta[rownames(mat_jaccard), ]
@@ -795,7 +774,7 @@ dev.off()
 # pdf_width_in <- as.numeric((ncol(mat_jaccard) * cell_size_cm) + unit(30, "cm"))/2.54
 # pdf_height_in <- as.numeric((nrow(mat_jaccard) * cell_size_cm) + unit(20, "cm"))/2.54
 
-# pdf(glue("fig_pub/figure_2_heatmap_{celltype_plot}_with_p.pdf"), width = pdf_width_in, height = pdf_height_in)
+# pdf(glue("figures/figure_2_heatmap_{celltype_plot}_with_p.pdf"), width = pdf_width_in, height = pdf_height_in)
 
 # draw(ht)
 

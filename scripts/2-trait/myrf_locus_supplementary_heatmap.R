@@ -8,7 +8,7 @@ library(RColorBrewer)
 df_msmr_strict <- read_parquet("results/preprocessed/tenk10k_phase1.v5.parquet.gz") %>%
     setDT()
 
-# Match trait + cell-type ordering used in other plots (see scripts/preprocess.R).
+# Match trait + cell-type ordering used in other plots (see scripts/0-preprocess/preprocess_results.R).
 pheno_order_strict <- df_msmr_strict[, .N, by = pheno_label][order(-N), as.character(pheno_label)]
 df_cell_map <- fread("metadata/cell.tsv")
 cell_type_order <- df_cell_map$cell_type
@@ -117,12 +117,14 @@ p_scatter_fads <- plot_data %>%
         axis.line.x = element_blank(),
         strip.clip = "off")
 
-ggsave("fig_pub/fads_locus_pleiotropic_scatter.png",
+# not yet assigned to a manuscript figure (Supplementary Figure 7 is the heatmap below)
+dir.create("figures/panels/2-trait", recursive = TRUE, showWarnings = FALSE)
+ggsave("figures/panels/2-trait/fads_locus_pleiotropic_scatter.png",
   p_scatter_fads,
   width = 5 * n_col, height = 4 * n_row,
   limitsize = FALSE)
 
-ggsave("fig_pub/fads_locus_pleiotropic_scatter.pdf",
+ggsave("figures/panels/2-trait/fads_locus_pleiotropic_scatter.pdf",
   p_scatter_fads,
   width = 5 * n_col, height = 4 * n_row,
   limitsize = FALSE)
@@ -219,8 +221,9 @@ n_genes_hm_byct <- n_distinct(heatmap_data_byct$Gene)
 w_hm_byct <- 13
 h_hm_byct <- 5
 
-ggsave("fig_pub/fads_locus_heatmap_by_celltype.png",
+dir.create("figures", recursive = TRUE, showWarnings = FALSE)
+ggsave("figures/fig-s7.png",
   p_heatmap_fads_byct, width = w_hm_byct, height = h_hm_byct,
   limitsize = FALSE, bg = "white")
-ggsave("fig_pub/fads_locus_heatmap_by_celltype.pdf",
+ggsave("figures/fig-s7.pdf",
   p_heatmap_fads_byct, width = w_hm_byct, height = h_hm_byct, limitsize = FALSE)

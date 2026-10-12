@@ -10,6 +10,9 @@ library(data.table)
 library(ComplexHeatmap)
 library(RColorBrewer)
 
+# fixed sort order so trait pairs (p1 < p2) are written the same way regardless of IDE/terminal locale
+Sys.setlocale("LC_COLLATE", "C")
+
 # source("scripts/mr_overview/rrho_function.R")
 
 # ----------------------------------------------------------------------------------------------------------------------------------
@@ -65,7 +68,7 @@ calc_spearman <- function(p1, p2){
 #  Data preprocessing  
 # ----------------------------------------------------------------------------------------------------------------------------------
 
-# source("scripts/0-preprocess/preprocess_results.R")
+# source("scripts/0-preprocess/preprocess_results.R") #
 df_msmr_strict <- read_parquet("results/preprocessed/tenk10k_phase1.v5.parquet.gz") %>%
     setDT()
 
@@ -140,7 +143,6 @@ p <- trait_lvl_genes_ranked_by_pSMR_multi %>%
     facet_wrap(~pheno_label, scales = "free") +
     theme_bw()
 
-p %>% ggsave(filename = "fig_pub/rank_aggregation/median_rank_vs_median_signed_log10_p_SMR_multi_scatterplot.png", width = 20, height = 20)
 
 # normalised rank better reflects the median signed log10 p value
 p <- trait_lvl_genes_ranked_by_pSMR_multi %>%
@@ -151,7 +153,6 @@ p <- trait_lvl_genes_ranked_by_pSMR_multi %>%
     facet_wrap(~pheno_label, scales = "free") +
     theme_bw()
 
-p %>% ggsave(filename = "fig_pub/rank_aggregation/median_rank_normalised_vs_median_signed_log10_p_SMR_multi_scatterplot.png", width = 20, height = 20)
 
 # -------------------------------------------------------------------------------------------------------------------------------------
 
@@ -175,6 +176,7 @@ spearmancorr_results_summary <- 1:nrow(pheno_combos) %>%
     }) %>% 
     bind_rows()
 
+dir.create("results/rrho", recursive = TRUE, showWarnings = FALSE)
 spearmancorr_results_summary %>%
     write_tsv(glue("results/rrho/spearman_corr_all_trait_combos_strictmr.tsv"))
 
@@ -266,7 +268,7 @@ cat(glue("Disease trait Spearman correlations: min = {min(disease_corrs$spearman
 #         # alternative='enrichment', 
 #         alternative=alternative,
 #         plots=TRUE,
-#         outputdir=glue("/g/data/fy54/analysis/bb3762/repos/tenk10k-causal/fig_pub/rrho_{make_clean_names(alternative)}/"),
+#         outputdir=glue("results/rrho/rrho_{make_clean_names(alternative)}/"),
 #         log10.ind=TRUE)
     
 #     max_p_value_raw <- RRHO_obj$hypermat %>% max()
