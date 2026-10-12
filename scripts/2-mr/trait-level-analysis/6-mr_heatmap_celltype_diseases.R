@@ -10,7 +10,7 @@ library(ragg)
 dir.create("figures/v3/supp", recursive = TRUE, showWarnings = FALSE)
 
 # ----------------------------------------------------------------------------------------------------------------------------------
-# Load data directly from the v5 parquet (mirrors the relevant subset of scripts/0-preprocess/preprocess_results.R)
+# Load data directly from the v5 parquet
 # ----------------------------------------------------------------------------------------------------------------------------------
 
 major_cell_type_order <- c(
@@ -231,14 +231,14 @@ number_egenes_legend <- Legend(
     direction = "horizontal"
 )
 
-# another version. this time colour by n smr hits decile rather than count
+# colour by decile of the MR gene count rather than the raw count
 
 # Calculate decile breaks from ALL values in the matrix
 msmr_vec <- as.vector(msmr_mat)
 global_breaks <- quantile(msmr_vec, probs = seq(0, 1, 0.1), na.rm = TRUE)
 
 # Disease counts are zero-inflated enough that several low deciles land exactly on the minimum value (this is why
-# mr_heatmap_celltype_biotraits.R's plain round()-based breaks fail here with "breaks are not unique"). Rather than
+# plain round()-based breaks fail here with "breaks are not unique"). Rather than
 # hardcoding how many low deciles to drop, collapse however many degenerate low deciles there are into a single bin
 # that captures only the minimum value, then keep the remaining (already distinct) breaks for the rest of the range.
 min_val <- global_breaks[1]

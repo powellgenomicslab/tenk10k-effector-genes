@@ -24,16 +24,15 @@ dir.create("figures/publication_pdf", recursive = TRUE, showWarnings = FALSE)
 disease_heatmap <- readRDS("figures/mr_overview/figure_2_heatmap_disease_only.rds")
 legend_disease <- readRDS("figures/mr_overview/figure_2_heatmap_legend_disease.rds")
 
-# grab viewport = panel a slot (5/8 of the 6.27 in width, 4/7 of the 6.8 in height); a viewport larger than the
-# slot is centred on it, which pushes the heatmap's top edge out of the slot and clips the first rows
+# grab viewport sized to the panel a slot (5/8 of the page width, 4/7 of its height); a larger viewport is centred on the slot and the top rows clip
 ht_grab_width <- 6.27 * 5 / 8
 ht_grab_height <- 6.8 * 4 / 7
 
 p_heatmap_disease <- grid::grid.grabExpr(
   {
-    # no vertical padding (bottom, left, top, right): the layout must fit the slot or ComplexHeatmap centres it and clips the top rows
+    # no vertical padding so the heatmap fits the slot
     draw(disease_heatmap, show_heatmap_legend = FALSE, padding = unit(c(0, 2, 0, 2), "mm"))
-    # draw legend in the top right corner, adjust the x and y values to position it correctly
+    # legend in the top right corner of the heatmap body
     decorate_heatmap_body("Spearman", {
     draw(legend_disease, x = unit(1, "npc"), y = unit(1, "npc"), just = c("right", "top"))
     })
@@ -46,7 +45,7 @@ p_heatmap_disease <- grid::grid.grabExpr(
 # Panel B: Pleitropic genes box plot
 #-------------------------------------------------------------------------------------------------------------------------------------------
 
-# split version (genes in 1 cell type by cell type, over genes in 2+ cell types); text sizes are set in the panel script
+# text sizes are set in the panel script
 p_n_phenotypes_by_n_celltypes <- readRDS("figures/mr_overview/n_phenotypes_by_n_celltypes_split.rds")
 
 #-------------------------------------------------------------------------------------------------------------------------------------------

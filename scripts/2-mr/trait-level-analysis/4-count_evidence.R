@@ -187,7 +187,6 @@ p_evidence_tally <- df_evidence_tally |>
   coord_cartesian(clip = "off") +
   layer_scales(p_tile)$y +
   theme_void(base_size = 8, base_family = "Helvetica") +
-  # add label
   geom_text(aes(label = number(n_sig, big.mark = ",")), hjust = -0.1, size = 5 / .pt, family = "Helvetica")
 
 # p evidence count tally
@@ -201,7 +200,6 @@ p_evidence_count_tally <- df_evidence_summary |>
   scale_y_discrete(expand = expansion(c(0, 0)), breaks = names(max_evidence_label), labels = max_evidence_label) +
   coord_cartesian(clip = "off") +
   theme_void(base_size = 8, base_family = "Helvetica") +
-  # add label
   geom_text(aes(label = number(n, big.mark = ",", prefix = " ")), vjust = 0.5, hjust = 0, size = 5 / .pt, family = "Helvetica") +
   labs(y = NULL) +
   theme(axis.text.y = element_text(size = 5, hjust = 1, margin = margin(r = 4)),

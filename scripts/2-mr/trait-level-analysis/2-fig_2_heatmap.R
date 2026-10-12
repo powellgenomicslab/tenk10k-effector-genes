@@ -79,15 +79,13 @@ nested_genes_trait_level <-  df_msmr %>%
 
 phenotypes <- unique(nested_genes_trait_level$pheno_label)
 
-# this plot data is for each cell type specifically
 plot_data_trait_level  <- crossing(
-    # Create all pairs of phenotypes within this biosample
         p1 = as.character(phenotypes),
         p2 = as.character(phenotypes)
     ) %>%
     filter(p1 < p2) # Remove duplicates (A vs B is same as B vs A) and self-comparisons so each combo is tested once
 
-# add the spearman correlation results (calculated in 1-fig_2_heatmap_spearman_calculation.R)
+# add the spearman correlation results
 spearman_corrs <- fread("results/rrho/spearman_corr_all_trait_combos_strictmr.tsv")
 
 plot_data_trait_level <- plot_data_trait_level %>% left_join(spearman_corrs, by = c("p1", "p2"))
@@ -97,7 +95,6 @@ plot_data_trait_level %>% filter(is.na(spearman_corr))
 # generate matrices to plot in the main heatmap
 # ----------------------------------------------------------------------------------------------------------------------------------
 
-# make the full matrices
 mat_spearman <- prepare_ct_matrices(plot_data_trait_level, spearman_corr)
 
 # Get the trait metadata to include as annotation bars

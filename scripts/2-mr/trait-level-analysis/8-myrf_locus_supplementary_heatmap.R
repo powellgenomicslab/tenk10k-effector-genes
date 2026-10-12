@@ -9,7 +9,7 @@ df_msmr_strict <- read_parquet("results/preprocessed/tenk10k_phase1.v5.parquet.g
 
 dir.create("figures/v3/supp", recursive = TRUE, showWarnings = FALSE)
 
-# Match trait + cell-type ordering used in other plots (see scripts/0-preprocess/preprocess_results.R).
+# trait and cell type ordering
 pheno_order_strict <- df_msmr_strict[, .N, by = pheno_label][order(-N), as.character(pheno_label)]
 df_cell_map <- fread("metadata/cell.tsv")
 cell_type_order <- df_cell_map$cell_type
@@ -20,7 +20,6 @@ fads_results <- df_msmr_strict %>% filter(Gene %in% fads_genes)
 
 # ------------------------------------------------------------------------------------------------
 # Pleiotropic scatter plot for FADS locus genes
-# (adapted from scripts/2-mr/trait-level-analysis/3-gene_features_pleiotropy.R)
 # ------------------------------------------------------------------------------------------------
 
 # Keep only Gene x cell_type combinations with at least one MR-significant phenotype

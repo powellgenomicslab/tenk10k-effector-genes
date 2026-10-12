@@ -1,5 +1,4 @@
 # Author: Blake Bowen
-# mm activate causal-env
 
 library(glue)
 library(tidyverse)

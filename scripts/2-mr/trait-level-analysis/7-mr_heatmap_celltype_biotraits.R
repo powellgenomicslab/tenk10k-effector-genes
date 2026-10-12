@@ -10,7 +10,7 @@ library(ragg)
 dir.create("figures/v3/supp", recursive = TRUE, showWarnings = FALSE)
 
 # ----------------------------------------------------------------------------------------------------------------------------------
-# Load data directly from the v5 parquet (mirrors the relevant subset of scripts/0-preprocess/preprocess_results.R)
+# Load data directly from the v5 parquet
 # ----------------------------------------------------------------------------------------------------------------------------------
 
 major_cell_type_order <- c(
@@ -230,7 +230,7 @@ number_egenes_legend <- Legend(
   direction = "horizontal"
 )
 
-# another version. this time colour by n smr hits decile rather than count
+# colour by decile of the MR gene count rather than the raw count
 
 # Calculate decile breaks from ALL values in the matrix
 msmr_vec <- as.vector(msmr_mat)

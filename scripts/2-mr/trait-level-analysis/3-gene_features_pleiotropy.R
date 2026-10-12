@@ -9,7 +9,6 @@ library(paletteer)
 dir.create("figures/mr_overview", recursive = TRUE, showWarnings = FALSE)
 
 df_msmr_tenk10k <- read_parquet("results/preprocessed/tenk10k_phase1.v5.parquet.gz")
-# calculate N phenotype / phenotype category
 
 df_gene_annot <- fread("metadata/gencode.v44.gene_type.tsv.gz")
 df_cell_map <- fread("metadata/cell.tsv")
@@ -83,8 +82,7 @@ gene_summary[,.N, by = n_celltypes]
 
 # Top 10 pleiotropic non-MHC genes for labelling (panel B)
 label_genes_b <- gene_summary[n_celltypes == 1 & !gene %in% mhc_genes][order(-n_effective_phenotypes)][1:10, gene]
-# print the top of the n_celltypes == 1 column: y-axis value, cell type and
-# label/MHC status, to check labelled points against what is drawn above them
+# top of the n_celltypes == 1 genes: value, cell type and label / MHC status
 print(gene_summary[n_celltypes == 1][order(-n_effective_phenotypes)][1:20, .(
   gene,
   n_effective_phenotypes,
@@ -96,9 +94,7 @@ print(gene_summary[n_celltypes == 1][order(-n_effective_phenotypes)][1:20, .(
 gene_summary[,median(n_effective_phenotypes)]
 
 # ------------------------------------------------------------------------------------------------
-# Panel b: genes in 1 cell type split by cell type (top, labelled) over genes in 2+ cell types by number of cell
-# types (bottom). Free y axes, outlier points coloured by extended-MHC (HLA) membership with one shared legend, and the
-# same 5 / 6 pt text treatment as Fig 2.
+# Panel b: genes in 1 cell type by cell type (top, labelled) over genes in 2+ cell types by number of cell types (bottom)
 # ------------------------------------------------------------------------------------------------
 
 hla_colours <- c(`TRUE` = "#D55E00", `FALSE` = "#0072B2") # Okabe-Ito vermillion / blue
@@ -113,9 +109,8 @@ one_celltype <- gene_summary |>
 one_celltype_outliers <- one_celltype |>
   filter(n_effective_phenotypes %in% boxplot.stats(n_effective_phenotypes)$out, .by = cell_type)
 
-# labels in two rows above the data, positions hard-coded (row 1 = lower, row 2 = upper; x_label = left edge of
-# the text in x-axis positions), placed so no upper-row leader passes through a lower-row label. All positions are
-# precomputed columns so the saved plot has no free variables. Genes missing from this table are not labelled.
+# label positions hard-coded (row 1 = lower, row 2 = upper; x_label = left edge of the text in x-axis positions);
+# positions are precomputed columns so the saved plot has no free variables. Genes missing from this table are not labelled.
 label_pos_one <- tribble(
   ~gene,             ~row, ~x_label, ~x_segment, # x_segment: where the leader leaves the bottom of the text
   "INKA1",              1,      1,       2.75,
@@ -134,7 +129,7 @@ label_data_one <- one_celltype |>
   filter(gene %in% label_genes_b) |>
   as_tibble() |>
   inner_join(label_pos_one, by = "gene") |>
-  mutate(y_label = y_top_one * c(1.14, 1.38)[row], # rows far enough apart that a leader stub shows under the upper row before it passes behind the lower row
+  mutate(y_label = y_top_one * c(1.14, 1.38)[row], # row heights relative to the data maximum
          y_segment = y_label - 0.05 * y_top_one)
 
 p_cell_phenotypes_one <- one_celltype |>
