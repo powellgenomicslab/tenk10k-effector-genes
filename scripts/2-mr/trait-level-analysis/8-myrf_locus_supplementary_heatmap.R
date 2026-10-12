@@ -2,13 +2,14 @@ library(data.table)
 library(tidyverse)
 library(arrow)
 library(ggrepel)
-library(readxl)
 library(RColorBrewer)
 
 df_msmr_strict <- read_parquet("results/preprocessed/tenk10k_phase1.v5.parquet.gz") %>%
     setDT()
 
-# Match trait + cell-type ordering used in other plots (see scripts/preprocess.R).
+dir.create("figures/v3/supp", recursive = TRUE, showWarnings = FALSE)
+
+# trait and cell type ordering
 pheno_order_strict <- df_msmr_strict[, .N, by = pheno_label][order(-N), as.character(pheno_label)]
 df_cell_map <- fread("metadata/cell.tsv")
 cell_type_order <- df_cell_map$cell_type
@@ -19,7 +20,6 @@ fads_results <- df_msmr_strict %>% filter(Gene %in% fads_genes)
 
 # ------------------------------------------------------------------------------------------------
 # Pleiotropic scatter plot for FADS locus genes
-# (adapted from scripts/revision/gene_features_pleiotropy.R)
 # ------------------------------------------------------------------------------------------------
 
 # Keep only Gene x cell_type combinations with at least one MR-significant phenotype
@@ -117,12 +117,12 @@ p_scatter_fads <- plot_data %>%
         axis.line.x = element_blank(),
         strip.clip = "off")
 
-ggsave("fig_pub/fads_locus_pleiotropic_scatter.png",
+ggsave("figures/v3/supp/fads_locus_pleiotropic_scatter.png",
   p_scatter_fads,
   width = 5 * n_col, height = 4 * n_row,
   limitsize = FALSE)
 
-ggsave("fig_pub/fads_locus_pleiotropic_scatter.pdf",
+ggsave("figures/v3/supp/fads_locus_pleiotropic_scatter.pdf",
   p_scatter_fads,
   width = 5 * n_col, height = 4 * n_row,
   limitsize = FALSE)
@@ -219,8 +219,8 @@ n_genes_hm_byct <- n_distinct(heatmap_data_byct$Gene)
 w_hm_byct <- 13
 h_hm_byct <- 5
 
-ggsave("fig_pub/fads_locus_heatmap_by_celltype.png",
+ggsave("figures/v3/supp/fads_locus_heatmap_by_celltype.png",
   p_heatmap_fads_byct, width = w_hm_byct, height = h_hm_byct,
   limitsize = FALSE, bg = "white")
-ggsave("fig_pub/fads_locus_heatmap_by_celltype.pdf",
+ggsave("figures/v3/supp/fads_locus_heatmap_by_celltype.pdf",
   p_heatmap_fads_byct, width = w_hm_byct, height = h_hm_byct, limitsize = FALSE)
