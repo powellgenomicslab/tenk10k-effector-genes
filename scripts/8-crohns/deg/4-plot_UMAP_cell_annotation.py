@@ -1,7 +1,6 @@
 # Purpose: Prepare supplementary fig - UMAP of original annotation and major cell types shared with TenK10K 
 
 # qsub -I -q normal -P fy54 -l ncpus=2,storage=gdata/fy54+gdata/ei56,mem=50GB -l jobfs=100GB
-# cd /g/data/fy54/rt3501/repos/tenk10k-causal/
 # conda activate scanpy
 # python
 
@@ -28,14 +27,16 @@ sc.logging.print_header()
 
 # Set directories 
 data_dir = "resources/crohns_case_study/deg"
-figs = "resources/crohns_case_study/figures/deg"
+figs = "figures/panels/8-crohns"
+os.makedirs(figs, exist_ok=True)
 
 # get Helvetica 
-font_path = os.environ.get('HELVETICA_TTF', '')  # set HELVETICA_TTF to a Helvetica .ttf, or leave unset for the matplotlib default  # Your font path goes here
-font_manager.fontManager.addfont(font_path)
-prop = font_manager.FontProperties(fname=font_path)
-plt.rcParams['font.family'] = 'sans-serif'
-plt.rcParams['font.sans-serif'] = prop.get_name()
+font_path = os.environ.get('HELVETICA_TTF', '')  # set HELVETICA_TTF to a Helvetica .ttf, or leave unset for the matplotlib default
+if font_path:
+    font_manager.fontManager.addfont(font_path)
+    prop = font_manager.FontProperties(fname=font_path)
+    plt.rcParams['font.family'] = 'sans-serif'
+    plt.rcParams['font.sans-serif'] = prop.get_name()
 
 adata = sc.read_h5ad(f"{data_dir}/cd_colon_immune_major_cell_types.h5ad")
 
@@ -70,8 +71,9 @@ with rc_context({"figure.figsize": (4, 4)}):
         s=s_var)
 
 # plt.savefig(f"{figs}/original_and_major_annotation_all_celltypes_alpha_0.5.png", bbox_inches='tight', dpi=300)
-plt.savefig(f"{figs}/original_annotation_all_celltypes_alpha{alpha_var}_s{s_var}_add_outline.png", bbox_inches='tight', dpi=300)
-plt.savefig(f"{figs}/original_annotation_all_celltypes_alpha{alpha_var}_s{s_var}.png", bbox_inches='tight', dpi=300)
+# Supplementary Figure 30 (left panel)
+plt.savefig(f"{figs}/umap_original_annotation.png", bbox_inches='tight', dpi=300)
+plt.savefig(f"{figs}/umap_original_annotation.pdf", bbox_inches='tight')
 
 # Grey out the major cell types that are not shared in the TenK10K dataset 
 groups = ['CD4 T', 'CD8 T', 'NK', 'Unconventional T', 'B', 'Plasma B', 'Monocyte', 'Dendritic']
@@ -98,4 +100,6 @@ with rc_context({"figure.figsize": (4, 4)}):
 
 # plt.savefig(f"{figs}/original_and_major_annotation_filtered_celltypes_alpha{alpha_var}_s{s_var}_add_outline.png", bbox_inches='tight', dpi=300)
 
-plt.savefig(f"{figs}/original_and_major_annotation_filtered_celltypes_alpha{alpha_var}_s{s_var}.png", bbox_inches='tight', dpi=300)
+# Supplementary Figure 30 (right panel)
+plt.savefig(f"{figs}/umap_major_cell_types.png", bbox_inches='tight', dpi=300)
+plt.savefig(f"{figs}/umap_major_cell_types.pdf", bbox_inches='tight')

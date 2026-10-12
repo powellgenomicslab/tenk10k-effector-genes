@@ -1,12 +1,11 @@
 # Purpose:
 # Create a major cell type classification for Kong et al., 2023 DEG results 
-# Create an updated major cell type classification for Cuomo et al., 2025 from resources/metdata/cell_map.tsv
+# Create an updated major cell type classification for Cuomo et al., 2025 from metadata/cell.tsv
 # Inner-join MR and DEG results on major cell type classification 
 
 #########################################################################################
 # Interactive job information 
-# qsub -I -q normal -P ei56 -l ncpus=2,storage=gdata/fy54+gdata/ei56,mem=32GB -l jobfs=100GB
-# cd /g/data/fy54/rt3501/repos/tenk10k-causal/
+# qsub -I -q normal -P ei56 -l ncpus=2,storage=gdata/fy54+gdata/ei56,mem=8GB -l jobfs=100GB
 # conda activate tidyverse
 # R
 #########################################################################################
@@ -66,29 +65,17 @@ maj_annot <- deg %>%
     gut_cell_type %in% c("B cells AICDA+ LRMP+") ~ "Germinal Centre B")) %>%
   mutate(tissue_specific = if_else(!major_cell_type %in% c("CD4 T", "CD8 T", "Unconventional T", "B", "Plasma B", "NK", "Dendritic", "Monocyte"), TRUE, FALSE))
 
+# Create a major cell type annotation column in the DEG results to match with MR results later 
+deg <- deg %>% left_join(maj_annot, by = "gut_cell_type")
+saveRDS(deg, paste0(crohns_dir, "/deg/crohns_deg_pre-processed_revision.RDS"))
+
 # Change the major cell type annotation for ILCs to NK instead of Unconventional T and for Plasmablast to Plasma B instead of B
-tenk_maj_annot <- read.delim("metadata/cell.tsv") %>%
-  mutate(major_cell_type = major_cell_type %>% dplyr::replace_when(cell_type == "ILC" ~ "NK", 
-                                                                  cell_type == "Plasmablast" ~ "Plasma B")) %>%
-  select(cell_type, wg2_scpred_prediction, major_cell_type)
-
-write_tsv(tenk_maj_annot, "resources/crohns_case_study/deg/tenk_maj_annot.tsv")
-
-# Derive the revised major cell type annotation.
-# NOTE: metadata/cell.tsv is the tracked, authoritative cell map and already
-# carries the revision_major_cell_type column produced by this block, so the
-# derivation below is kept for transparency only and must not be written back
-# over its own input. It is emitted to the Crohn's working directory instead.
-revised_cell_map <- read.delim("metadata/cell.tsv") %>%
-  mutate(revision_major_cell_type = major_cell_type) %>% 
-  mutate(revision_major_cell_type = revision_major_cell_type %>% dplyr::replace_when(cell_type == "ILC" ~ "NK", 
-                                                                   cell_type == "Plasmablast" ~ "Plasma B"))
-
-write_tsv(revised_cell_map, "resources/crohns_case_study/deg/cell_map_revised.tsv")
+# NOTE: metadata/cell.tsv is the authoritative cell map and already carries this revision in its
+# revision_major_cell_type column (ILC -> NK, Plasmablast -> Plasma B), so it is read directly below
+# and no revised cell map is written.
 ######## 
 
-deg <- deg %>% left_join(maj_annot, by = "gut_cell_type")
-common_gut_cell_types <- intersect(tenk_maj_annot$major_cell_type, maj_annot$major_cell_type)
+# Note the shared cell types 
+tenk_maj_annot <- read.delim("metadata/cell.tsv")
+common_gut_cell_types <- intersect(tenk_maj_annot$revision_major_cell_type, maj_annot$major_cell_type)
 write.table(common_gut_cell_types, paste0(crohns_dir, "/deg/common_gut_cell_types_with_tenk_revision.txt"), sep = "\t", col.names = F, quote = F, row.names = F)
-
-saveRDS(deg, paste0(crohns_dir, "/deg/crohns_deg_pre-processed_revision.RDS"))

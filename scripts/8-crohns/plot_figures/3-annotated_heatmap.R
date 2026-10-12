@@ -69,7 +69,11 @@ max_ptransform <- plot_data %>% pull(p_transform) %>% abs() %>% max(na.rm = TRUE
   # ggtitle(label = "Annotated Causal Genes for Crohn's Disease")# Add significance layer
 )
 
-ggsave("resources/crohns_case_study/figures/heatmap_canonical_deg_mrsenscoloc.png", FIG1, device = ragg::agg_png(),
-        width = 5.0, height = 16, bg = "white", scaling = 1.0, dpi = 300)
+# Figure 6b panel
+dir.create("figures/panels/8-crohns", recursive = TRUE, showWarnings = FALSE)
+ggsave("figures/panels/8-crohns/fig6b_heatmap_canonical_deg_mrsenscoloc.png", FIG1, device = ragg::agg_png(),
+        width = 5.0, height = 16, bg = "white", scaling = 1.0, dpi = 500)
+ggsave("figures/panels/8-crohns/fig6b_heatmap_canonical_deg_mrsenscoloc.pdf", FIG1, device = cairo_pdf,
+       width = 5.0, height = 16, bg = "white")
 
 save.image("resources/crohns_case_study/figures/heatmap_objects.RData")

@@ -18,7 +18,17 @@ plot(mr_deg$b_SMR, mr_deg$`Discrete DE coefficients`)
 #   deframe()
 
 darker_colors <- c("#ba8e23", "#674FA3", "#1976D2", "#65350F", "#D84315", "#1B5E20", "#FBC02D", "#4A001F") 
-
+# Give each color the EXACT name of the cell type as it appears in your data
+darker_colors <- c(
+  "B" = "#ba8e23", 
+  "CD4 T" = "#674FA3", 
+  "CD8 T" = "#1976D2", 
+  "Dendritic" = "#65350F", 
+  "Monocyte" = "#D84315", 
+  "NK" = "#1B5E20", 
+  "Plasma B" = "#FBC02D", 
+  "Unconventional T" = "#4A001F"
+)
 
 scatterplot <- ggplot(mr_deg, aes(x = p_transform_mr, y = p_transform_deg, colour = major_cell_type, label = Gene)) +
   #scatterplot <- ggplot(mr_deg, aes(x = b_SMR, y = `Discrete DE coefficients`, colour = major_cell_type, label = Gene)) +
@@ -97,9 +107,12 @@ scatterplot_all_in_one
 
 save(scatterplot, scatterplot_all_in_one, file = "resources/crohns_case_study/figures/mr_deg_scatterplot_objects.RData")
 
-ggsave("resources/crohns_case_study/figures/mr_deg_facet_annot.png", scatterplot, device = ragg::agg_png(),
-       width = 5.0, height = 8, bg = "white", scaling = 0.5, dpi = 300)
+# Figure 6c panel
+dir.create("figures/panels/8-crohns", recursive = TRUE, showWarnings = FALSE)
+ggsave("figures/panels/8-crohns/fig6c_mr_deg_annot.png", scatterplot_all_in_one, device = ragg::agg_png(),
+       width = 5.0, height = 5, bg = "white", scaling = 0.7, dpi = 500)
 
-ggsave("resources/crohns_case_study/figures/mr_deg.png", scatterplot_all_in_one, device = ragg::agg_png(),
-       width = 5.0, height = 4.5, bg = "white", scaling = 0.7, dpi = 300)
+ggsave("figures/panels/8-crohns/fig6c_mr_deg_annot.pdf", scatterplot_all_in_one, device = cairo_pdf,
+       width = 7.0, height = 7, bg = "white")
+
 

@@ -3,7 +3,6 @@
 # Make a verbose column for Type (NonI, Infl, Heal)
 
 # qsub -I -q normal -P fy54 -l ncpus=2,storage=gdata/fy54+gdata/ei56,mem=50GB -l jobfs=100GB
-# cd /g/data/fy54/rt3501/repos/tenk10k-causal/
 # conda activate scanpy
 # python
 

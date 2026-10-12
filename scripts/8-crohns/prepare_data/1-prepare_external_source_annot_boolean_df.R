@@ -85,6 +85,7 @@ gene_lists <- list(
 )
 # Create a dataframe of sources and genes and a membership status column (placeholder for wide format next step)
 gene_lists_df <- dplyr::bind_rows(gene_lists, .id = "source") %>% mutate(member = TRUE) %>% distinct()
+head(gene_lists_df)
 
 # Pivot wider to create annotation table 
 gene_lists_df <- gene_lists_df %>% 

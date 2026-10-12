@@ -1,5 +1,5 @@
 library(tidyverse)
-library(writexl)
+source("scripts/util/write_table.R")
 
 load("resources/crohns_case_study/supplementary/crohns_summary_gene_count_df.RData")
 
@@ -14,9 +14,10 @@ rm(combined_summary)
 source("scripts/8-crohns/supplementary/2-prepare_crohns_annotated_results.R")
 source("scripts/8-crohns/supplementary/2-prepare_supplementary_table_cd_genes_in_immune_diseases.R")
 source("scripts/8-crohns/supplementary/2-prepare_supplementary_table_mr_deg.R")
+
+# data from Bradley's analysis on effector gene enrichment (an intermediate file saved from the TenK10K_causal_inference_vs_IBDverse repo)
 load("resources/crohns_case_study/revision/IBDverse_pi1_tables.RData")
 # pi1_results <- pi1_summary
-# data used to generate fig 6e
 library(data.table)
 pi1_results <- pi1_combined %>% 
   select(discovery, pi1, label_new, major_cell_type, comparison) %>% 
@@ -34,12 +35,16 @@ pi1_results <- pi1_combined %>%
 # sup_figure_pi1 <- pi1_all[gut == TRUE] %>% 
 #   select(discovery, neqtls_intersection, pi1, tissue_label, label_new)
 
-# data for figure 6e
-OR <- readRDS("resources/crohns_case_study/revision/OR_IBDverse_coloc_genes_in_CD_MR_genes.RDS")
+# data from Bradley's analysis on effector gene enrichment (an intermediate file saved from the TenK10K_causal_inference_vs_IBDverse repo)
+OR <- readRDS("resources/crohns_case_study/revision/OR_IBDverse_coloc_genes_in_CD_MR_genes.RDS") %>% 
+  select(category, nde, n_notnovelde, OR, CI_low, CI_high, pval, prop_blood)
+# column labels (pval -> "P", etc.) come from the ibdverse_effectorgene_OR sheet of
+# metadata/table_column_names.xlsx via write_table()
+
 source("scripts/8-crohns/supplementary/2-prepare_annot.R")
 ###########################################################################################
 
-df_list_names <- c("15-Annotated CD MR Associations", "16-CD Associations in Immune", "17-CD MR-DEG Comparison", "18-IBDverse eQTL Replication", "19-IBDverse-MR Effector Gene OR", "20-All Literature Annotations")
+df_list_names <- c("crohns_summary", "crohns_shared_immune", "crohns_mr_deg_comparison", "ibdverse_eqtl_replication", "ibdverse_effectorgene_OR", "crohns_literature_annotations")
 #df_list <- list(crohns_summary, crohns_annotated_results, crohns_immune, crohns_annotated_results_deg, pi1_results, annot)
 df_list <- list(crohns_annotated_results, crohns_immune, crohns_annotated_results_deg, pi1_results, OR, annot)
 
@@ -47,11 +52,8 @@ names(df_list) <- df_list_names
 
 names(df_list)
 
-writexl::write_xlsx(df_list, "resources/crohns_case_study/supplementary/Crohns_Summary.xlsx")
-
-df_colnames_list <- map(
-  df_list,
-  ~tibble(name = names(.x), label = names(.x), description =NA)
-)
-
-writexl::write_xlsx(df_colnames_list, "resources/crohns_case_study/supplementary/Crohns_Summary_colnames.xlsx")
+# Supplementary Tables 16-21, in the order of df_list_names; column labels come from the
+# sheet of the same name in metadata/table_column_names.xlsx
+for (i in seq_along(df_list)) {
+  write_table(df_list[[i]], df_list_names[i], 15 + i)
+}

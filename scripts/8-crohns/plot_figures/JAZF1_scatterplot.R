@@ -29,20 +29,23 @@ plot_data <- join %>% filter(p_CD4Naive < 0.05 | p_cDC2 < 0.05) %>%
   labs(x = "CD4 Naive signed log10 P eQTL", y = "cDC2 signed log10 P eQTL", fill = "LD r2")
 )
 
-ggsave("resources/crohns_case_study/figures/JAZF1_signed_eqtl_scatter.png", p, device = ragg::agg_png(),
-       width = 5.0, height = 4.5, bg = "white", scaling = 0.7, dpi = 300)
-
+# Supplementary Figure 17
+dir.create("figures", recursive = TRUE, showWarnings = FALSE)
+ggsave("figures/fig-s17.png", p, device = ragg::agg_png(),
+       width = 5.0, height = 4.5, bg = "white", scaling = 0.7, dpi = 500)
+ggsave("figures/fig-s17.pdf", p, device = cairo_pdf,
+       width = 5.0, height = 4.5, bg = "white")
 ################### 
 
 
-
-png(paste0(figs, gene, "_compare_discordant_bsmr_2.png"), width = 5, height = 8, units = "in", res = 300, type = "cairo") # Note it's res, not dpi. 
-oldpar <- set_layers(1)
-scatter_plot(loclist[[1]], xticks = FALSE, pcutoff = 5e-08, ylim = c(-100, 100), scheme = "blue", showLD = FALSE)
-scatter_plot(loclist[[2]], xticks = FALSE, pcutoff = 5e-08, scheme = "orange", showLD = FALSE, pch = 22, add = TRUE)
-genetracks(loclist[[2]])
-par(oldpar)
-dev.off()
+# 
+# png(paste0(figs, gene, "_compare_discordant_bsmr_2.png"), width = 5, height = 8, units = "in", res = 300, type = "cairo") # Note it's res, not dpi. 
+# oldpar <- set_layers(1)
+# scatter_plot(loclist[[1]], xticks = FALSE, pcutoff = 5e-08, ylim = c(-100, 100), scheme = "blue", showLD = FALSE)
+# scatter_plot(loclist[[2]], xticks = FALSE, pcutoff = 5e-08, scheme = "orange", showLD = FALSE, pch = 22, add = TRUE)
+# genetracks(loclist[[2]])
+# par(oldpar)
+# dev.off()
 
 
 

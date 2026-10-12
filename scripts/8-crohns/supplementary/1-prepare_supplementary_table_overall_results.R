@@ -3,11 +3,12 @@ library(tidyverse)
 library(writexl)
 library(formattable)
 
-mr <- readRDS("resources/crohns_case_study/postprocess/tenk_crohns_sig.RDS")
+mr <- readRDS("resources/crohns_case_study/postprocess/tenk_crohns_sig.RDS") %>% 
+  mutate(across(where(is.logical), function(x) (replace_na(x, FALSE))))
 
 all_res <- mr %>% group_by(cell_type) %>% tally() %>% ungroup() %>% rename(All = n)
 
-condition <- mr %>% group_by(eqtlgen_mr, cell_type) %>% tally() %>% filter(eqtlgen_mr == F) %>% ungroup() %>% select(-eqtlgen_mr) %>% rename(`Not in Bulk MR` = n)
+condition <- mr %>% group_by(eqtlgen_sig, cell_type) %>% tally() %>% filter(eqtlgen_sig == F) %>% ungroup() %>% select(-eqtlgen_sig) %>% rename(`Not in Bulk MR` = n)
 both <- left_join(all_res, condition, by = "cell_type") %>% 
   mutate(`Prop Not in BulkMR` = `Not in Bulk MR`/All)
 
@@ -37,7 +38,7 @@ combined <- df_list %>%
 
 # Prop cell type specific not in eQTL Gene
 mr_spec <- mr %>% filter(ct_spec == T) %>% group_by(cell_type) %>% tally() %>% rename(`Cell Type Specific` = n)
-condition <- mr %>% filter(ct_spec == T) %>% group_by(eqtlgen_mr, cell_type) %>% tally() %>% filter(eqtlgen_mr == F) %>% ungroup() %>% select(-eqtlgen_mr) %>% rename(`Cell Type Specific Not in Bulk` = n)
+condition <- mr %>% filter(ct_spec == T) %>% group_by(eqtlgen_sig, cell_type) %>% tally() %>% filter(eqtlgen_sig == F) %>% ungroup() %>% select(-eqtlgen_sig) %>% rename(`Cell Type Specific Not in Bulk` = n)
 both <- left_join(mr_spec, condition, by = "cell_type") %>% 
   mutate(`Prop Not in Bulk (Of Cell Type Specific)` = `Cell Type Specific Not in Bulk`/`Cell Type Specific`)
 
@@ -71,11 +72,4 @@ tables <- list(Crohns_Summary = combined, Crohns_Summary_Mean = combined_summary
 # writexl::write_xlsx(tables, "resources/crohns_case_study/supplementary/S11_Crohns_Summary.xlsx")
 
 save(combined, combined_summary, file = "resources/crohns_case_study/supplementary/crohns_summary_gene_count_df.RData")
-
-
-
-
-
-
-
 

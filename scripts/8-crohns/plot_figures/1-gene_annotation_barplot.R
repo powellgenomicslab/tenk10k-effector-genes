@@ -83,9 +83,30 @@ plot_data2 <- plot_data2 %>%  arrange(annotation)
 plot_data2$annotation_new <- factor(plot_data2$annotation_new, levels = plot_data2$annotation_new)
 
 # New plot 
+# p1 <- ggplot(plot_data2 %>% arrange(annotation), aes(y = annotation_new, x = total)) +
+#   geom_col() +
+#   geom_text(size = 2, aes(label = paste0(total)), hjust = -0.3, vjust = 0.6, colour = "black", fontface = "bold") +
+#   #coord_flip() +
+#   #facet_wrap(~higher_annotation, scales = "free", space = "free_x") + 
+#   #scale_fill_manual(values = c("TRUE" = "#4682B4", "FALSE" = "#D3D3D3"), guide = guide_legend(reverse = TRUE)) +
+#   #scale_x_continuous(limits = c(0, 200), breaks = c(0, 50, 100, 150, 180)) +
+#   scale_x_continuous(limits = c(0, 180), breaks = c(0, 50, 100, 150, 180), expand = expansion(c(0, 0.01))) +  #geom_segment( aes(xend=phenotype, yend=0)) +
+#   scale_y_discrete(limits = rev) +
+#   theme_minimal() + 
+#   labs(x = "Number of MR + Sensitivity + Coloc Genes", y = NULL) +
+#   theme(axis.title.x = element_text(size = 8, face = "bold"),
+#     axis.text.x = element_text(face = "bold", size = 8, vjust = 1, hjust =0.5),
+#     axis.text.y = element_text(face = "bold", size = 8, vjust = 1, hjust =1))
+# p1
+# 
+# saveRDS(p1, "resources/crohns_case_study/figures/annotation_fig.RDS")
+
+# ggsave("resources/crohns_case_study/figures/ext_source_annotation_barplot.png", p1, device = ragg::agg_png(),
+#        width = 5.0, height = 2, bg = "white", scaling = 1.0, dpi = 300)
+
 p1 <- ggplot(plot_data2 %>% arrange(annotation), aes(y = annotation_new, x = total)) +
   geom_col() +
-  geom_text(size = 2, aes(label = paste0(total)), hjust = -0.3, vjust = 0.6, colour = "black", fontface = "bold") +
+  geom_text(size = 3, aes(label = paste0(total)), hjust = -0.3, vjust = 0.6, colour = "black", fontface = "bold") +
   #coord_flip() +
   #facet_wrap(~higher_annotation, scales = "free", space = "free_x") + 
   #scale_fill_manual(values = c("TRUE" = "#4682B4", "FALSE" = "#D3D3D3"), guide = guide_legend(reverse = TRUE)) +
@@ -95,12 +116,13 @@ p1 <- ggplot(plot_data2 %>% arrange(annotation), aes(y = annotation_new, x = tot
   theme_minimal() + 
   labs(x = "Number of MR + Sensitivity + Coloc Genes", y = NULL) +
   theme(axis.title.x = element_text(size = 8, face = "bold"),
-    axis.text.x = element_text(face = "bold", size = 8, vjust = 1, hjust =0.5),
-    axis.text.y = element_text(face = "bold", size = 8, vjust = 1, hjust =1))
+        axis.text.x = element_text(face = "bold", size = 8, vjust = 1, hjust =0.5),
+        axis.text.y = element_text(face = "bold", size = 10, vjust = 0.5, hjust =1))
 p1
 
-saveRDS(p1, "resources/crohns_case_study/figures/annotation_fig.RDS")
-
-ggsave("resources/crohns_case_study/figures/ext_source_annotation_barplot.png", p1, device = ragg::agg_png(),
-       width = 5.0, height = 2, bg = "white", scaling = 1.0, dpi = 300)
-
+# Figure 6a panel
+dir.create("figures/panels/8-crohns", recursive = TRUE, showWarnings = FALSE)
+ggsave("figures/panels/8-crohns/fig6a_ext_source_annotation_barplot.png", p1, device = ragg::agg_png(),
+       width = 5.0, height = 2, bg = "white", scaling = 1.0, dpi = 500)
+ggsave("figures/panels/8-crohns/fig6a_ext_source_annotation_barplot.pdf", p1, device = cairo_pdf,
+       width = 5.0, height = 2, bg = "white")
