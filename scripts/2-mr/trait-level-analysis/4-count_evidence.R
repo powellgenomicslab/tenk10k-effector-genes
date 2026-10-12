@@ -1,15 +1,13 @@
-
-# source("scripts/0-preprocess/preprocess_results.R")
 suppressPackageStartupMessages(suppressWarnings({
   library(tidyverse)
   library(data.table)
   library(arrow)
   library(ragg)
   library(scales)
-  library(paletteer)
   library(patchwork)
-  library(ggforce)
 }))
+
+dir.create("figures/strict/supp", recursive = TRUE, showWarnings = FALSE)
 
 df_msmr_tenk10k <- read_parquet("results/preprocessed/tenk10k_phase1.v5.parquet.gz")
 evidence_criteria <- list(
@@ -59,7 +57,6 @@ evidence_label <- c(
   coloc_multi = "Coloc (multi-variant)"
 )
 
-# evidence <- c("mr", "mr_heidi", "coloc_single", "coloc_multi")
 max_evidence_label <- c(
   mr = "MR only",
   mr_sens = "MR + Sensitivity",
@@ -71,20 +68,24 @@ df_evidence_category <- list(
   MR = c("mr"),
   Sensitivity = c("heidi", "het_ivw", "pleio_mrlink2"),
   Coloc = c("coloc_single", "coloc_multi")
-) |> 
-  enframe(name = "evidence_category", value = "evidence") |> 
+) |>
+  enframe(name = "evidence_category", value = "evidence") |>
   unnest_longer(evidence) |> setDT()
 
-df_evidence_summary <- df_msmr_tenk10k |> 
-  filter(mr) |> 
-  select(biosample, phenotype, probeID, all_of(names(evidence)), max_evidence) |> 
+df_evidence_summary <- df_msmr_tenk10k |>
+  filter(mr) |>
+  select(biosample, phenotype, probeID, all_of(names(evidence)), max_evidence) |>
   mutate(across(all_of(names(evidence)), ~ifelse(is.na(.x), FALSE, .x) |> as.numeric())) |>
-  unite("set", all_of(names(evidence)), sep = "", remove = FALSE) |> 
+  unite("set", all_of(names(evidence)), sep = "", remove = FALSE) |>
   setDT()
 
-df_set_tally <- df_evidence_summary |> 
-  group_by(set, across(all_of(names(evidence))), max_evidence) |> 
-  summarise(N = n(), .groups = "drop") |> 
+# ------------------------------------------------------------------------------------------------
+# Panel c: upset plot
+# ------------------------------------------------------------------------------------------------
+
+df_set_tally <- df_evidence_summary |>
+  group_by(set, across(all_of(names(evidence))), max_evidence) |>
+  summarise(N = n(), .groups = "drop") |>
   arrange(desc(N))
 
 set_order <- unique(df_set_tally$set)
@@ -98,9 +99,6 @@ evidence_color <- c(scales::viridis_pal()(4),
        "MR", "Sensitivity", "Coloc"
 ))
 
-# tile for set
-pals <- paletteer::paletteer_d("MexBrewer::Frida")
-# pals <- paletteer::paletteer_d("ggprism::viridis")
 # Compute evidence category blocks dynamically from df_evidence_category
 # evidence levels (reversed on y-axis): rev(names(evidence)), so position 1 = coloc_multi, ..., 6 = mr
 evidence_levels_rev <- rev(names(evidence))
@@ -116,8 +114,8 @@ evidence_cat_blocks <- df_evidence_category |>
 
 cat_fill_cols <- c(MR = "#4E9B8F40", Sensitivity = "#E8A02540", Coloc = "#7B5EA740")
 
-(p_tile <- df_set_tally |> 
-  filter(as.numeric(set) > 0) |> 
+p_tile <- df_set_tally |>
+  filter(as.numeric(set) > 0) |>
   pivot_longer(all_of(names(evidence))) |>
   left_join(df_evidence_category, by = c(name = "evidence")) |>
   filter(value == 1) |>
@@ -149,6 +147,8 @@ cat_fill_cols <- c(MR = "#4E9B8F40", Sensitivity = "#E8A02540", Coloc = "#7B5EA7
            hjust = 0.5, angle = 90, vjust = 1,
            fill = "white",
            fontface = "bold",
+           size = 6 / .pt,
+           family = "Helvetica",
            color = c("#2E7B70", "#A06A10", "#5A3E87")) +
   theme_void(base_size = 8, base_family = "Helvetica") +
   scale_y_discrete(
@@ -159,24 +159,24 @@ cat_fill_cols <- c(MR = "#4E9B8F40", Sensitivity = "#E8A02540", Coloc = "#7B5EA7
   scale_x_discrete(expand = expansion(add = c(2.5, 0.5))) +
   theme(panel.grid = element_line(color = "grey90"),
         panel.border = element_rect(color = "black", fill = NA, linewidth = 1),
-        axis.text.y = element_text(hjust = 1, margin = margin(r = 4)),
-        plot.margin = margin(l = 40)))
+        axis.text.y = element_text(size = 5, hjust = 1, margin = margin(r = 4)),
+        plot.margin = margin(l = 40))
 
-p_set_tally <- df_set_tally |> 
-  filter(as.numeric(set) > 0) |> 
+p_set_tally <- df_set_tally |>
+  filter(as.numeric(set) > 0) |>
   ggplot(aes(x = fct_reorder(set, -N), y = N)) +
   geom_col(aes(fill = max_evidence), color = "black", width = 0.65) +
-  geom_text(aes(label = number(N, big.mark = ",", prefix = " ")), nudge_y = 200, angle = 90, hjust = 0, vjust = 0.5) +
+  geom_text(aes(label = number(N, big.mark = ",", prefix = " ")), nudge_y = 200, angle = 90, hjust = 0, vjust = 0.5, size = 5 / .pt, family = "Helvetica") +
   scale_fill_viridis_d(na.translate = FALSE, guide = "none") +
-  scale_y_continuous(expand = expansion(c(0, 0.5))) +
+  scale_y_continuous(expand = expansion(c(0, 0.35))) +
   coord_cartesian(clip = "off") +
   layer_scales(p_tile)$x +
   theme_void(base_size = 8, base_family = "Helvetica")
 
-df_evidence_tally <- df_set_tally |> 
+df_evidence_tally <- df_set_tally |>
   pivot_longer(all_of(names(evidence))) |>
   filter(value == 1) |>
-  group_by(name) |> 
+  group_by(name) |>
   summarise(n_sig = sum(N))
 
 p_evidence_tally <- df_evidence_tally |>
@@ -188,12 +188,12 @@ p_evidence_tally <- df_evidence_tally |>
   layer_scales(p_tile)$y +
   theme_void(base_size = 8, base_family = "Helvetica") +
   # add label
-  geom_text(aes(label = number(n_sig, big.mark = ",")), hjust = -0.1)
+  geom_text(aes(label = number(n_sig, big.mark = ",")), hjust = -0.1, size = 5 / .pt, family = "Helvetica")
 
 # p evidence count tally
-(p_evidence_count_tally <- df_evidence_summary |> 
-  group_by(max_evidence) |> 
-  tally() |> 
+p_evidence_count_tally <- df_evidence_summary |>
+  group_by(max_evidence) |>
+  tally() |>
   ggplot(aes(y = factor(max_evidence), x = n, fill = factor(max_evidence))) +
   geom_col(color = "black", width = 0.8) +
   scale_fill_viridis_d(guide = "none") +
@@ -202,11 +202,10 @@ p_evidence_tally <- df_evidence_tally |>
   coord_cartesian(clip = "off") +
   theme_void(base_size = 8, base_family = "Helvetica") +
   # add label
-  geom_text(aes(label = number(n, big.mark = ",", prefix = " ")), vjust = 0.5, hjust = 0) +
+  geom_text(aes(label = number(n, big.mark = ",", prefix = " ")), vjust = 0.5, hjust = 0, size = 5 / .pt, family = "Helvetica") +
   labs(y = NULL) +
-  theme(axis.text.y = element_text(hjust = 1, margin = margin(r = 4)),
+  theme(axis.text.y = element_text(size = 5, hjust = 1, margin = margin(r = 4)),
         axis.title.y = element_text(angle = 90, margin = margin(r = 6)))
-)
 # combine plots
 p_combined <- p_set_tally + plot_spacer() + p_tile + p_evidence_tally + plot_layout(ncol = 2, widths = c(3,1)) &
     theme(plot.margin = margin())
@@ -221,17 +220,16 @@ ggsave("figures/strict/evidence_tally_v2.png",
 
 saveRDS(p_combined, "figures/strict/evidence_tally_plot.rds")
 
-# Individual trait breakdown of max evidence
-
-two_color_pal <- paletteer::paletteer_d("RColorBrewer::RdBu")[c(3,9)] %>% 
-  set_names(c("Positive", "Negative"))
+# ------------------------------------------------------------------------------------------------
+# Extended Data Fig 2: breakdown of max evidence by trait category and cell type
+# ------------------------------------------------------------------------------------------------
 
 df_evidence_by_cat <- df_msmr_tenk10k[mr == TRUE] %>%
   count(cell_type, pheno_cat, supercategory, max_evidence) %>%
-  mutate(cat_totals = sum(n), .by = c(pheno_cat, max_evidence)) |> 
+  mutate(cat_totals = sum(n), .by = c(pheno_cat, max_evidence)) |>
   mutate(max_evidence = factor(max_evidence, levels = rev(names(max_evidence_label))))
 
-(p_evidence_by_cat <- df_evidence_by_cat %>%
+p_evidence_by_cat <- df_evidence_by_cat %>%
   ggplot(aes(x = cell_type, y = n, fill = max_evidence)) +
   facet_wrap(~pheno_cat, ncol = 2, scales = "free_y") +
   geom_col() +
@@ -242,7 +240,6 @@ df_evidence_by_cat <- df_msmr_tenk10k[mr == TRUE] %>%
                     labels = max_evidence_label,
                     breaks = names(max_evidence_label),
                     name = NULL) +
-  # scale_alpha_manual(values = setNames(c(0.5, 1), c("Negative", "Positive"))) +
   guides(y = guide_axis(cap = "both"),
          fill = guide_legend(theme = theme(legend.key.size = unit(0.5, "lines")),
                              direction = "horizontal")) +
@@ -256,12 +253,9 @@ df_evidence_by_cat <- df_msmr_tenk10k[mr == TRUE] %>%
     panel.grid.major.y = element_line(color = "gray90"),
     legend.position = "bottom",
     legend.text = element_text(margin = margin(l = 2)),
-    # legend.position.inside = c(0.5, 1),
-    # legend.justification.inside = c(1, 0),
     axis.title = element_text(size = 9),
     strip.text = element_text(size = 9, hjust = 0),
   )
-)
 ggsave("figures/strict/supp/evidence_by_category.png",
        p_evidence_by_cat,
        device = ragg::agg_png, scaling = 1,
