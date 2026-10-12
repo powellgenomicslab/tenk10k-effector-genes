@@ -30,6 +30,36 @@ df_stats <- list(
   map_df(fread, .id = "study")
 
 # compare number of cells
+p_cell_count <- df_stats |> 
+  distinct(study, cell_type, n_cell) |> 
+  mutate(study = case_when(
+    study == "tenk10k" ~ "TenK10K",
+    study == "aifi" ~ "AIFI Immune Health Atlas",
+    TRUE ~ study
+  ),
+         cell_type = str_replace_all(cell_type, "_", " ")) |>
+  ggplot(aes(x = fct_reorder(cell_type, n_cell, diff), fill = study, y = n_cell)) +
+  geom_col(position = position_dodge(width = 0.9), color = "black") +
+  theme_minimal() +
+  scale_fill_tableau() +
+  labs(x = NULL, y = "Number of sampled cells", fill = NULL) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
+  theme(legend.position = "top",
+        # legend.background = element_rect(fill = "white", color = NA),
+        # legend.position.inside = c(0,1),
+        legend.justification = c(0,0),
+        legend.key.size = unit(0.5, "lines"),
+        axis.text.x = element_text(angle = 90, hjust = 1, vjust= 0.5)
+      )
+
+# Supplementary Figure 29
+dir.create("figures", showWarnings = FALSE)
+ggsave("figures/fig-s29.png", p_cell_count,
+       device = agg_png, scaling = 1,
+        width = 8, height = 5, units = "in", res = 300)
+ggsave("figures/fig-s29.pdf", p_cell_count,
+       device = cairo_pdf,
+        width = 8, height = 5, units = "in")
 
 
 # compare results
@@ -48,9 +78,14 @@ df_stats_wide <- df_stats %>%
             by = "phenotype") 
   # %>% 
   # filter to cell-type significant in TenK10K
-  filter(assoc_mcp.tenk10k < 0.05)
-  
-
+  # filter(assoc_mcp.tenk10k < 0.05)
+ 
+# find how many cell types have higher mcz
+df_stats |> 
+  ggplot(aes(x = study, group = study, y = abs(assoc_mcz))) +
+  facet_wrap(~cell_type) +
+  geom_boxplot() +
+  theme_minimal()
 # calculate correlation by phenotype
 cor_mcz_pheno <- df_stats_wide %>%
   group_by(phenotype) %>%
@@ -95,9 +130,14 @@ p_correlation <- df_stats_wide %>%
         legend.justification = c(1,0))
 )
 # save plot
-ggsave("figures/scdrs/compare_scdrs_tenk10k_aifi_by_celltype.png", p_correlation,
+# Supplementary Figure (number not cited in the manuscript text)
+dir.create("figures/unnumbered", recursive = TRUE, showWarnings = FALSE)
+ggsave("figures/unnumbered/scdrs_tenk10k_aifi_by_celltype.png", p_correlation,
        device = agg_png, scaling = 1.25,
         width = 10, height = 10, units = "in", res = 300)
+ggsave("figures/unnumbered/scdrs_tenk10k_aifi_by_celltype.pdf", p_correlation,
+       device = cairo_pdf, scale = 1/1.25,
+        width = 10, height = 10, units = "in")
 
 # correlation by trait
 ggplot(cor_mcz_pheno, aes(y = cor_z, x = phenotype)) +

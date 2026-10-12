@@ -120,12 +120,22 @@ df_crohns_sum <- df_crohns %>%
     )
 )
 
-ggsave("figures/supp/10-scdrs_crohns_sampling_violin.png",
+# Supplementary Figures (numbers not cited in the manuscript text)
+dir.create("figures/unnumbered", recursive = TRUE, showWarnings = FALSE)
+ggsave("figures/unnumbered/scdrs_crohns_sampling_violin.png",
     p_violin,
     width = 10, height = 8, device = agg_png
 )
+ggsave("figures/unnumbered/scdrs_crohns_sampling_violin.pdf",
+    p_violin,
+    width = 10, height = 8, device = cairo_pdf
+)
 
-ggsave("figures/supp/11-scdrs_crohns_sampling_prop.png",
+ggsave("figures/unnumbered/scdrs_crohns_sampling_prop.png",
     p_compare_prop,
     width = 10, height = 8, device = agg_png
+)
+ggsave("figures/unnumbered/scdrs_crohns_sampling_prop.pdf",
+    p_compare_prop,
+    width = 10, height = 8, device = cairo_pdf
 )
