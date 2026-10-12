@@ -124,10 +124,11 @@ df_enrich[supercategory == "disease" & source %in% sources, .N]
 df_enrich[supercategory == "disease" & source %in% sources & maj_hla == FALSE, .(n_phenotypes = uniqueN(phenotype)), by = .(term_name, term_id)][order(-n_phenotypes)]
 
 # terms with 1 phenotype only
-df_enrich[supercategory == "disease" & source %in% sources & maj_hla == FALSE] |> 
-  group_by(term_name, term_id) |>
-  filter(n() == 1) |> 
-  View()
+# (interactive inspection only; View() is commented out because it fails under Rscript)
+# df_enrich[supercategory == "disease" & source %in% sources & maj_hla == FALSE] |> 
+#   group_by(term_name, term_id) |>
+#   filter(n() == 1) |> 
+#   View()
 
 
 # --- Bipartite network: terms (left) <-> phenotypes (right) ---
@@ -297,11 +298,6 @@ p_bip <- ggraph(layout_bip) +
   theme(legend.position = "right",
         legend.title.position = "top")
 
-ggsave(
-  "figures/enrichment/bipartite_string_enrichment_CD4_CTL.png",
-  p_bip, width = 8, height = 8, device = ragg::agg_png, scaling = 1.1
-)
-
 
 # --- PPI network visualisation ---
 
@@ -328,6 +324,8 @@ node_annot <- df_bipartite[,
 all_genes <- union(df_network$from, df_network$to) |> 
   # exclude housekeeping_genes
   setdiff(housekeeping_genes)
+# drop edges to housekeeping genes as well, so every edge has both nodes
+df_network <- df_network[from %in% all_genes & to %in% all_genes]
 nodes <- tibble(name = all_genes) |>
   left_join(node_annot, by = c("name" = "gene")) |>
   mutate(
@@ -407,11 +405,6 @@ p_graph <- ggraph(layout_full) +
   theme_graph(base_family = "sans") +
   labs(title = "STRING PPI network (CD4 CTL genes) — high-pleiotropy genes")
 
-ggsave(
-  "figures/enrichment/string_high_pleiotropy_network_v2.png",
-  p_graph, width = 8, height = 6, device = ragg::agg_png
-)
-
 degree_df <- layout_full |>
   as_tibble() |>
   transmute(
@@ -466,9 +459,15 @@ p_violin <- ggplot(degree_df, aes(x = is_mr, y = betweenness)) +
   theme(legend.position = "right",
         plot.subtitle = element_text(hjust = 0.5))
 
+# Supplementary Fig. 13
+dir.create("figures", recursive = TRUE, showWarnings = FALSE)
 ggsave(
-  "figures/enrichment/string_betweenness_by_mr.png",
+  "figures/fig-s13.png",
   p_violin, width = 6, height = 5, device = ragg::agg_png
+)
+ggsave(
+  "figures/fig-s13.pdf",
+  p_violin, width = 6, height = 5, device = cairo_pdf
 )
 
 # --- STRING cluster-focused network ---
@@ -565,7 +564,7 @@ p_ms <- ggraph(layout_full) +
   geom_label_repel(
     data = layout_ms,
     aes(x = x, y = y, label = name, color = term_fill),
-    size = 2.5, max.overlaps = 40, fontface = "plain",
+    size = 2.5, max.overlaps = 40, fontface = "plain", seed = 42,
     fill = alpha("white", 0.5),
     show.legend = FALSE, segment.colour = "grey60",
     segment.size = 0.2, label.size = 0
@@ -588,29 +587,59 @@ p_ms <- ggraph(layout_full) +
   theme(legend.position = "bottom",
         legend.box = "horizontal", legend.key.spacing.y = unit(0.1, "lines"))
 
-ggsave(
-  "figures/enrichment/string_ms_highlight_network.png",
-  p_ms, width = 10, height = 8, device = ragg::agg_png,
-)
+# figures for publication (previously combined as panels a and b)
+# stand-alone versions are taller, with larger points and text
 
-# plot assembly
-plots <- wrap_plots(
-  list(
-    p_bip + expand_limits(x = c(1.5, 1)) +
-      theme(legend.box.margin = margin(l = -7, unit = "lines")),
-    p_ms),
-  ncol = 1,
-  heights = c(1.6, 1),
-  guide = "keep"
-) +
-  plot_annotation(tag_levels = "a") &
-  theme(plot.tag = element_text(face = "bold"),
-        plot.margin = margin(),
-      plot.tag.position = c(0.02, 0.97))
-  
-ggsave("figures/enrichment/string_enrichment_combined.png",
-  plots, width = 9, height = 12, device = ragg::agg_png, scaling = 1
-)
+# multiply the size of point and text layers
+scale_layer_sizes <- function(p, point = 1, text = 1) {
+  for (i in seq_along(p$layers)) {
+    l <- p$layers[[i]]
+    f <- if (inherits(l$geom, c("GeomText", "GeomLabel", "GeomTextRepel", "GeomLabelRepel"))) text
+         else if (inherits(l$geom, "GeomPoint")) point else 1
+    if (!is.null(l$aes_params$size)) l$aes_params$size <- l$aes_params$size * f
+  }
+  p
+}
+
+# Extended Data: CD4 CTL STRING enrichment (bipartite network)
+p_bip_pub <- scale_layer_sizes(p_bip, point = 1.4, text = 1.45)
+# move the source brackets further left to clear the larger term labels
+for (i in seq_along(p_bip_pub$layers)) {
+  l <- p_bip_pub$layers[[i]]
+  if (identical(l$data, source_labels)) {
+    if (inherits(l$geom, "GeomSegment")) l$mapping <- aes(x = -0.85, xend = -0.85, y = y_min, yend = y_max)
+    if (inherits(l$geom, "GeomText")) l$mapping <- aes(x = -0.9, y = y_mid, label = source)
+  }
+}
+p_bip_pub <- p_bip_pub +
+  expand_limits(x = c(1.5, 1)) +
+  guides(fill = guide_legend(nrow = 1, override.aes = list(size = 5, shape = 22, colour = "grey20"))) +
+  theme(legend.position = "bottom",
+        legend.text = element_text(size = 11),
+        plot.margin = margin(5, 5, 5, 5))
+
+# Extended Data Fig. 5
+ggsave("figures/fig-e5.pdf",
+       p_bip_pub, width = 9, height = 10, device = cairo_pdf, bg = "white")
+ggsave("figures/fig-e5.png",
+       p_bip_pub, width = 9, height = 10, device = ragg::agg_png, dpi = 300, bg = "white")
+
+# Supplementary: STRING PPI network highlighting MS-enriched terms
+p_ms_pub <- scale_layer_sizes(p_ms, point = 1.4, text = 1.45) +
+  theme(legend.text = element_text(size = 11),
+        legend.title = element_text(size = 12),
+        plot.margin = margin(5, 5, 5, 5))
+p_ms_pub$layers[[2]]$aes_params$size <- 0.8  # background nodes
+# no label border (a zero-width border is drawn as a hairline in cairo PDFs)
+for (l in p_ms_pub$layers) {
+  if (inherits(l$geom, "GeomLabelRepel")) l$geom_params$label.size <- NA
+}
+
+# Supplementary Fig. 12
+ggsave("figures/fig-s12.pdf",
+       p_ms_pub, width = 9, height = 8, device = cairo_pdf, bg = "white")
+ggsave("figures/fig-s12.png",
+       p_ms_pub, width = 9, height = 8, device = ragg::agg_png, dpi = 300, bg = "white")
 
 # get numbers
 df_enrich
@@ -706,7 +735,3 @@ p_graph <- ggraph(layout_full) +
     # panel.grid = element_blank()
   )
 
-ggsave(
-  "figures/enrichment/string_cluster_network.png",
-  p_graph, width = 10, height = 10, device = ragg::agg_png
-)
