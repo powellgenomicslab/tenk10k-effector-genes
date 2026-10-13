@@ -122,7 +122,7 @@ ITEMS = {
     "fig_e5": ("STRING enrichment of CD4 CTL effector genes", figs("e5")),
     "fig_e6": ("scDRS for Crohn's disease across all cell types", figs("e6")),
     "fig_e8": ("All 122 MR-supported target-indication pairs", figs("e8")),
-    "fig_e9": ("GPX1 locus: discordant effects in CD4 TCM and cDC2", figs("e9")),
+    "fig_e9": ("GPX1: locus zoom and cross plots in CD4 TCM and cDC2", figs("e9")),
     "fig_s1": ("MR associations across cell types: diseases", figs("s1")),
     "fig_s2": ("MR associations across cell types: biomarker traits", figs("s2")),
     "fig_s3": ("Associations vs tests per cell type", figs("s3")),
@@ -1036,7 +1036,17 @@ rule crohns_fig6_panels:
 
 rule crohns_gpx1_plot:
     input:
+        # a) locus zoom
         bundled(CD_GPX1, review=REVIEW_LD) or CD_GPX1,
+        # b, c) cross plots of the MR instruments in CD4 TCM and cDC2
+        ext(
+            "results/sensitivity/smr/tenk10k_phase1/tenk10k_phase1_sensitivity.snps4msmr.parquet.gz",
+            *[
+                f"results/smr_locus/tenk10k_phase1/{ct}/crohns/ENSG00000233276.{x}"
+                for ct in ("CD4_TCM", "cDC2")
+                for x in ("eqtl.tsv", "gwas.tsv")
+            ],
+        ),
     output:
         figs("e9"),
     params:
