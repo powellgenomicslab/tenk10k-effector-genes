@@ -1,0 +1,6 @@
+# The Dockerfile only copies the conda environment definitions; keep the
+# build context to those (no results, figures, logs or cached environments).
+*
+!workflow
+workflow/*
+!workflow/envs

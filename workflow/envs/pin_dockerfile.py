@@ -38,4 +38,14 @@ for yaml, prefix in copies:
         build,
     )
 
+# link the GHCR package to its source repository (shown on the repository page
+# and inheriting its access settings)
+label = (
+    "LABEL org.opencontainers.image.source="
+    "https://github.com/powellgenomicslab/tenk10k-effector-genes\n"
+)
+if label not in text:
+    text = text.replace('LABEL io.github.snakemake.containerized="true"\n',
+                        'LABEL io.github.snakemake.containerized="true"\n' + label, 1)
+
 path.write_text(text)
