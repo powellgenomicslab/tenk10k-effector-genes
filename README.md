@@ -78,16 +78,16 @@ Dependencies between scripts are resolved automatically. For example, `make fig-
 | Assessing horizontal pleiotropy via sensitivity analyses and colocalisation | Fig. 2c; ED Figs. 2–3; Supp. Fig. 8 | [`3-pleiotropy`](scripts/3-pleiotropy/README.md) |
 | Single-cell eQTL enhances identification of effector genes | Fig. 3; ED Fig. 4; Supp. Figs. 9–11; Supp. Tables 6–7 | [`4-comparison`](scripts/4-comparison/README.md) |
 | Identifying disease-relevant biological pathways | ED Fig. 5; Supp. Figs. 12–13; Supp. Table 8 | [`5-pathways`](scripts/5-pathways/README.md) |
-| Polygenic enrichment reveals trait-relevant immune cell types | Fig. 4; ED Fig. 6; Supp. Figs. 14, 29; Supp. Tables 9–10 | [`6-polygenic`](scripts/6-polygenic/README.md) |
+| Polygenic enrichment reveals trait-relevant immune cell types | Fig. 4; ED Fig. 6; Supp. Figs. 14, 21–24; Supp. Tables 9–10 | [`6-polygenic`](scripts/6-polygenic/README.md) |
 | Single-cell MR supports drug target discovery | Fig. 5; ED Fig. 8; Supp. Fig. 16; Supp. Tables 11–15 | [`7-drug`](scripts/7-drug/README.md) |
-| Triangulation of evidence prioritises effector genes for Crohn's disease | Fig. 6a–c; ED Fig. 9; Supp. Figs. 17, 25, 30 (raw data only); Supp. Tables 16–21 | [`8-crohns`](scripts/8-crohns/README.md) |
+| Triangulation of evidence prioritises effector genes for Crohn's disease | Fig. 6a–c; ED Figs. 9–10; Supp. Figs. 17, 25 (raw data only); Supp. Tables 16–21 | [`8-crohns`](scripts/8-crohns/README.md) |
 
 Some items are not produced by code in this repository:
 - **Fig. 1a** is BioRender artwork, provided in `figures/biorender/`.
 - **Fig. 6** is assembled by hand from panels a–c (`make fig-m6`) and panel d.
-- **Fig. 6d and Supp. Fig. 24** come from the [`TenK10K_causal_inference_vs_IBDverse`](TenK10K_causal_inference_vs_IBDverse) submodule.
+- **Fig. 6d and Supp. Figs. 18–19** come from the [`TenK10K_causal_inference_vs_IBDverse`](TenK10K_causal_inference_vs_IBDverse) submodule.
 - **ED Fig. 7 and Supp. Fig. 15** come from scDeepID, in a separate repository.
-- **Supp. Figs. 18–23 and 26–28** are not yet linked to a script.
+- **Supp. Fig. 20** (genes tested per cell type) is not yet linked to a script.
 
 ### Options
 
@@ -96,7 +96,7 @@ Some items are not produced by code in this repository:
 - **Existing results tree.** If you already have the results (for example on NCI Gadi), run `make link-data DATA_DIR=/path/to/results/root` instead of `make data`. It links each input file listed in `config/figure_inputs.txt` and does not modify the source.
 - **Raw-data steps.** Two kinds of step read individual-level data, which is not shared:
   - the LD calculations behind the GPX1 and JAZF1 locus plots;
-  - the Crohn's colon UMAPs (Supp. Fig. 30).
+  - the Crohn's colon UMAPs (Supp. Fig. 25).
 
   Their summary-level outputs are included in the download, so every other item builds without them. Where the raw data are available, add `ARGS="--config restricted=true"`.
 
