@@ -6,7 +6,7 @@ pipeline output. The full table of manuscript items is in `../README.md`.
 | Script | Purpose |
 |---|---|
 | `plot_scdrs_overall.R` | Fig 4, Extended Data Fig 6, Supp Fig 14 and Supp Table 9 |
-| `compare_scdrs_aifi.R` | Replication in the AIFI Immune Health Atlas (Supp Fig 29 and the Z-score comparison) |
+| `compare_scdrs_aifi.R` | Replication in the AIFI Immune Health Atlas (Supp Figs 23–24) |
 | `aifi-labelTransfer.py` | Transfers TenK10K cell-type labels onto the AIFI atlas. It writes the annotated `.h5ad` that the pipeline scores and `compare_scdrs_aifi.R` then summarises |
 | `scdrs_supp_sampling.R` | Crohn's disease robustness to the cell-sampling strategy |
 

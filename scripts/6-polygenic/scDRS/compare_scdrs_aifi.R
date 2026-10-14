@@ -52,12 +52,12 @@ p_cell_count <- df_stats |>
         axis.text.x = element_text(angle = 90, hjust = 1, vjust= 0.5)
       )
 
-# Supplementary Figure 29
+# Supplementary Figure 23: cells sampled from AIFI and TenK10K by cell type
 dir.create("figures", showWarnings = FALSE)
-ggsave("figures/fig-s29.png", p_cell_count,
+ggsave("figures/fig-s23.png", p_cell_count,
        device = agg_png, scaling = 1,
         width = 8, height = 5, units = "in", res = 300)
-ggsave("figures/fig-s29.pdf", p_cell_count,
+ggsave("figures/fig-s23.pdf", p_cell_count,
        device = cairo_pdf,
         width = 8, height = 5, units = "in")
 
@@ -130,12 +130,11 @@ p_correlation <- df_stats_wide %>%
         legend.justification = c(1,0))
 )
 # save plot
-# Supplementary Figure (number not cited in the manuscript text)
-dir.create("figures/unnumbered", recursive = TRUE, showWarnings = FALSE)
-ggsave("figures/unnumbered/scdrs_tenk10k_aifi_by_celltype.png", p_correlation,
+# Supplementary Figure 24: scDRS Z-score, TenK10K vs AIFI
+ggsave("figures/fig-s24.png", p_correlation,
        device = agg_png, scaling = 1.25,
         width = 10, height = 10, units = "in", res = 300)
-ggsave("figures/unnumbered/scdrs_tenk10k_aifi_by_celltype.pdf", p_correlation,
+ggsave("figures/fig-s24.pdf", p_correlation,
        device = cairo_pdf, scale = 1/1.25,
         width = 10, height = 10, units = "in")
 

@@ -647,14 +647,14 @@ selected_diseases <- c("Crohn's disease" = "Crohn's disease",
 )
 
 # combine
-# left column: a (targets by phase), c (enrichment), d (MoA concordance)
-# right column: b (association score by MR support, facets stacked vertically)
+# left column: a (targets by phase), b (enrichment), c (MoA concordance)
+# right column: d (association score by MR support, facets stacked vertically)
 p_design <- "
-AB
-#B
-CB
-#B
-DB
+AD
+#D
+BD
+#D
+CD
 "
 
 gap <- 0.08  # vertical space between left-column panels (relative height)
@@ -662,9 +662,9 @@ tag_up <- theme(plot.tag.position = c(0, 1.04))
 
 plots <- list(
   A = p_bar_overall + theme(legend.box.margin = margin(l = -1, unit= "lines")),
-  B = p_violin_mr + theme(plot.margin = margin(l = 1, unit = "lines")),
-  C = wrap_elements(full = p_enrich),
-  D = wrap_elements(full = p_bar_concordance)
+  B = wrap_elements(full = p_enrich),
+  C = wrap_elements(full = p_bar_concordance),
+  D = p_violin_mr + theme(plot.margin = margin(l = 1, unit = "lines"))
 ) %>% 
   wrap_plots(guides = "keep", design = p_design, widths = c(1.3, 1),
              heights = c(1, gap, 1, gap, 1))
@@ -676,9 +676,9 @@ plots <-  (plots &
     )) +
   plot_annotation(tag_levels = "a") &
   theme(axis.title = element_text(size = 9))
-# raise the tags of the wrapped panels (c, d) slightly
+# raise the tags of the wrapped panels (b, c) slightly
+plots[[2]] <- plots[[2]] + tag_up
 plots[[3]] <- plots[[3]] + tag_up
-plots[[4]] <- plots[[4]] + tag_up
 
 
 # Figure 5
@@ -689,69 +689,14 @@ ggsave("figures/fig-m5.pdf",
 ggsave("figures/fig-m5.png",
        device = agg_png, bg = "white",
        plots, width = 9, height = 10, dpi = 300, scale = 1/1.2)
+source("scripts/util/fit_journal.R")  # shrink to journal max size (180 x 225 mm)
+fit_journal_pdf("figures/fig-m5.pdf", png = "figures/fig-m5.png")
 
 
 
 
-(p_top_drug_all <- df_mr_phase %>%
-    filter(mr == 1) %>% 
-    mutate(pheno_label = str_to_title(disease_label),
-           score = otp_assoc_max) %>% 
-    group_by(pheno_label) %>%
-    mutate(rank_score = frank(-score)) %>% 
-    ggplot(aes(x = -rank_score, y = score)) +
-    theme_classic() +
-    geom_point(aes(fill = phase), shape = "circle filled") +
-    facet_wrap(~pheno_label, scale = "free_x",
-               ncol = 4, axes = "all",
-               labeller = labeller(pheno_label = label_wrap_gen(25))) +
-    theme(legend.position = "none") +
-    geom_text_repel(
-      aes(label = hgnc_symbol),
-      fontface = "italic",
-      size = 5/.pt, segment.size = 0.1,
-      segment.color = "black",
-      
-      point.padding = 0.1,
-      min.segment.length = 0,
-      data = ~filter(.x, rank_score <= 15),
-      max.overlaps = Inf,
-      direction = "y",
-      xlim = c(Inf, NA),
-      force = 2,
-      hjust = 1,
-      segment.color = "black",
-    ) +
-    coord_cartesian(clip = "off") +
-    scale_y_continuous(expand = expansion(mult = c(0.1, 0)),
-                       limits = c(0, 1),
-                       breaks = seq(0, 1, 0.2),
-                       guide = guide_axis(cap = "both")) +
-    scale_x_continuous(expand = expansion(mult = c(0.1, 0.1))) +
-    labs(y = "Association Score", x = NULL) +
-    scale_fill_viridis_d(
-      direction = -1,
-      name = "Maximum clinical development stage",
-      guide = guide_legend(override.aes = list(size = 2))) +
-    theme(strip.clip = "off",
-          strip.background = element_blank(),
-          plot.margin = margin(r = 2.5, t = 0, l = 0.2, unit = "lines"),
-          panel.spacing.x = unit(3, "lines"),
-          strip.text = element_text(face = "bold", size = 8,
-                                    hjust = 0),
-          axis.ticks.x = element_blank(),
-          panel.grid.major.y = element_line(color = "gray90"),
-          axis.line.x = element_blank(),
-          axis.text.x = element_blank(),
-          legend.position = "bottom")
-)
-
-
-# Extended Data Figure 8
-ggsave("figures/fig-e8.png", device = agg_png, bg = "white",
-       p_top_drug_all, width = 8, height = 12, dpi = 300, scaling = 1.1)
-ggsave("figures/fig-e8.pdf", device = cairo_pdf, bg = "white",
-       p_top_drug_all, width = 8, height = 12, scale = 1/1.1)
+# association scores of MR-supported T-I pairs for all diseases
+# (Extended Data Figure 8): see otp_ti_mr_all.R
 
 # write supplementary tables
 source("scripts/util/write_table.R")
@@ -762,7 +707,7 @@ tbl_tally_gene <- tally_gene %>%
   left_join(df_gene_annot[,.(targetId = ensembl_gene_id, hgnc_symbol)]) %>% 
   arrange(desc(phase), mr_genes)
 
-write_table(tbl_tally_gene, "target_otp", 11)
+write_table(tbl_tally_gene, "target_otp", 11)  # Fig. 5a
 
 # table of TI support estimate
 tbl_stats <- df_stats_overall %>% 
@@ -772,7 +717,7 @@ tbl_stats <- df_stats_overall %>%
          noEvidence_noMR = map(table, ~.x[2,2])) %>% 
   unnest(stats)
 
-write_table(tbl_stats, "ti_support_stats", 12)
+write_table(tbl_stats, "ti_support_stats", 12)  # Fig. 5b
 
 # table of otp score by source of evidence
 label <- tibble(
@@ -784,7 +729,7 @@ tbl_otp_by_evidence <- df_ttest %>%
          n_supported = map_dbl(`1`, ~length(.x))) %>% 
   left_join(label) %>% 
   rename(source_id = source, source = label)
-write_table(tbl_otp_by_evidence, "otp_by_evidence", 13)
+write_table(tbl_otp_by_evidence, "otp_by_evidence", 15)  # Fig. 5d
 
 
 # table of TI support with MR
@@ -807,5 +752,5 @@ tbl_ti <- df_mr_phase %>%
     observed_dir != predicted_dir ~ "Discordant",
     TRUE ~ "Undetermined"
   ))
-write_table(tbl_ti, "ti_drug_mr", 14)
+write_table(tbl_ti, "ti_drug_mr", 13)  # Fig. 5c, Extended Data Fig. 8
 

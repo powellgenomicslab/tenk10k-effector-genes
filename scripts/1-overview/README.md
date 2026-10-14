@@ -10,7 +10,7 @@ These scripts summarise the scope of the MR analysis: how many genes and traits 
 | `mr_heatmap_celltype_biotraits.R` | Supp Fig 2 | `make fig-s2` | v5 parquet, MAGMA parquet, `metadata/` | `figures/fig-s2.{pdf,png}` |
 | `fig_smr_overview_scatter.R` | Supp Fig 3 (tests vs associations per cell type); Supp Fig 9 (MAGMA vs MR gene counts per trait) | `make fig-s3`, `make fig-s9` | `preprocess_results.R` objects | `figures/fig-s3.{pdf,png}`, `figures/fig-s9.{pdf,png}` |
 | `celltype_exclusive_assoc.R` | Supp Fig 4 | `make fig-s4` | `preprocess_results.R` objects | `figures/fig-s4.{pdf,png}` |
-| `compare_ray_tenk10k.R` | Supp Figs 5–6 | `make fig-s5`, `make fig-s6` | `preprocess_results.R` objects; `resources/misc/onek1k_cad_mr_ray2025.txt` | `figures/fig-s5.{pdf,png}`, `figures/fig-s6.{pdf,png}`, `figures/panels/1-overview/compare_ray_tenk10k_pval.{pdf,png}` |
+| `compare_ray_tenk10k.R` | Supp Fig 5 (CAD MR P values vs Ray et al.); Supp Fig 6 (effect estimates) | `make fig-s5`, `make fig-s6` | `preprocess_results.R` objects; `resources/misc/onek1k_cad_mr_ray2025.txt` | `figures/fig-s5.{pdf,png}`, `figures/fig-s6.{pdf,png}`, `figures/panels/1-overview/compare_ray_tenk10k_overlap.{pdf,png}` (not a manuscript figure) |
 | `tab_smr_overview.R` | Supp Table 3 | `make tab-s3` | `preprocess_results.R` objects; `metadata/table_column_names.xlsx` | `tables/` (Supp Table 3) |
 
 ## Run order

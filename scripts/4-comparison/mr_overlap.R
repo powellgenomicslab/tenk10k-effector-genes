@@ -100,3 +100,5 @@ ggsave("figures/fig-e4.pdf", plots_overlap,
        width = 8, height = 3, device = cairo_pdf)
 ggsave("figures/fig-e4.png", plots_overlap,
        width = 8, height = 3, device = ragg::agg_png, dpi = 300)
+source("scripts/util/fit_journal.R")  # shrink to journal max size (180 x 225 mm)
+fit_journal_pdf("figures/fig-e4.pdf", png = "figures/fig-e4.png")

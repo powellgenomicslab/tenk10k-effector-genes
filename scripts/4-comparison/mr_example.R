@@ -441,6 +441,8 @@ ggsave("figures/fig-m3.pdf", plots_combined, width = 8, height = 10 * 5/6,
        device = cairo_pdf, scale = 1.25)
 ggsave("figures/fig-m3.png", plots_combined, width = 8, height = 10 * 5/6,
        device = ragg::agg_png, dpi = 300, scale = 1.25)
+source("scripts/util/fit_journal.R")  # shrink to journal max size (180 x 225 mm)
+fit_journal_pdf("figures/fig-m3.pdf", png = "figures/fig-m3.png")
 
 # fill in data
 # N gene trait not in MAGMA

@@ -671,6 +671,8 @@ ggsave("figures/fig-m4.pdf",
        plots, bg = "white", width = 12.5, height = 15, device = cairo_pdf, scale = 1/1.2)
 ggsave("figures/fig-m4.png",
        plots, bg = "white", width = 12.5, height = 15, device = agg_png, dpi = 300, scale = 1/1.2)
+source("scripts/util/fit_journal.R")  # shrink to journal max size (180 x 225 mm)
+fit_journal_pdf("figures/fig-m4.pdf", png = "figures/fig-m4.png")
 
 # Extended Data: Crohn's disease scDRS UMAP (previously Fig. 4b) and scDRS
 # across all cell types
@@ -687,6 +689,7 @@ ggsave("figures/fig-e6.pdf",
        plots_ext, bg = "white", width = 13, height = 7, device = cairo_pdf)
 ggsave("figures/fig-e6.png",
        plots_ext, bg = "white", width = 13, height = 7, device = agg_png, dpi = 300)
+fit_journal_pdf("figures/fig-e6.pdf", png = "figures/fig-e6.png")
 
 # 
 # ggsave("figures/scdrs/tenk10k_phase1_sample.scdrs.all.png",

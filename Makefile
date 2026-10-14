@@ -22,7 +22,7 @@ ARGS      ?=
 SMK = $(SNAKEMAKE) --snakefile scripts/Snakefile --workflow-profile none \
       --cores $(CORES) $(if $(SDM),--sdm $(SDM)) $(ARGS) --
 
-.PHONY: help list all figs-m figs-e figs-s tabs-s unnumbered data link-data \
+.PHONY: help list all figs-m figs-e figs-s tabs-s data link-data \
         manifest env lock dockerfile dry-run
 
 help:
@@ -32,7 +32,7 @@ list:
 	@$(SNAKEMAKE) --snakefile scripts/Snakefile --workflow-profile none --cores 1 \
 	  --quiet all -- targets
 
-all figs-m figs-e figs-s tabs-s unnumbered:
+all figs-m figs-e figs-s tabs-s:
 	$(SMK) $(subst -,_,$@)
 
 fig-% tab-%:

@@ -18,4 +18,4 @@ df_pathway_label <- fread("resources/enrichment/gmt/GO_bp_2024_terms.tsv") |>
 df_res <- fread("results/scDeepID/pathway_test_full.csv") %>%
   left_join(df_pathway_label, by = c("pathway" = "pathway"))
 
-write_table(df_res, "scdrs_pathway", 10)
+write_table(df_res, "scdeepid_b_cells_sle", 10)

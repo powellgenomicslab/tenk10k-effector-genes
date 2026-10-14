@@ -65,8 +65,10 @@ dependencies:
   - r-ldlinkr
   - bioconductor-ensdb.hsapiens.v86
   - bioconductor-annotationhub
-  # Fig. 1 layout
+  # Fig. 1 layout, and fitting figures to the journal's print size
+  # (scripts/util/fit_journal.R: typst, pdfinfo, pdftocairo)
   - typst
+  - poppler
   # compiling oaqc in figures.post-deploy.sh
   - cxx-compiler
   - make

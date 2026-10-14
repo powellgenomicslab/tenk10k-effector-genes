@@ -1,9 +1,9 @@
 FROM condaforge/miniforge3:latest
 LABEL io.github.snakemake.containerized="true"
-LABEL io.github.snakemake.conda_env_hash="d3ac4f34b874b4a1c92bfa2e23bb236c9fa6490bc34144463dc422eeac8e5e00"
+LABEL io.github.snakemake.conda_env_hash="c2900d2e9b3a8e568e51e91ea4e6871c88d418a4bb3e4925b6e5194b127b54e1"
 # Conda environment:
 #   source: workflow/envs/figures.yaml
-#   prefix: /conda-envs/ea3f31ab236339d4586f37013b407426
+#   prefix: /conda-envs/444d31012a000d8bef71d1fa3df7fb98
 #   # Environment for the manuscript figure and table scripts in scripts/
 #   # (referenced from scripts/Snakefile as "../workflow/envs/figures.yaml").
 #   #
@@ -71,15 +71,17 @@ LABEL io.github.snakemake.conda_env_hash="d3ac4f34b874b4a1c92bfa2e23bb236c9fa649
 #     - r-ldlinkr
 #     - bioconductor-ensdb.hsapiens.v86
 #     - bioconductor-annotationhub
-#     # Fig. 1 layout
+#     # Fig. 1 layout, and fitting figures to the journal's print size
+#     # (scripts/util/fit_journal.R: typst, pdfinfo, pdftocairo)
 #     - typst
+#     - poppler
 #     # compiling oaqc in figures.post-deploy.sh
 #     - cxx-compiler
 #     - make
-RUN mkdir -p /conda-envs/ea3f31ab236339d4586f37013b407426
-COPY workflow/envs/figures.yaml /conda-envs/ea3f31ab236339d4586f37013b407426/environment.yaml
-COPY workflow/envs/figures.linux-64.pin.txt /conda-envs/ea3f31ab236339d4586f37013b407426/pin.txt
-COPY workflow/envs/figures.post-deploy.sh /conda-envs/ea3f31ab236339d4586f37013b407426/post-deploy.sh
+RUN mkdir -p /conda-envs/444d31012a000d8bef71d1fa3df7fb98
+COPY workflow/envs/figures.yaml /conda-envs/444d31012a000d8bef71d1fa3df7fb98/environment.yaml
+COPY workflow/envs/figures.linux-64.pin.txt /conda-envs/444d31012a000d8bef71d1fa3df7fb98/pin.txt
+COPY workflow/envs/figures.post-deploy.sh /conda-envs/444d31012a000d8bef71d1fa3df7fb98/post-deploy.sh
 # Conda environment:
 #   source: workflow/envs/scverse.yaml
 #   prefix: /conda-envs/92849e4d31ff556d5f4bc6bad124e02b
@@ -104,7 +106,7 @@ COPY workflow/envs/figures.post-deploy.sh /conda-envs/ea3f31ab236339d4586f37013b
 RUN mkdir -p /conda-envs/92849e4d31ff556d5f4bc6bad124e02b
 COPY workflow/envs/scverse.yaml /conda-envs/92849e4d31ff556d5f4bc6bad124e02b/environment.yaml
 
-RUN conda create --yes --prefix /conda-envs/ea3f31ab236339d4586f37013b407426 --file /conda-envs/ea3f31ab236339d4586f37013b407426/pin.txt && \
-    conda run --prefix /conda-envs/ea3f31ab236339d4586f37013b407426 bash /conda-envs/ea3f31ab236339d4586f37013b407426/post-deploy.sh && \
+RUN conda create --yes --prefix /conda-envs/444d31012a000d8bef71d1fa3df7fb98 --file /conda-envs/444d31012a000d8bef71d1fa3df7fb98/pin.txt && \
+    conda run --prefix /conda-envs/444d31012a000d8bef71d1fa3df7fb98 bash /conda-envs/444d31012a000d8bef71d1fa3df7fb98/post-deploy.sh && \
     conda env create --prefix /conda-envs/92849e4d31ff556d5f4bc6bad124e02b --file /conda-envs/92849e4d31ff556d5f4bc6bad124e02b/environment.yaml && \
     conda clean --all -y

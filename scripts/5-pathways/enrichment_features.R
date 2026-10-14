@@ -623,6 +623,8 @@ ggsave("figures/fig-e5.pdf",
        p_bip_pub, width = 9, height = 10, device = cairo_pdf, bg = "white")
 ggsave("figures/fig-e5.png",
        p_bip_pub, width = 9, height = 10, device = ragg::agg_png, dpi = 300, bg = "white")
+source("scripts/util/fit_journal.R")  # shrink to journal max size (180 x 225 mm)
+fit_journal_pdf("figures/fig-e5.pdf", png = "figures/fig-e5.png")
 
 # Supplementary: STRING PPI network highlighting MS-enriched terms
 p_ms_pub <- scale_layer_sizes(p_ms, point = 1.4, text = 1.45) +
@@ -640,6 +642,7 @@ ggsave("figures/fig-s12.pdf",
        p_ms_pub, width = 9, height = 8, device = cairo_pdf, bg = "white")
 ggsave("figures/fig-s12.png",
        p_ms_pub, width = 9, height = 8, device = ragg::agg_png, dpi = 300, bg = "white")
+fit_journal_pdf("figures/fig-s12.pdf", png = "figures/fig-s12.png")
 
 # get numbers
 df_enrich

@@ -153,4 +153,4 @@ ggsave("figures/fig-s16.pdf", plots,
 # write to supplementary files
 
 source("scripts/util/write_table.R")
-write_table(df_power, "otp_power", 15)
+write_table(df_power, "otp_power", 14)  # concordance by phase + power simulation

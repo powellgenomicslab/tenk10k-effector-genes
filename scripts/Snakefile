@@ -123,12 +123,13 @@ ITEMS = {
     "fig_e6": ("scDRS for Crohn's disease across all cell types", figs("e6")),
     "fig_e8": ("All 122 MR-supported target-indication pairs", figs("e8")),
     "fig_e9": ("GPX1: locus zoom and cross plots in CD4 TCM and cDC2", figs("e9")),
+    "fig_e10": ("IBDverse effector-gene enrichment by blood-cell fraction", figs("e10")),
     "fig_s1": ("MR associations across cell types: diseases", figs("s1")),
     "fig_s2": ("MR associations across cell types: biomarker traits", figs("s2")),
     "fig_s3": ("Associations vs tests per cell type", figs("s3")),
     "fig_s4": ("Cell-type-exclusive associations", figs("s4")),
-    "fig_s5": ("OneK1K CAD comparison: overlap", figs("s5")),
-    "fig_s6": ("OneK1K CAD comparison: effect sizes", figs("s6")),
+    "fig_s5": ("CAD MR gene P values, TenK10K vs Ray et al.", figs("s5")),
+    "fig_s6": ("CAD MR gene effects, TenK10K vs Ray et al.", figs("s6")),
     "fig_s7": ("FADS locus pleiotropy by cell type", figs("s7")),
     "fig_s8": ("MR-colocalisation overlap", figs("s8")),
     "fig_s9": ("MAGMA vs MR gene counts per trait", figs("s9")),
@@ -139,9 +140,11 @@ ITEMS = {
     "fig_s14": ("scDRS trait x cell type grid", figs("s14")),
     "fig_s16": ("Power projection for MoA-MR concordance", figs("s16")),
     "fig_s17": ("JAZF1 eQTL effects in cDC2 and naive CD4 T", figs("s17")),
-    "fig_s25": ("IBDverse effector-gene enrichment by cell type", figs("s25")),
-    "fig_s29": ("AIFI vs TenK10K cell counts", figs("s29")),
-    "fig_s30": ("Crohn's colon UMAP and major cell type matching (restricted)", panels(
+    "fig_s21": ("scDRS for Crohn's disease across two sampling strategies", figs("s21")),
+    "fig_s22": ("Cells enriched for Crohn's disease across two sampling strategies", figs("s22")),
+    "fig_s23": ("Cells sampled from AIFI and TenK10K for scDRS", figs("s23")),
+    "fig_s24": ("scDRS Z-scores, TenK10K vs AIFI", figs("s24")),
+    "fig_s25": ("Harmonised major cell types for the MR-DEG comparison (restricted)", panels(
         "8-crohns",
         *[f"umap_{n}.{e}" for n in ("original_annotation", "major_cell_types") for e in ("pdf", "png")],
     )),
@@ -157,9 +160,9 @@ ITEMS = {
     "tab_s10": ("scDeepID pathways", tabs("s10")),
     "tab_s11": ("Drug targets with OTP and MR support", tabs("s11")),
     "tab_s12": ("Target-indication support statistics", tabs("s12")),
-    "tab_s13": ("OT evidence scores by MR support", tabs("s13")),
-    "tab_s14": ("MR-supported target-indication pairs", tabs("s14")),
-    "tab_s15": ("Power projection", tabs("s15")),
+    "tab_s13": ("Drugs for MR-supported target-indication pairs", tabs("s13")),
+    "tab_s14": ("MoA-MR concordance and power", tabs("s14")),
+    "tab_s15": ("OT association scores by evidence source", tabs("s15")),
     "tab_s16": ("Crohn's disease effector genes, annotated", tabs("s16")),
     "tab_s17": ("Crohn's genes shared with immune diseases", tabs("s17")),
     "tab_s18": ("MR-DEG comparison", tabs("s18")),
@@ -167,15 +170,7 @@ ITEMS = {
     "tab_s20": ("IBDverse effector-gene enrichment", tabs("s20")),
     "tab_s21": ("Crohn's literature annotations", tabs("s21")),
 }
-RESTRICTED_ITEMS = {"fig_s30"}
-UNNUMBERED = [
-    "figures/unnumbered/scdrs_tenk10k_aifi_by_celltype.pdf",
-    "figures/unnumbered/scdrs_tenk10k_aifi_by_celltype.png",
-    "figures/unnumbered/scdrs_crohns_sampling_violin.pdf",
-    "figures/unnumbered/scdrs_crohns_sampling_violin.png",
-    "figures/unnumbered/scdrs_crohns_sampling_prop.pdf",
-    "figures/unnumbered/scdrs_crohns_sampling_prop.png",
-]
+RESTRICTED_ITEMS = {"fig_s25"}
 
 AVAILABLE = [k for k in ITEMS if RESTRICTED or k not in RESTRICTED_ITEMS]
 
@@ -184,7 +179,7 @@ def group(prefix):
     return [f for k in AVAILABLE if k.startswith(prefix) for f in ITEMS[k][1]]
 
 
-localrules: all, figs_m, figs_e, figs_s, tabs_s, unnumbered, targets, manifest, containerize
+localrules: all, figs_m, figs_e, figs_s, tabs_s, targets, manifest, containerize
 
 
 rule all:
@@ -210,11 +205,6 @@ rule figs_s:
 rule tabs_s:
     input:
         group("tab_s"),
-
-
-rule unnumbered:
-    input:
-        UNNUMBERED,
 
 
 for _item in AVAILABLE:
@@ -403,7 +393,7 @@ rule compare_ray_tenk10k:
         ext("resources/misc/onek1k_cad_mr_ray2025.txt", review=REVIEW_3P),
     output:
         figs("s5", "s6"),
-        panels("1-overview", "compare_ray_tenk10k_pval.pdf", "compare_ray_tenk10k_pval.png"),
+        panels("1-overview", "compare_ray_tenk10k_overlap.pdf", "compare_ray_tenk10k_overlap.png"),
     params:
         script="scripts/1-overview/compare_ray_tenk10k.R",
     log:
@@ -802,8 +792,7 @@ rule compare_scdrs_aifi:
         # produced by the main workflow from the AIFI atlas (see aifi_label_transfer)
         ext("results/aggregate/immune_health_atlas_annotated.scdrs.cell_type_stats.tsv"),
     output:
-        figs("s29"),
-        UNNUMBERED[:2],
+        figs("s23", "s24"),
     params:
         script="scripts/6-polygenic/scDRS/compare_scdrs_aifi.R",
     log:
@@ -817,15 +806,17 @@ rule compare_scdrs_aifi:
 rule scdrs_supp_sampling:
     input:
         SCDRS_STATS,
-        # Not in the bundle manifest: these paths (kept as in tenk10k-causal) do
-        # not match the current scDRS outputs, and the rule only makes uncited
-        # figures (make unnumbered).
-        "results/aggregate/tenk10k_phase1/scdrs.cell_score.tsv.parquet.gz",
-        "results/aggregate/tenk10k_phase1/scdrs.cell_mcp.tsv.parquet.gz",
-        "results/misc/tenk10k_prop_sample.crohns.cell_score.tsv.parquet.gz",
+        # NOTE: these paths are kept as in tenk10k-causal but do not match the
+        # current scDRS output names; check them on Gadi before depositing.
+        ext(
+            "results/aggregate/tenk10k_phase1/scdrs.cell_score.tsv.parquet.gz",
+            "results/aggregate/tenk10k_phase1/scdrs.cell_mcp.tsv.parquet.gz",
+            "results/misc/tenk10k_prop_sample.crohns.cell_score.tsv.parquet.gz",
+            review=REVIEW_CELL,
+        ),
         ext("metadata/cell.tsv"),
     output:
-        UNNUMBERED[2:],
+        figs("s21", "s22"),
     params:
         script="scripts/6-polygenic/scDRS/scdrs_supp_sampling.R",
     log:
@@ -881,8 +872,8 @@ rule otp_combined:
         ),
     output:
         OTP_CONCORDANCE,
-        figs("m5", "e8"),
-        tabs("s11", "s12", "s13", "s14"),
+        figs("m5"),
+        tabs("s11", "s12", "s13", "s15"),
     params:
         script="scripts/7-drug/otp_combined.R",
     log:
@@ -899,11 +890,37 @@ rule otp_power_projection:
         WRITE_TABLE,
     output:
         figs("s16"),
-        tabs("s15"),
+        tabs("s14"),
     params:
         script="scripts/7-drug/otp_power_projection.R",
     log:
         log("otp_power_projection"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule otp_ti_mr_all:
+    input:
+        PREPROCESS,
+        ext("metadata/otp.xlsx"),
+        ext(
+            *[
+                f"{OTP}/{f}"
+                for f in (
+                    "all_disease.tsv",
+                    "all_drug_evidence_chembl.tsv",
+                    "otp_assoc_overall.gz.parquet",
+                )
+            ]
+        ),
+    output:
+        figs("e8"),
+    params:
+        script="scripts/7-drug/otp_ti_mr_all.R",
+    log:
+        log("otp_ti_mr_all"),
     conda:
         ENV
     shell:
@@ -1079,7 +1096,7 @@ rule ibdverse_novelty:
         # from the TenK10K_causal_inference_vs_IBDverse submodule (summarise.r)
         ext("results/pi1_mr_novelty_results/tenk_not_novel_res_relative_celltype.tsv"),
     output:
-        figs("s25"),
+        figs("e10"),
     params:
         script="scripts/8-crohns/plot_figures/ibdverse_novelty_by_celltype.R",
     log:
@@ -1186,7 +1203,7 @@ if RESTRICTED:
         input:
             CD_MAJOR_H5AD,
         output:
-            ITEMS["fig_s30"][1],
+            ITEMS["fig_s25"][1],
         log:
             log("crohns_umap"),
         conda:

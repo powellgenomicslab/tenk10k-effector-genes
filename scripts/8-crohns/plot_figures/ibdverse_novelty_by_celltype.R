@@ -13,7 +13,7 @@ library(scales)
 
 input.dir <- "results/pi1_mr_novelty_results"
 out.dir <- "figures"
-out.name <- "fig-s25"
+out.name <- "fig-e10"
 
 # text/point sizes (original figure: label = 6, point = 4, strip = 7, base = 11, 9 x 6 in)
 sz <- list(label = 9, point = 5, strip = 10, base = 13, width = 12, height = 9)
@@ -80,3 +80,5 @@ ggsave(file.path(out.dir, paste0(out.name, ".pdf")), plots_or_celltype,
        width = sz$width, height = sz$height, device = cairo_pdf, bg = "white")
 ggsave(file.path(out.dir, paste0(out.name, ".png")), plots_or_celltype,
        width = sz$width, height = sz$height, device = ragg::agg_png, dpi = 300, bg = "white")
+source("scripts/util/fit_journal.R")  # shrink to journal max size (180 x 225 mm)
+fit_journal_pdf(file.path(out.dir, paste0(out.name, ".pdf")), png = file.path(out.dir, paste0(out.name, ".png")))

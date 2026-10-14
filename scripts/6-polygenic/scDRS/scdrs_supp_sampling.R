@@ -120,22 +120,23 @@ df_crohns_sum <- df_crohns %>%
     )
 )
 
-# Supplementary Figures (numbers not cited in the manuscript text)
-dir.create("figures/unnumbered", recursive = TRUE, showWarnings = FALSE)
-ggsave("figures/unnumbered/scdrs_crohns_sampling_violin.png",
+# Supplementary Figures 21 (scDRS distribution) and 22 (proportion of enriched
+# cells) for Crohn's disease across the two sampling strategies
+dir.create("figures", recursive = TRUE, showWarnings = FALSE)
+ggsave("figures/fig-s21.png",
     p_violin,
     width = 10, height = 8, device = agg_png
 )
-ggsave("figures/unnumbered/scdrs_crohns_sampling_violin.pdf",
+ggsave("figures/fig-s21.pdf",
     p_violin,
     width = 10, height = 8, device = cairo_pdf
 )
 
-ggsave("figures/unnumbered/scdrs_crohns_sampling_prop.png",
+ggsave("figures/fig-s22.png",
     p_compare_prop,
     width = 10, height = 8, device = agg_png
 )
-ggsave("figures/unnumbered/scdrs_crohns_sampling_prop.pdf",
+ggsave("figures/fig-s22.pdf",
     p_compare_prop,
     width = 10, height = 8, device = cairo_pdf
 )

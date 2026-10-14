@@ -269,3 +269,5 @@ ggsave("figures/fig-e2.pdf",
        p_evidence_by_cat,
        device = cairo_pdf,
        width = 8, height = 6, units = "in")
+source("scripts/util/fit_journal.R")  # shrink to journal max size (180 x 225 mm)
+fit_journal_pdf("figures/fig-e2.pdf", png = "figures/fig-e2.png")

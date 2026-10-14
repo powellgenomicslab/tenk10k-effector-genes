@@ -190,19 +190,20 @@ p_pval <- ggplot(df_shared_genes[overlap != "Neither"],
 dir.create("figures", showWarnings = FALSE, recursive = TRUE)
 dir.create("figures/panels/1-overview", showWarnings = FALSE, recursive = TRUE)
 
-# Supplementary Figures 5-6 (OneK1K CAD comparison); panel-to-figure mapping is provisional
-ggsave("figures/fig-s5.png", p_overlap,
-  device = agg_png, width = 7, height = 5, scaling = 0.8)
-ggsave("figures/fig-s5.pdf", p_overlap,
-  device = cairo_pdf, width = 7 / 0.8, height = 5 / 0.8)
+# Supplementary Figure 5: MR gene P values, TenK10K vs Ray et al.
+ggsave("figures/fig-s5.png", p_pval,
+  device = agg_png, width = 8, height = 6, scaling = 1.2)
+ggsave("figures/fig-s5.pdf", p_pval,
+  device = cairo_pdf, width = 8 / 1.2, height = 6 / 1.2)
 
+# Supplementary Figure 6: MR effect estimates, TenK10K vs Ray et al.
 ggsave("figures/fig-s6.png", p_scatter,
   device = agg_png, width = 8, height = 6, scaling = 1.2)
 ggsave("figures/fig-s6.pdf", p_scatter,
   device = cairo_pdf, width = 8 / 1.2, height = 6 / 1.2)
 
-# -log10 P comparison: not yet assigned to a manuscript figure
-ggsave("figures/panels/1-overview/compare_ray_tenk10k_pval.png", p_pval,
-  device = agg_png, width = 8, height = 6, scaling = 1.2)
-ggsave("figures/panels/1-overview/compare_ray_tenk10k_pval.pdf", p_pval,
-  device = cairo_pdf, width = 8 / 1.2, height = 6 / 1.2)
+# overlap of MR genes by cell type: not a manuscript figure
+ggsave("figures/panels/1-overview/compare_ray_tenk10k_overlap.png", p_overlap,
+  device = agg_png, width = 7, height = 5, scaling = 0.8)
+ggsave("figures/panels/1-overview/compare_ray_tenk10k_overlap.pdf", p_overlap,
+  device = cairo_pdf, width = 7 / 0.8, height = 5 / 0.8)
