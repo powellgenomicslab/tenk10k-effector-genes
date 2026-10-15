@@ -72,7 +72,7 @@ df_n_label <- df_power |>
   distinct(phase, multiplier_label, n_concordant_proj, n_proj) |>
   mutate(label = paste0(n_concordant_proj, "/", n_proj))
 
-(p_power <- df_power |>
+p_power <- df_power |>
   # pivot_longer(c(power_binomial, power_permutation), names_to = "method", values_to = "power") |>
   # mutate(method = recode(method,
   #                         power_binomial = "Binomial test",
@@ -101,14 +101,13 @@ df_n_label <- df_power |>
         panel.grid.minor = element_blank(),
         panel.grid.major.x = element_blank(),
         legend.position = "none")
-)
 # ggsave("figures/strict/otp/otp_power_projection.png", p_power,
 #        device = agg_png, bg = "white", width = 9, height = 3.8, dpi = 300, scaling = 1.2)
 
 # supplementary figure: projected -log10(P), current sample size highlighted.
 # Permutation P is the median across the simulated datasets above, since a
 # single permutation p-value is itself a random draw at a given n and rate.
-(p_pvalue <- df_power |>
+p_pvalue <- df_power |>
   # pivot_longer(c(p_binomial, p_permutation), names_to = "method", values_to = "p_value") |>
   # mutate(method = recode(method,
   #                         p_binomial = "Binomial test",
@@ -137,7 +136,6 @@ df_n_label <- df_power |>
         panel.grid.minor = element_blank(),
         panel.grid.major.x = element_blank(),
         legend.position = "none")
-)
 
 plots <- (p_power / p_pvalue) +
   plot_layout(guide = "collect") &

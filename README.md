@@ -53,8 +53,10 @@ make data
 make fig-m2
 ```
 
-`make all` builds every figure and table (add `CORES=4` to run four scripts at
-once), and `make list` shows each target with its caption. The first build
+`make all` builds every figure and table, and `make list` shows each target
+with its caption. To run several scripts at once, add `CORES=N`. Each script
+can use up to about 16 GB of memory, so choose N no larger than your memory in
+GB divided by 16 (for example `CORES=4` with 64 GB). The first build
 installs a pinned R 4.4.1 conda environment, which takes several minutes;
 later builds reuse it.
 
@@ -89,12 +91,12 @@ not meant for heavy work. Split the work in two:
    make pull          # container image only; runs no scripts
    ```
 
-2. **Build** in a batch or interactive job on a compute node, with at least
-   32 GB of memory:
+2. **Build** in a batch or interactive job on a compute node, with about
+   16 GB of memory per core (here 4 cores and 64 GB):
 
    ```bash
    conda activate snakemake
-   make all SDM="conda apptainer" CORES=8
+   make all SDM="conda apptainer" CORES=4
    ```
 
 If you set `APPTAINER_CACHEDIR`, use the same value in both steps, so that the
@@ -114,7 +116,7 @@ directory; if your data are linked from elsewhere (see `make link-data` under
 | `make figs-m`, `figs-e`, `figs-s`, `tabs-s` | All items of one kind |
 | `make list` | Every target, with its caption |
 
-Dependencies between scripts are resolved automatically. For example, `make fig-m2` first builds the panels that Fig. 2 is assembled from. To build several items in parallel, add `CORES=4`.
+Dependencies between scripts are resolved automatically. For example, `make fig-m2` first builds the panels that Fig. 2 is assembled from. To build several items in parallel, add `CORES=N`, allowing about 16 GB of memory per core.
 
 ### Display items by Results subsection
 
