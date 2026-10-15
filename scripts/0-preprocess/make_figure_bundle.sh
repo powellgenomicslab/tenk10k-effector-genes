@@ -57,7 +57,7 @@ if [[ "$include_review" != "--include-review" ]]; then
 else
     cp INVENTORY.tsv INVENTORY.bundle.tsv
 fi
-tar -czhf "$out" --transform "s|^${readme}\$|README.md|; s|^INVENTORY.bundle.tsv\$|INVENTORY.tsv|" \
+tar -czhf "$out" --transform "s|^${readme}\$|README.md|" --transform "s|^INVENTORY.bundle.tsv\$|INVENTORY.tsv|" \
     "$readme" INVENTORY.bundle.tsv figure_inputs.sha256 "${files[@]}"
 rm figure_inputs.sha256 INVENTORY.bundle.tsv
 echo "wrote $out with ${#files[@]} file(s); $skipped REVIEW file(s) skipped"
