@@ -5,6 +5,7 @@
 #   make fig-s3        Supplementary Figure 3     -> figures/fig-s3.{pdf,png}
 #   make tab-s3        Supplementary Table 3      -> tables/tab-s3.tsv
 #   make figs-m | figs-e | figs-s | tabs-s | all
+#   make figures/panels/<folder>/<file>   one output file, e.g. a panel
 #   make list          every target with its caption
 #   make pull          download the container image only (needs internet)
 #   make inventory     list the bundle files with checksums -> INVENTORY.tsv
@@ -26,10 +27,10 @@ SMK = $(SNAKEMAKE) --snakefile scripts/Snakefile --workflow-profile none \
       --cores $(CORES) $(if $(SDM),--sdm $(SDM)) $(ARGS) --
 
 .PHONY: help list all figs-m figs-e figs-s tabs-s data link-data \
-        manifest inventory bundle env lock dockerfile dry-run pull
+        manifest inventory bundle env lock dockerfile dry-run pull FORCE
 
 help:
-	@sed -n '2,20p' Makefile | sed 's/^# \{0,1\}//'
+	@sed -n '2,21p' Makefile | sed 's/^# \{0,1\}//'
 
 list:
 	@$(SNAKEMAKE) --snakefile scripts/Snakefile --workflow-profile none --cores 1 \
@@ -40,6 +41,14 @@ all figs-m figs-e figs-s tabs-s:
 
 fig-% tab-%:
 	$(SMK) $(subst -,_,$@)
+
+# Any output file by path, e.g. a panel: make figures/panels/1-overview/panel_b.svg
+# FORCE makes make pass the request on even if the file exists; Snakemake then
+# decides whether it is up to date.
+figures/% tables/%: FORCE
+	$(SMK) $@
+
+FORCE:
 
 dry-run:
 	$(MAKE) all ARGS=--dry-run
