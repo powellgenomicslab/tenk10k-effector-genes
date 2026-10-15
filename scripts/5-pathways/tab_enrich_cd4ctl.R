@@ -16,7 +16,7 @@ df_trait_map <- fread("metadata/trait.tsv") |>
   filter(include) |>
   setDT()
 
-enrich <- "string_rank_api"
+enrich <- "string_rank_api.trimmed"
 biosample <- "CD4_CTL"
 enrichment_file <- glue::glue("results/enrichment/tenk10k_phase1_mr_strict/mr_strict/{biosample}.{enrich}.tsv")
 df_enrich <- fread(enrichment_file)

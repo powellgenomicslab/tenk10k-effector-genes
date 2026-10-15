@@ -34,9 +34,9 @@ results/aggregate/tenk10k_phase1.scdrs.cell_type_stats.tsv
 results/aggregate/tenk10k_phase1.scdrs.cell_type_top.tsv
 results/aggregate/tenk10k_phase1/scdrs.cell_mcp.tsv.parquet.gz	# REVIEW: cell-level scDRS scores; confirm cell-level data may be shared
 results/aggregate/tenk10k_phase1/scdrs.cell_score.tsv.parquet.gz	# REVIEW: cell-level scDRS scores; confirm cell-level data may be shared
-results/enrichment/tenk10k_phase1_mr_strict/mr_strict/CD4_CTL.string_rank_api.bipartite.tsv
-results/enrichment/tenk10k_phase1_mr_strict/mr_strict/CD4_CTL.string_rank_api.ppi_network.tsv
-results/enrichment/tenk10k_phase1_mr_strict/mr_strict/CD4_CTL.string_rank_api.tsv
+results/enrichment/tenk10k_phase1_mr_strict/mr_strict/CD4_CTL.string_rank_api.trimmed.bipartite.tsv
+results/enrichment/tenk10k_phase1_mr_strict/mr_strict/CD4_CTL.string_rank_api.trimmed.ppi_network.tsv
+results/enrichment/tenk10k_phase1_mr_strict/mr_strict/CD4_CTL.string_rank_api.trimmed.tsv
 results/gwas_locus/eczema/tenk10k_phase1/12_6339001_6631955.gwas.tsv
 results/gwas_locus/eczema/tenk10k_phase1/12_6339001_6631955.ld
 results/gwas_locus/sle/tenk10k_phase1/4_101311286_102174812.gwas.tsv

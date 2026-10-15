@@ -59,10 +59,13 @@ targets.
 ## Licences
 
 Each file's licence is given in the `licence` column of `INVENTORY.tsv`.
-Files produced by this study are released under CC BY 4.0. Files derived from
-ChEMBL are under CC BY-SA 3.0. Open Targets Platform outputs are under CC0.
-Third-party tables and summary-statistics excerpts keep the terms of their
-sources, and should be cited as given in the `source` column.
+The archive is released under CC BY-SA 4.0, which also covers the files
+produced by this study. Files derived from ChEMBL are under CC BY-SA 3.0.
+Open Targets Platform outputs are under CC0. Third-party tables and
+summary-statistics excerpts keep the terms of their sources, and should be
+cited as given in the `source` column. The STRING enrichment results include
+KEGG pathway terms (rows with source `KEGG`), which remain under KEGG's terms
+(<https://www.kegg.jp/kegg/legal.html>).
 
 ## Citation
 

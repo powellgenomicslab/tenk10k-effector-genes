@@ -81,7 +81,7 @@ gene_summary[, n_effective_phenotypes := sapply(phenotypes, function(p) {
 })]
 
 
-enrich <- "string_rank_api"
+enrich <- "string_rank_api.trimmed"
 biosample <- "CD4_CTL"
 # enrichment_file <- glue::glue("results/aggregate/enrichment/tenk10k_phase1_mr_strict.mr_strict.{enrich}.tsv.gz")
 enrichment_file <- glue::glue("results/enrichment/tenk10k_phase1_mr_strict/mr_strict/{biosample}.{enrich}.tsv")

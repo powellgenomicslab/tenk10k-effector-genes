@@ -4,8 +4,8 @@ These scripts summarise the rank-based STRING functional enrichment of MR result
 
 | Script | Manuscript item(s) | Make target(s) | Key inputs | Outputs |
 |---|---|---|---|---|
-| `enrichment_features.R` | Extended Data Fig. 5; Supplementary Figs 12 and 13 | `make fig-e5`, `make fig-s12`, `make fig-s13` | `results/preprocessed/tenk10k_phase1.v5.parquet.gz`; `metadata/{trait.tsv,cell.tsv,trait_category.tsv,gencode.v44.gene_type.tsv.gz}`; `results/rrho/spearman_corr_all_trait_combos_strictmr.tsv`; `results/enrichment/tenk10k_phase1_mr_strict/mr_strict/CD4_CTL.string_rank_api{.tsv,.ppi_network.tsv,.bipartite.tsv}`; `resources/enrichment/string_id_map.tsv`; `resources/misc/HOUNKPE_HOUSEKEEPING_GENES.v2026.1.Hs.tsv` | `figures/fig-e5.{png,pdf}`, `figures/fig-s12.{png,pdf}`, `figures/fig-s13.{png,pdf}` |
-| `tab_enrich_cd4ctl.R` | Supplementary Table 8 | `make tab-s8` | `metadata/trait.tsv`; `results/enrichment/tenk10k_phase1_mr_strict/mr_strict/CD4_CTL.string_rank_api.tsv`; `metadata/table_column_names.xlsx` | `tables/tab-s8.tsv` |
+| `enrichment_features.R` | Extended Data Fig. 5; Supplementary Figs 12 and 13 | `make fig-e5`, `make fig-s12`, `make fig-s13` | `results/preprocessed/tenk10k_phase1.v5.parquet.gz`; `metadata/{trait.tsv,cell.tsv,trait_category.tsv,gencode.v44.gene_type.tsv.gz}`; `results/rrho/spearman_corr_all_trait_combos_strictmr.tsv`; `results/enrichment/tenk10k_phase1_mr_strict/mr_strict/CD4_CTL.string_rank_api.trimmed{.tsv,.ppi_network.tsv,.bipartite.tsv}`; `resources/enrichment/string_id_map.tsv`; `resources/misc/HOUNKPE_HOUSEKEEPING_GENES.v2026.1.Hs.tsv` | `figures/fig-e5.{png,pdf}`, `figures/fig-s12.{png,pdf}`, `figures/fig-s13.{png,pdf}` |
+| `tab_enrich_cd4ctl.R` | Supplementary Table 8 | `make tab-s8` | `metadata/trait.tsv`; `results/enrichment/tenk10k_phase1_mr_strict/mr_strict/CD4_CTL.string_rank_api.trimmed.tsv`; `metadata/table_column_names.xlsx` | `tables/tab-s8.tsv` |
 
 ## Run order
 

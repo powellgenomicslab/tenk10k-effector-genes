@@ -770,7 +770,7 @@ rule tab_mr_overlap:
 
 # --- 5-pathways -----------------------------------------------------------------
 
-STRING_CD4CTL = "results/enrichment/tenk10k_phase1_mr_strict/mr_strict/CD4_CTL.string_rank_api"
+STRING_CD4CTL = "results/enrichment/tenk10k_phase1_mr_strict/mr_strict/CD4_CTL.string_rank_api.trimmed"
 
 
 rule enrichment_features:
