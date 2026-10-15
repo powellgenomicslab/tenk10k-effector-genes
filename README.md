@@ -34,18 +34,33 @@ results. Its two parts are:
 
 ## Reproducing the display items
 
-**Requirements:** [conda](https://github.com/conda-forge/miniforge) and [Snakemake](https://snakemake.readthedocs.io) ≥ 9 (tested with 9.27), on Linux (x86-64) or macOS (Apple Silicon). Everything else is installed automatically.
+### Quick start
+
+You need [conda](https://github.com/conda-forge/miniforge) and, on Linux,
+[Apptainer](https://apptainer.org) (most HPC systems provide it, often as
+`module load apptainer`). Allow 32 GB of memory.
 
 ```bash
+# 1. Install Snakemake (once), and activate it whenever you run make
+conda create -n snakemake -c conda-forge -c bioconda 'snakemake>=9'
+conda activate snakemake
+
+# 2. Get the code and the data (once)
 git clone https://github.com/powellgenomicslab/tenk10k-effector-genes.git
 cd tenk10k-effector-genes
+make data
 
-make data        # download the summary statistics (once)
-make fig-m2      # rebuild Figure 2  -> figures/fig-m2.pdf, figures/fig-m2.png
-make all         # rebuild every figure and table
+# 3. Build a figure inside the container -> figures/fig-m2.pdf, figures/fig-m2.png
+make fig-m2 SDM="conda apptainer"
 ```
 
-The first build installs a pinned R 4.4.1 environment, which takes a few minutes.
+The first build downloads the container image (1.5 GB); later builds reuse it
+and run offline. `make all SDM="conda apptainer" CORES=4` builds every figure
+and table, and `make list` shows each target with its caption.
+
+Without Apptainer (for example on macOS), leave out `SDM=...`: the first build
+then installs a pinned R 4.4.1 conda environment instead, which takes several
+minutes.
 
 > [!NOTE]
 > The summary-statistics download will be released with the published
@@ -55,6 +70,14 @@ The first build installs a pinned R 4.4.1 environment, which takes a few minutes
 > cell-level scDRS scores, in-sample LD and third-party tables whose release
 > is under review. Items that depend on a file left out of the download will
 > not build from it.
+
+**On an HPC cluster**, compute nodes usually have no internet access. Download
+the image first with `make pull` on a node that has it (on NCI Gadi, the
+`copyq` queue), then run the builds on compute nodes. If you set
+`APPTAINER_CACHEDIR`, use the same value for both, so that the build finds the
+downloaded image. If your inputs are links to another filesystem (see
+`make link-data` under [Options](#options)), mount it with
+`ARGS='--apptainer-args "-B /g/data"'`.
 
 **Targets:**
 
@@ -91,8 +114,8 @@ Some items are not produced by code in this repository:
 
 ### Options
 
-- **Container.** Once the container image is published, `make fig-m2 SDM="conda apptainer"` will run inside it instead of building the environment locally. Apptainer is available on most HPC systems. The image is built from the `Dockerfile`.
 - **Your own software.** `make fig-m2 SDM=` uses the R and Python already on your `PATH`. The packages needed are listed in `workflow/envs/figures.yaml`.
+- **Rebuilding the container image.** The image is built from the `Dockerfile`, which `make dockerfile` regenerates from the conda environments. Publish each rebuild under a new tag and update `container:` in `config/figures.yaml`: Snakemake caches images under a name derived from the tag, so a rebuilt image pushed under an existing tag is ignored wherever the old one has been downloaded.
 - **Existing results tree.** If you already have the results (for example on NCI Gadi), run `make link-data DATA_DIR=/path/to/results/root` instead of `make data`. It links each input file listed in `config/figure_inputs.txt` and does not modify the source.
 - **Raw-data steps.** Two kinds of step read individual-level data, which is not shared:
   - the LD calculations behind the GPX1 and JAZF1 locus plots;

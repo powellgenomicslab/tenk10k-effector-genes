@@ -6,14 +6,15 @@
 #   make tab-s3        Supplementary Table 3      -> tables/tab-s3.tsv
 #   make figs-m | figs-e | figs-s | tabs-s | all
 #   make list          every target with its caption
+#   make pull          download the container image only (needs internet)
 #
 # Inputs: `make data` downloads the public summary-statistics bundle, or
 # `make link-data DATA_DIR=/path/to/tenk10k-causal` links the files listed in
 # config/figure_inputs.txt from an existing results tree.
 #
 # Software: SDM=conda (default) builds the pinned conda environment
-# (workflow/envs/figures.<platform>.pin.txt); once the container image is
-# published, SDM="conda apptainer" runs inside it; SDM= uses software on PATH.
+# (workflow/envs/figures.<platform>.pin.txt); SDM="conda apptainer" runs
+# inside the container image; SDM= uses software on PATH.
 
 SNAKEMAKE ?= snakemake
 CORES     ?= 1
@@ -23,10 +24,10 @@ SMK = $(SNAKEMAKE) --snakefile scripts/Snakefile --workflow-profile none \
       --cores $(CORES) $(if $(SDM),--sdm $(SDM)) $(ARGS) --
 
 .PHONY: help list all figs-m figs-e figs-s tabs-s data link-data \
-        manifest env lock dockerfile dry-run
+        manifest env lock dockerfile dry-run pull
 
 help:
-	@sed -n '2,17p' Makefile | sed 's/^# \{0,1\}//'
+	@sed -n '2,18p' Makefile | sed 's/^# \{0,1\}//'
 
 list:
 	@$(SNAKEMAKE) --snakefile scripts/Snakefile --workflow-profile none --cores 1 \
@@ -40,6 +41,17 @@ fig-% tab-%:
 
 dry-run:
 	$(MAKE) all ARGS=--dry-run
+
+# Download the container image to the file Snakemake looks for (the MD5 of its
+# URL, under APPTAINER_CACHEDIR or .snakemake/singularity), so that builds can
+# then run on nodes without internet access.
+IMAGE = $(shell sed -n 's/^container: *"\(.*\)"/\1/p' config/figures.yaml)
+pull:
+	@dir="$${APPTAINER_CACHEDIR:-.snakemake/singularity}"; \
+	name="$$(printf %s '$(IMAGE)' | md5sum | cut -c1-32).simg"; \
+	mkdir -p "$$dir"; \
+	if [ -e "$$dir/$$name" ]; then echo "$$dir/$$name is already present"; \
+	else cd "$$dir" && apptainer pull --name "$$name" '$(IMAGE)'; fi
 
 data:
 	$(SMK) download_inputs
