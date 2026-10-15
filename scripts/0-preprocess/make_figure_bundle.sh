@@ -45,7 +45,8 @@ readme="scripts/0-preprocess/BUNDLE_README.md"
 
 shasum -a 256 "${files[@]}" > figure_inputs.sha256
 # the inventory must list exactly the bundled files, with the same checksums
-if ! diff <(awk '{print $2 "\t" $1}' figure_inputs.sha256 | sort) \
+# shasum writes "<hash>  <path>"; the path may contain spaces
+if ! diff <(awk '{print substr($0, length($1) + 3) "\t" $1}' figure_inputs.sha256 | sort) \
           <(awk -F'\t' -v inc="$include_review" 'NR > 1 && (inc == "--include-review" || $9 != "yes") {print $1 "\t" $3}' INVENTORY.tsv | sort) >&2; then
     echo "INVENTORY.tsv does not match the files being bundled; rerun make inventory" >&2
     rm figure_inputs.sha256
