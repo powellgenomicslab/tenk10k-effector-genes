@@ -153,9 +153,12 @@ snakemake --snakefile workflow/snakefile --workflow-profile none --list-rules
 
 ## Data Availability
 
-The summary statistics needed to rebuild the display items will be deposited on
-Zenodo / Hugging Face following manuscript publication; `make data` downloads
-them. The sc-eQTL summary statistics are released separately as described in the main [TenK10K phase 1 sc-eQTL mapping study (Cuomo et al.)](https://www.medrxiv.org/content/10.1101/2025.03.20.25324352v2).
+The data needed to rebuild the display items will be deposited on Zenodo as a
+dataset with its own DOI, separate from this code's release, following
+manuscript publication. `make data` downloads the archive and checks every file
+against its checksum. The archive's `INVENTORY.tsv` lists each file with its
+source and licence. [`RELEASING.md`](RELEASING.md) describes how the code and
+data releases are linked. The sc-eQTL summary statistics are released separately as described in the main [TenK10K phase 1 sc-eQTL mapping study (Cuomo et al.)](https://www.medrxiv.org/content/10.1101/2025.03.20.25324352v2).
 
 Not shared:
 - Individual-level single-cell expression and genotypes of the TenK10K donors
