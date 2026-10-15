@@ -26,7 +26,7 @@ tar -xzf "$tmp/bundle.tar.gz" -C "$tmp/unpacked"
 
 (cd "$tmp/unpacked" && shasum -a 256 -c figure_inputs.sha256)
 
-(cd "$tmp/unpacked" && find results resources -type f 2>/dev/null) | while read -r f; do
+(cd "$tmp/unpacked" && find results resources -type f 2>/dev/null || true) | while read -r f; do
     mkdir -p "$(dirname "$f")"
     cp "$tmp/unpacked/$f" "$f"
 done
