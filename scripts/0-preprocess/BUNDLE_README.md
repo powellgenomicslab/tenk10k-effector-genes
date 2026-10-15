@@ -47,7 +47,9 @@ targets.
 
 - Individual-level single-cell expression data and genotypes of the TenK10K
   donors. The LD values in `*.ld` files and in the locus objects are r²
-  statistics computed from the genotypes; no genotypes are included.
+  statistics computed from the genotypes; no genotypes are included. In the
+  cell-level scDRS files, each cell ID is the 10x barcode followed by an
+  anonymous code in place of the sequencing pool.
 - Full GWAS and eQTL summary statistics. These are available from their
   original sources (see `INVENTORY.tsv`). The TenK10K sc-eQTL summary
   statistics are released with Cuomo et al. 2025

@@ -28,10 +28,10 @@ df_stats <- fread("results/aggregate/tenk10k_phase1.scdrs.cell_type_stats.tsv") 
   filter(phenotype %in% df_trait_map$trait_id)
 df_top <- fread("results/aggregate/tenk10k_phase1.scdrs.cell_type_top.tsv")
 
-df_cells <- read_parquet("results/aggregate/tenk10k_phase1.scdrs.cell_score.tsv.parquet.gz")
+df_cells <- read_parquet("results/aggregate/tenk10k_phase1.scdrs.cell_score.anon.parquet.gz")
 
 # get cell mcp value
-df_mcp <- read_parquet("results/aggregate/tenk10k_phase1.scdrs.cell_mcp.tsv.parquet.gz") %>% 
+df_mcp <- read_parquet("results/aggregate/tenk10k_phase1.scdrs.cell_mcp.anon.parquet.gz") %>% 
   pivot_longer(any_of(df_trait_map$trait_id), names_to = "phenotype", values_to = "assoc_mcp") %>% 
   setDT()
 

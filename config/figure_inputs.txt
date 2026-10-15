@@ -28,12 +28,10 @@ results/aggregate/coloc/tenk10k_phase1.mvcoloc.parquet.gz
 results/aggregate/eqtlgen2020.msmr.parquet.gz
 results/aggregate/immune_health_atlas_annotated.scdrs.cell_type_stats.tsv
 results/aggregate/tenk10k_phase1.magma.gz.parquet
-results/aggregate/tenk10k_phase1.scdrs.cell_mcp.tsv.parquet.gz	# REVIEW: cell-level scDRS scores; confirm cell-level data may be shared
-results/aggregate/tenk10k_phase1.scdrs.cell_score.tsv.parquet.gz	# REVIEW: cell-level scDRS scores; confirm cell-level data may be shared
+results/aggregate/tenk10k_phase1.scdrs.cell_mcp.anon.parquet.gz
+results/aggregate/tenk10k_phase1.scdrs.cell_score.anon.parquet.gz
 results/aggregate/tenk10k_phase1.scdrs.cell_type_stats.tsv
 results/aggregate/tenk10k_phase1.scdrs.cell_type_top.tsv
-results/aggregate/tenk10k_phase1/scdrs.cell_mcp.tsv.parquet.gz	# REVIEW: cell-level scDRS scores; confirm cell-level data may be shared
-results/aggregate/tenk10k_phase1/scdrs.cell_score.tsv.parquet.gz	# REVIEW: cell-level scDRS scores; confirm cell-level data may be shared
 results/enrichment/tenk10k_phase1_mr_strict/mr_strict/CD4_CTL.string_rank_api.trimmed.bipartite.tsv
 results/enrichment/tenk10k_phase1_mr_strict/mr_strict/CD4_CTL.string_rank_api.trimmed.ppi_network.tsv
 results/enrichment/tenk10k_phase1_mr_strict/mr_strict/CD4_CTL.string_rank_api.trimmed.tsv
@@ -41,7 +39,7 @@ results/gwas_locus/eczema/tenk10k_phase1/12_6339001_6631955.gwas.tsv
 results/gwas_locus/eczema/tenk10k_phase1/12_6339001_6631955.ld
 results/gwas_locus/sle/tenk10k_phase1/4_101311286_102174812.gwas.tsv
 results/gwas_locus/sle/tenk10k_phase1/4_101311286_102174812.ld
-results/misc/tenk10k_prop_sample.crohns.cell_score.tsv.parquet.gz	# REVIEW: cell-level scDRS scores; confirm cell-level data may be shared
+results/misc/tenk10k_prop_sample.crohns.cell_score.anon.parquet.gz
 results/otp/26.03/all_disease.tsv
 results/otp/26.03/all_drug_evidence_chembl.tsv
 results/otp/26.03/all_drug_mechanism_chembl.tsv

@@ -16,8 +16,8 @@ df_cell_map <- fread("metadata/cell.tsv") %>%
 
 df_stats <- fread("results/aggregate/tenk10k_phase1.scdrs.cell_type_stats.tsv")
 df_top <- fread("results/aggregate/tenk10k_phase1.scdrs.cell_type_top.tsv")
-df_cells <- read_parquet("results/aggregate/tenk10k_phase1/scdrs.cell_score.tsv.parquet.gz")
-df_mcp <- read_parquet("results/aggregate/tenk10k_phase1/scdrs.cell_mcp.tsv.parquet.gz")
+df_cells <- read_parquet("results/aggregate/tenk10k_phase1.scdrs.cell_score.anon.parquet.gz")
+df_mcp <- read_parquet("results/aggregate/tenk10k_phase1.scdrs.cell_mcp.anon.parquet.gz")
 
 setDT(df_cells)
 setDT(df_mcp)
@@ -35,7 +35,7 @@ df_cell_crohn <- inner_join(
     df_mcp %>% select(index, cell_type, mc_pval = crohns)
 )
 
-df_cell_crohn2 <- read_parquet("results/misc/tenk10k_prop_sample.crohns.cell_score.tsv.parquet.gz")
+df_cell_crohn2 <- read_parquet("results/misc/tenk10k_prop_sample.crohns.cell_score.anon.parquet.gz")
 
 df_crohns <- bind_rows(
     list(
