@@ -142,3 +142,6 @@ tables/
 
 # default R graphics device output from scripts run non-interactively
 Rplots.pdf
+
+# caches written by programs run in the container (its home is the repository)
+.cache/

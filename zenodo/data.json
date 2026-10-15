@@ -1,0 +1,15 @@
+{
+  "title": "TenK10K Phase 1 effector genes: inputs for the figures and tables",
+  "upload_type": "dataset",
+  "description": "<p>Summary-level data needed to rebuild every figure and supplementary table of <em>Single-cell genetics identifies cell type-specific causal mechanisms in complex traits and diseases</em> (medRxiv doi:10.1101/2025.08.28.25334614) with the companion code release (<code>make data</code> downloads and verifies this record). INVENTORY.tsv lists each file with its size, SHA-256, the display items that use it, its source and its licence. No individual-level data or genotypes are included; cell-level scDRS files carry anonymised cell identifiers.</p>",
+  "creators": [
+    {"name": "TODO: Family, Given", "orcid": "TODO", "affiliation": "TODO"}
+  ],
+  "license": "cc-by-sa-4.0",
+  "keywords": ["single-cell eQTL", "Mendelian randomisation", "effector genes", "colocalisation", "scDRS", "TenK10K"],
+  "related_identifiers": [
+    {"identifier": "10.1101/2025.08.28.25334614", "relation": "isSupplementTo", "resource_type": "publication-preprint", "scheme": "doi"},
+    {"identifier": "TODO: code release DOI", "relation": "isSupplementTo", "resource_type": "software", "scheme": "doi"},
+    {"identifier": "https://github.com/powellgenomicslab/tenk10k-effector-genes/tree/TODO-tag", "relation": "isSupplementTo", "resource_type": "software", "scheme": "url"}
+  ]
+}

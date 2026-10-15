@@ -5,7 +5,8 @@
 container: "docker://ghcr.io/powellgenomicslab/tenk10k-effector-genes:v4.1"
 
 # Public bundle of summary-level inputs (Zenodo / Hugging Face). Placeholder
-# until the bundle is deposited; `make data` downloads and verifies it.
+# until the bundle is deposited; `make data` downloads and verifies it. Set to
+# the Zenodo data record when releasing (see RELEASING.md).
 bundle_url: "https://zenodo.org/records/TODO/files/tenk10k_figure_inputs.tar.gz"
 
 # true only where the raw single-cell data and genotypes are available (Gadi).
