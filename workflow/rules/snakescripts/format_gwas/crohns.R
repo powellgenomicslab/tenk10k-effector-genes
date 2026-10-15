@@ -16,7 +16,9 @@ threads  <- snakemake@threads
 # threads <- 8
 setDTthreads(threads)
 
-# Summary stats from https://doi.org/10.1038/s41588-023-01384-0
+# de Lange et al. 2017 (doi:10.1038/ng.3760) summary statistics: the European
+# columns (*_NFE) of the IIBDGC file released with Liu et al. 2023
+# (doi:10.1038/s41588-023-01384-0)
 # ndex variant chosen as the most significant variant in the locus and annotated as CHR:POS:A1:A2. 
 # CHR, chromosome; POS, genomic position in genome build 38; A1, reference allele; A2, effect allele. 
 # bOR and P-value are from the inverse-variance-weighted fixed-effect meta-analysis (two-tailed) 
