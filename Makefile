@@ -7,6 +7,8 @@
 #   make figs-m | figs-e | figs-s | tabs-s | all
 #   make list          every target with its caption
 #   make pull          download the container image only (needs internet)
+#   make inventory     list the bundle files with checksums -> INVENTORY.tsv
+#   make bundle        pack the bundle for Zenodo (BUNDLE=out.tar.gz)
 #
 # Inputs: `make data` downloads the public summary-statistics bundle, or
 # `make link-data DATA_DIR=/path/to/tenk10k-causal` links the files listed in
@@ -24,10 +26,10 @@ SMK = $(SNAKEMAKE) --snakefile scripts/Snakefile --workflow-profile none \
       --cores $(CORES) $(if $(SDM),--sdm $(SDM)) $(ARGS) --
 
 .PHONY: help list all figs-m figs-e figs-s tabs-s data link-data \
-        manifest env lock dockerfile dry-run pull
+        manifest inventory bundle env lock dockerfile dry-run pull
 
 help:
-	@sed -n '2,18p' Makefile | sed 's/^# \{0,1\}//'
+	@sed -n '2,20p' Makefile | sed 's/^# \{0,1\}//'
 
 list:
 	@$(SNAKEMAKE) --snakefile scripts/Snakefile --workflow-profile none --cores 1 \
@@ -60,6 +62,15 @@ DATA_DIR ?=
 link-data: config/figure_inputs.txt
 	@test -n "$(DATA_DIR)" || { echo "usage: make link-data DATA_DIR=/path/to/data/root"; exit 1; }
 	bash scripts/0-preprocess/link_figure_inputs.sh "$(DATA_DIR)"
+
+inventory:
+	$(SNAKEMAKE) --snakefile scripts/Snakefile --workflow-profile none --cores 1 \
+	  --quiet all -- inventory
+
+BUNDLE ?= tenk10k_figure_inputs.tar.gz
+BUNDLE_ARGS ?=
+bundle: inventory
+	bash scripts/0-preprocess/make_figure_bundle.sh config/figure_inputs.txt $(BUNDLE) $(BUNDLE_ARGS)
 
 manifest config/figure_inputs.txt:
 	$(SNAKEMAKE) --snakefile scripts/Snakefile --workflow-profile none --cores 1 \

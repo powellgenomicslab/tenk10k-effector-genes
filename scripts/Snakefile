@@ -172,7 +172,7 @@ def group(prefix):
     return [f for k in AVAILABLE if k.startswith(prefix) for f in ITEMS[k][1]]
 
 
-localrules: all, figs_m, figs_e, figs_s, tabs_s, targets, manifest, containerize
+localrules: all, figs_m, figs_e, figs_s, tabs_s, targets, manifest, inventory, containerize
 
 
 rule all:
@@ -242,6 +242,74 @@ rule manifest:
             for p in sorted(EXTERNAL):
                 note = EXTERNAL[p]
                 fh.write(f"{p}\t# REVIEW: {note}\n" if note else f"{p}\n")
+
+
+def item_label(k):
+    kind, n = k.split("_")
+    return {"fig_m": "Fig. ", "fig_e": "ED Fig. ", "fig_s": "Supp. Fig. ", "tab_s": "Supp. Table "}[
+        f"{kind}_{n[0]}"
+    ] + n[1:]
+
+
+rule inventory:
+    """Write INVENTORY.tsv: every bundled file with its size, SHA-256, the display
+    items that read it, and the description, source and licence given in
+    config/figure_inputs_annotation.tsv (first matching pattern). With
+    `--config checksums=false` the sha256 column is left as the empty-input hash."""
+    run:
+        import csv, fnmatch, hashlib, os
+
+        producer = {str(f): r for r in workflow.rules for f in r.output}
+
+        def externals(rule, seen):
+            found = set()
+            for f in map(str, rule.input):
+                if f not in producer:
+                    found.add(f)
+                elif producer[f].name not in seen:
+                    seen.add(producer[f].name)
+                    found |= externals(producer[f], seen)
+            return found
+
+        used_by = {}
+        for k in ITEMS:
+            for f in externals(workflow.get_rule(k), {k}):
+                used_by.setdefault(f, []).append(item_label(k))
+
+        with open("config/figure_inputs_annotation.tsv") as fh:
+            notes = list(csv.DictReader(fh, delimiter="\t"))
+        unmatched, hit = [], set()
+        rows = []
+        for p in sorted(EXTERNAL):
+            if p.startswith(("metadata/", "scripts/", "config/")):
+                continue
+            note = next((n for n in notes if fnmatch.fnmatch(p, n["pattern"])), None)
+            if note is None:
+                unmatched.append(p)
+                continue
+            hit.add(note["pattern"])
+            sha = hashlib.sha256()
+            if config.get("checksums", True):
+                with open(p, "rb") as fh:
+                    for block in iter(lambda: fh.read(1 << 20), b""):
+                        sha.update(block)
+            rows.append([
+                p, os.path.getsize(p), sha.hexdigest(), note["category"],
+                note["description"], "; ".join(used_by.get(p, [])),
+                note["source"], note["licence"],
+                "yes" if EXTERNAL[p] else "",
+            ])
+        if unmatched:
+            raise ValueError("no annotation pattern matches: " + ", ".join(unmatched))
+        for n in notes:
+            if n["pattern"] not in hit:
+                print(f"warning: annotation pattern matches no file: {n['pattern']}")
+        with open("INVENTORY.tsv", "w", newline="") as fh:
+            w = csv.writer(fh, delimiter="\t", lineterminator="\n")
+            w.writerow(["path", "size_bytes", "sha256", "category", "description",
+                        "used_by", "source", "licence", "review"])
+            w.writerows(rows)
+        print(f"wrote INVENTORY.tsv: {len(rows)} files, {sum(r[1] for r in rows) / 1e9:.2f} GB")
 
 
 # Data-free rules naming each software environment, so that
