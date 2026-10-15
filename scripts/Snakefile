@@ -58,7 +58,6 @@ def log(name):
 R = "Rscript {params.script} > {log} 2>&1"
 
 REVIEW_CELL = "cell-level scDRS scores; confirm cell-level data may be shared"
-REVIEW_3P = "third-party file; check redistribution licence or link to source instead"
 
 META = ext(
     "metadata/cell.tsv",
@@ -384,7 +383,7 @@ rule celltype_exclusive_assoc:
 rule compare_ray_tenk10k:
     input:
         PREPROCESS,
-        ext("resources/misc/onek1k_cad_mr_ray2025.txt", review=REVIEW_3P),
+        ext("resources/misc/onek1k_cad_mr_ray2025.txt"),
     output:
         figs("s5", "s6"),
         panels("1-overview", "compare_ray_tenk10k_overlap.pdf", "compare_ray_tenk10k_overlap.png"),
@@ -717,7 +716,7 @@ rule enrichment_features:
             f"{STRING_CD4CTL}.bipartite.tsv",
             "resources/enrichment/string_id_map.tsv",
         ),
-        ext("resources/misc/HOUNKPE_HOUSEKEEPING_GENES.v2026.1.Hs.tsv", review=REVIEW_3P),
+        ext("resources/misc/HOUNKPE_HOUSEKEEPING_GENES.v2026.1.Hs.tsv"),
     output:
         figs("e5", "s12", "s13"),
     params:
@@ -952,11 +951,10 @@ rule crohns_external_annot:
                 for f in (
                     "Systematic Review of Crohns Disease Genes.csv",
                     "OT-EFO_0000384-associated-targets-07_04_2026-v26_03.tsv",
-                    "41588_2023_1384_MOESM4_ESM_Liuetal2023_SupTable.xlsx",
+                    "liu2023_st8_genes.tsv",
                     "drug_target_genes.txt",
                 )
             ],
-            review=REVIEW_3P,
         ),
     output:
         CD_ANNOT,
@@ -990,9 +988,7 @@ rule crohns_deg_preprocess:
     input:
         ext("metadata/cell.tsv"),
         ext(
-            f"{CD}/deg/Kongetal2023_supplementary/Kongetal2023_Crohns-sc_DEG.xlsx",
-            f"{CD}/deg/features_original.tsv",
-            review=REVIEW_3P,
+            f"{CD}/deg/kong2023_immune_deg.parquet",
         ),
     output:
         CD_DEG,

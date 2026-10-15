@@ -50,7 +50,9 @@ df2 <- df2 %>% dplyr::rename(Gene = symbol) %>%
   dplyr::distinct()
 
 ############ 3: Nearest gene to 320 loci from Liu et al., 2023 
-df3 <- readxl::read_xlsx(here("resources/crohns_case_study/crohns_relevant_gene_lists/sources/41588_2023_1384_MOESM4_ESM_Liuetal2023_SupTable.xlsx"), sheet = "ST8", skip = 1) %>% select(Gene) %>% distinct()
+# Liu et al. 2023 Supplementary Table 8 genes (extracted by
+# workflow/rules/snakescripts/crohns_external/extract_third_party.R)
+df3 <- read_tsv(here("resources/crohns_case_study/crohns_relevant_gene_lists/sources/liu2023_st8_genes.tsv"), show_col_types = FALSE) %>% select(Gene) %>% distinct()
 
 ############# 4: Drug target list from literature 
 # Names of drug targets from the literature

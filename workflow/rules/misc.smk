@@ -89,3 +89,21 @@ rule crohns_jazf1_locus_data:
     shell:
         "mkdir -p resources/crohns_case_study/figures/ld && "
         "Rscript workflow/rules/snakescripts/crohns_locus/locus_zoom_eQTL_discordant.R > {log} 2>&1"
+
+# Extracts of two published supplementary tables (Kong et al. 2023, Liu et al. 2023)
+# used by the Crohn's case study. The originals are not redistributed; the figure
+# harness reads these extracts, which are shared in the data bundle with a citation.
+
+rule crohns_third_party_extracts:
+    input:
+        kong = "resources/crohns_case_study/deg/Kongetal2023_supplementary/Kongetal2023_Crohns-sc_DEG.xlsx",
+        features = "resources/crohns_case_study/deg/features_original.tsv",
+        liu = "resources/crohns_case_study/crohns_relevant_gene_lists/sources/41588_2023_1384_MOESM4_ESM_Liuetal2023_SupTable.xlsx"
+    output:
+        kong = "resources/crohns_case_study/deg/kong2023_immune_deg.parquet",
+        liu = "resources/crohns_case_study/crohns_relevant_gene_lists/sources/liu2023_st8_genes.tsv"
+    log:
+        "logs/crohns_locus/third_party_extracts.log"
+    conda: "../envs/figures.yaml"
+    shell:
+        "Rscript workflow/rules/snakescripts/crohns_external/extract_third_party.R > {log} 2>&1"

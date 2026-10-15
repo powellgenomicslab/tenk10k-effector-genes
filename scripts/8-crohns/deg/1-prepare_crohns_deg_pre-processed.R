@@ -14,20 +14,16 @@ library(tidyverse)
 library(here) 
 
 crohns_dir <- here("resources/crohns_case_study")
-deg <- readxl::read_xlsx(paste0(crohns_dir, "/deg/Kongetal2023_supplementary/Kongetal2023_Crohns-sc_DEG.xlsx"), sheet = 1)
+# Kong et al. 2023 DEG table, immune cells and discrete model only, with Ensembl IDs
+# (extracted from the published supplementary table by
+# workflow/rules/snakescripts/crohns_external/extract_third_party.R)
+deg <- arrow::read_parquet(paste0(crohns_dir, "/deg/kong2023_immune_deg.parquet"))
 
 print("Kong et al DEG colnames: ")
 colnames(deg)
 
-# remove random cols
-deg <- deg[,1:10]
-# get immune cells only
 deg <- deg %>% rename(gut_cell_type = `Cell subset`)
-deg <- deg %>% filter(grepl(pattern = "Immune", gut_cell_type))
 deg$gut_cell_type <- gsub("Immune.", "", as.character(deg$gut_cell_type))
-
-# Use the discrete model only, for simplicity
-deg <- deg %>% select(-`Continuous DE coefficients`, -`Continuous DE coefficients p value`, -`Continuous FDR` )
 
 # Prepare a -log10 transformed pvalue that also shows the direction of effect by multiplying with direction of beta (-log10 Discrete pval * direction of beta)
 deg$disc_p_transform <- -log10(deg$`Discrete DE coefficients p value`)*sign(deg$`Discrete DE coefficients`) 
@@ -37,9 +33,6 @@ deg$disc_p_transform <- -log10(deg$`Discrete DE coefficients p value`)*sign(deg$
 deg$Location <- factor(deg$Location, levels = c("CO", "TI"))
 deg$Contrast <- factor(deg$Contrast, levels = c("Infl vs. Heal", "NonI vs. Heal"))
 
-# Append gene names 
-features <- read_tsv("resources/crohns_case_study/deg/features_original.tsv", col_names = c("probeID", "Gene"))
-deg <- deg %>% left_join(features, by = "Gene") %>% select(Gene, probeID, everything())
 
 print("Explore scRNAseq ID cell types: ")
 deg_celltypes <- unique(deg$gut_cell_type) |> sort()

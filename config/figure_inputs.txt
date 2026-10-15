@@ -9,21 +9,20 @@ metadata/otp.xlsx
 metadata/table_column_names.xlsx
 metadata/trait.tsv
 metadata/trait_category.tsv
-resources/crohns_case_study/crohns_relevant_gene_lists/sources/41588_2023_1384_MOESM4_ESM_Liuetal2023_SupTable.xlsx	# REVIEW: third-party file; check redistribution licence or link to source instead
-resources/crohns_case_study/crohns_relevant_gene_lists/sources/OT-EFO_0000384-associated-targets-07_04_2026-v26_03.tsv	# REVIEW: third-party file; check redistribution licence or link to source instead
-resources/crohns_case_study/crohns_relevant_gene_lists/sources/Systematic Review of Crohns Disease Genes.csv	# REVIEW: third-party file; check redistribution licence or link to source instead
-resources/crohns_case_study/crohns_relevant_gene_lists/sources/drug_target_genes.txt	# REVIEW: third-party file; check redistribution licence or link to source instead
-resources/crohns_case_study/deg/Kongetal2023_supplementary/Kongetal2023_Crohns-sc_DEG.xlsx	# REVIEW: third-party file; check redistribution licence or link to source instead
-resources/crohns_case_study/deg/features_original.tsv	# REVIEW: third-party file; check redistribution licence or link to source instead
+resources/crohns_case_study/crohns_relevant_gene_lists/sources/OT-EFO_0000384-associated-targets-07_04_2026-v26_03.tsv
+resources/crohns_case_study/crohns_relevant_gene_lists/sources/Systematic Review of Crohns Disease Genes.csv
+resources/crohns_case_study/crohns_relevant_gene_lists/sources/drug_target_genes.txt
+resources/crohns_case_study/crohns_relevant_gene_lists/sources/liu2023_st8_genes.tsv
+resources/crohns_case_study/deg/kong2023_immune_deg.parquet
 resources/crohns_case_study/figures/JAZF1_data.RDS
 resources/crohns_case_study/locus_zoom_data/GPX1/tenk10k_GPX1_locus_plot_data.RDS
 resources/crohns_case_study/revision/IBDverse_pi1_tables.RData
 resources/crohns_case_study/revision/OR_IBDverse_coloc_genes_in_CD_MR_genes.RDS
 resources/enrichment/gmt/GO_bp_2024_terms.tsv
 resources/enrichment/string_id_map.tsv
-resources/misc/HOUNKPE_HOUSEKEEPING_GENES.v2026.1.Hs.tsv	# REVIEW: third-party file; check redistribution licence or link to source instead
+resources/misc/HOUNKPE_HOUSEKEEPING_GENES.v2026.1.Hs.tsv
 resources/misc/chembl_action_type.tsv
-resources/misc/onek1k_cad_mr_ray2025.txt	# REVIEW: third-party file; check redistribution licence or link to source instead
+resources/misc/onek1k_cad_mr_ray2025.txt
 results/aggregate/coloc/tenk10k_phase1.coloc.v3.parquet.gz
 results/aggregate/coloc/tenk10k_phase1.mvcoloc.parquet.gz
 results/aggregate/eqtlgen2020.msmr.parquet.gz
