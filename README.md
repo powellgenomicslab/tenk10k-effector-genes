@@ -56,7 +56,9 @@ make fig-m2
 `make all` builds every figure and table, and `make list` shows each target
 with its caption. To run several scripts at once, add `CORES=N`. Each script
 can use up to about 16 GB of memory, so choose N no larger than your memory in
-GB divided by 16 (for example `CORES=4` with 64 GB). The first build
+GB divided by 16 (for example `CORES=4` with 64 GB). Rebuilding everything takes about
+an hour of computing: on NCI Gadi, `make all` with `CORES=4` finished in 16
+minutes and used at most 50 GB. The first build
 installs a pinned R 4.4.1 conda environment, which takes several minutes;
 later builds reuse it.
 
