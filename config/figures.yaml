@@ -2,7 +2,7 @@
 
 # Container holding the figures conda environment, used with
 # `--sdm conda apptainer`. Built from the generated Dockerfile; see README.md.
-container: "docker://ghcr.io/powellgenomicslab/tenk10k-effector-genes:v4"
+container: "docker://ghcr.io/powellgenomicslab/tenk10k-effector-genes:v4.1"
 
 # Public bundle of summary-level inputs (Zenodo / Hugging Face). Placeholder
 # until the bundle is deposited; `make data` downloads and verifies it.

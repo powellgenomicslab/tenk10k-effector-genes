@@ -4,12 +4,18 @@ Snakemake writes one `conda env create --file environment.yaml` per environment,
 which re-solves the environment at build time and skips post-deploy scripts.
 For every environment with a `<name>.linux-64.pin.txt` next to its YAML, this
 rewrites the build to install the pinned explicit package list and run
-`<name>.post-deploy.sh`. The /conda-envs/<hash> prefixes are left unchanged,
-because that is where Snakemake looks for them inside the container.
+`<name>.post-deploy.sh`.
+
+Snakemake looks for each environment inside the container at /conda-envs/<hash>,
+where <hash> covers the post-deploy script, the pin file for the platform it is
+running on, and the YAML. The image is Linux, so the prefixes are recomputed
+with the linux-64 pin; otherwise a Dockerfile generated on macOS names them by
+the osx-arm64 pin and Snakemake on Linux cannot find them.
 
 usage: python3 workflow/envs/pin_dockerfile.py Dockerfile
 """
 
+import hashlib
 import re
 import sys
 from pathlib import Path
@@ -37,6 +43,13 @@ for yaml, prefix in copies:
         f"conda env create --prefix {prefix} --file {prefix}/environment.yaml",
         build,
     )
+    # same order as snakemake.deployment.conda.Env._get_hash
+    md5 = hashlib.md5()
+    if post.exists():
+        md5.update(post.read_bytes())
+    md5.update(pin.read_bytes())
+    md5.update(yaml_path.read_bytes())
+    text = text.replace(prefix, f"/conda-envs/{md5.hexdigest()}")
 
 # link the GHCR package to its source repository (shown on the repository page
 # and inheriting its access settings)
