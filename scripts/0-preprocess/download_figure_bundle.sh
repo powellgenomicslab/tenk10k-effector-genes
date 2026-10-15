@@ -24,7 +24,8 @@ if tar -tzf "$tmp/bundle.tar.gz" | grep -qE '^/|(^|/)\.\.(/|$)'; then
 fi
 tar -xzf "$tmp/bundle.tar.gz" -C "$tmp/unpacked"
 
-(cd "$tmp/unpacked" && shasum -a 256 -c figure_inputs.sha256)
+if command -v shasum > /dev/null; then sha256check="shasum -a 256 -c"; else sha256check="sha256sum -c"; fi
+(cd "$tmp/unpacked" && $sha256check figure_inputs.sha256)
 
 (cd "$tmp/unpacked" && find results resources -type f 2>/dev/null || true) | while read -r f; do
     mkdir -p "$(dirname "$f")"

@@ -55,8 +55,11 @@ pull:
 	if [ -e "$$dir/$$name" ]; then echo "$$dir/$$name is already present"; \
 	else cd "$$dir" && apptainer pull --name "$$name" '$(IMAGE)'; fi
 
+# Download and verify the data bundle. Runs the script directly, not through
+# Snakemake, so that it never runs inside the container.
+BUNDLE_URL = $(shell sed -n 's/^bundle_url: *"\(.*\)"/\1/p' config/figures.yaml)
 data:
-	$(SMK) download_inputs
+	bash scripts/0-preprocess/download_figure_bundle.sh '$(BUNDLE_URL)'
 
 DATA_DIR ?=
 link-data: config/figure_inputs.txt
