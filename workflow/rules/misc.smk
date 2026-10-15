@@ -54,3 +54,38 @@ rule extract_gwas_locus:
               --ld-snp $TOPVAR \
               --out {params.out_prefix}
         """
+# Crohn's disease locus objects for the manuscript figures (ED Fig. 9, Supp. Fig. 17).
+# Each combines eQTL and GWAS statistics with LD (r2 to the index variant) computed
+# by PLINK from the TenK10K genotypes; only the r2 values are written out, never
+# the genotypes. PLINK must be on PATH, as for extract_gwas_locus.
+
+rule crohns_gpx1_locus_data:
+    input:
+        gwas = "resources/pipeline_ma/crohns.ma",
+        eqtl = expand("resources/matrix_eqtl/tenk10k_phase1/{ct}/chr3_meqtl.tsv", ct = ["CD4_TCM", "cDC2"]),
+        bfile = expand("resources/genotypes/tenk10k_phase1/chr3.{ext}", ext = ["bed", "bim", "fam"])
+    output:
+        "resources/crohns_case_study/locus_zoom_data/GPX1/tenk10k_GPX1_locus_plot_data.RDS"
+    log:
+        "logs/crohns_locus/GPX1.log"
+    conda: "../envs/figures.yaml"
+    shell:
+        "Rscript workflow/rules/snakescripts/crohns_locus/1-generate_locus_zoom_object.R "
+        "GPX1 3 ENSG00000233276 > {log} 2>&1"
+
+rule crohns_jazf1_locus_data:
+    input:
+        # MR results annotated for Crohn's disease, written by
+        # scripts/8-crohns/prepare_data/2-postprocess.R; only the JAZF1 probe ID,
+        # chromosome and top eQTL variants are read from it
+        mr = "resources/crohns_case_study/postprocess/tenk_crohns_raw.RDS",
+        eqtl = expand("resources/matrix_eqtl/tenk10k_phase1/{ct}/chr7_meqtl.tsv", ct = ["CD4_Naive", "cDC2"]),
+        bfile = expand("resources/genotypes/tenk10k_phase1/chr7.{ext}", ext = ["bed", "bim", "fam"])
+    output:
+        "resources/crohns_case_study/figures/JAZF1_data.RDS"
+    log:
+        "logs/crohns_locus/JAZF1.log"
+    conda: "../envs/figures.yaml"
+    shell:
+        "mkdir -p resources/crohns_case_study/figures/ld && "
+        "Rscript workflow/rules/snakescripts/crohns_locus/locus_zoom_eQTL_discordant.R > {log} 2>&1"

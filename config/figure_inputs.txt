@@ -15,8 +15,8 @@ resources/crohns_case_study/crohns_relevant_gene_lists/sources/Systematic Review
 resources/crohns_case_study/crohns_relevant_gene_lists/sources/drug_target_genes.txt	# REVIEW: third-party file; check redistribution licence or link to source instead
 resources/crohns_case_study/deg/Kongetal2023_supplementary/Kongetal2023_Crohns-sc_DEG.xlsx	# REVIEW: third-party file; check redistribution licence or link to source instead
 resources/crohns_case_study/deg/features_original.tsv	# REVIEW: third-party file; check redistribution licence or link to source instead
-resources/crohns_case_study/figures/JAZF1_data.RDS	# REVIEW: LD estimated from TenK10K genotypes (in-sample); confirm it may be shared
-resources/crohns_case_study/locus_zoom_data/GPX1/tenk10k_GPX1_locus_plot_data.RDS	# REVIEW: LD estimated from TenK10K genotypes (in-sample); confirm it may be shared
+resources/crohns_case_study/figures/JAZF1_data.RDS
+resources/crohns_case_study/locus_zoom_data/GPX1/tenk10k_GPX1_locus_plot_data.RDS
 resources/crohns_case_study/revision/IBDverse_pi1_tables.RData
 resources/crohns_case_study/revision/OR_IBDverse_coloc_genes_in_CD_MR_genes.RDS
 resources/enrichment/gmt/GO_bp_2024_terms.tsv
@@ -39,9 +39,9 @@ results/enrichment/tenk10k_phase1_mr_strict/mr_strict/CD4_CTL.string_rank_api.bi
 results/enrichment/tenk10k_phase1_mr_strict/mr_strict/CD4_CTL.string_rank_api.ppi_network.tsv
 results/enrichment/tenk10k_phase1_mr_strict/mr_strict/CD4_CTL.string_rank_api.tsv
 results/gwas_locus/eczema/tenk10k_phase1/12_6339001_6631955.gwas.tsv
-results/gwas_locus/eczema/tenk10k_phase1/12_6339001_6631955.ld	# REVIEW: LD estimated from TenK10K genotypes (in-sample); confirm it may be shared
+results/gwas_locus/eczema/tenk10k_phase1/12_6339001_6631955.ld
 results/gwas_locus/sle/tenk10k_phase1/4_101311286_102174812.gwas.tsv
-results/gwas_locus/sle/tenk10k_phase1/4_101311286_102174812.ld	# REVIEW: LD estimated from TenK10K genotypes (in-sample); confirm it may be shared
+results/gwas_locus/sle/tenk10k_phase1/4_101311286_102174812.ld
 results/misc/tenk10k_prop_sample.crohns.cell_score.tsv.parquet.gz	# REVIEW: cell-level scDRS scores; confirm cell-level data may be shared
 results/otp/26.03/all_disease.tsv
 results/otp/26.03/all_drug_evidence_chembl.tsv
@@ -55,33 +55,33 @@ results/scDeepID/pathway_test_full.csv
 results/sensitivity/smr/tenk10k_phase1/CD14_Mono/eczema/all_chr.snps4msmr.list
 results/sensitivity/smr/tenk10k_phase1/tenk10k_phase1_sensitivity.snps4msmr.parquet.gz
 results/smr_locus/eqtlgen2020/bulk_wb/sle/ENSG00000153064.eqtl.tsv
-results/smr_locus/eqtlgen2020/bulk_wb/sle/ENSG00000153064.ld	# REVIEW: LD estimated from TenK10K genotypes (in-sample); confirm it may be shared
+results/smr_locus/eqtlgen2020/bulk_wb/sle/ENSG00000153064.ld
 results/smr_locus/tenk10k_phase1/B_memory/sle/ENSG00000153064.eqtl.tsv
-results/smr_locus/tenk10k_phase1/B_memory/sle/ENSG00000153064.ld	# REVIEW: LD estimated from TenK10K genotypes (in-sample); confirm it may be shared
+results/smr_locus/tenk10k_phase1/B_memory/sle/ENSG00000153064.ld
 results/smr_locus/tenk10k_phase1/B_naive/sle/ENSG00000153064.eqtl.tsv
-results/smr_locus/tenk10k_phase1/B_naive/sle/ENSG00000153064.ld	# REVIEW: LD estimated from TenK10K genotypes (in-sample); confirm it may be shared
+results/smr_locus/tenk10k_phase1/B_naive/sle/ENSG00000153064.ld
 results/smr_locus/tenk10k_phase1/CD14_Mono/eczema/ENSG00000010292.eqtl.tsv
 results/smr_locus/tenk10k_phase1/CD14_Mono/eczema/ENSG00000010292.gwas.tsv
-results/smr_locus/tenk10k_phase1/CD14_Mono/eczema/ENSG00000010292.ld	# REVIEW: LD estimated from TenK10K genotypes (in-sample); confirm it may be shared
+results/smr_locus/tenk10k_phase1/CD14_Mono/eczema/ENSG00000010292.ld
 results/smr_locus/tenk10k_phase1/CD14_Mono/eczema/ENSG00000111639.eqtl.tsv
 results/smr_locus/tenk10k_phase1/CD14_Mono/eczema/ENSG00000111639.gwas.tsv
-results/smr_locus/tenk10k_phase1/CD14_Mono/eczema/ENSG00000111639.ld	# REVIEW: LD estimated from TenK10K genotypes (in-sample); confirm it may be shared
+results/smr_locus/tenk10k_phase1/CD14_Mono/eczema/ENSG00000111639.ld
 results/smr_locus/tenk10k_phase1/CD14_Mono/eczema/ENSG00000139190.eqtl.tsv
 results/smr_locus/tenk10k_phase1/CD14_Mono/eczema/ENSG00000139190.gwas.tsv
-results/smr_locus/tenk10k_phase1/CD14_Mono/eczema/ENSG00000139190.ld	# REVIEW: LD estimated from TenK10K genotypes (in-sample); confirm it may be shared
+results/smr_locus/tenk10k_phase1/CD14_Mono/eczema/ENSG00000139190.ld
 results/smr_locus/tenk10k_phase1/CD14_Mono/eczema/ENSG00000139192.eqtl.tsv
 results/smr_locus/tenk10k_phase1/CD14_Mono/eczema/ENSG00000139192.gwas.tsv
-results/smr_locus/tenk10k_phase1/CD14_Mono/eczema/ENSG00000139192.ld	# REVIEW: LD estimated from TenK10K genotypes (in-sample); confirm it may be shared
+results/smr_locus/tenk10k_phase1/CD14_Mono/eczema/ENSG00000139192.ld
 results/smr_locus/tenk10k_phase1/CD14_Mono/eczema/ENSG00000215039.eqtl.tsv
 results/smr_locus/tenk10k_phase1/CD14_Mono/eczema/ENSG00000215039.gwas.tsv
-results/smr_locus/tenk10k_phase1/CD14_Mono/eczema/ENSG00000215039.ld	# REVIEW: LD estimated from TenK10K genotypes (in-sample); confirm it may be shared
+results/smr_locus/tenk10k_phase1/CD14_Mono/eczema/ENSG00000215039.ld
 results/smr_locus/tenk10k_phase1/CD4_TCM/crohns/ENSG00000233276.eqtl.tsv
 results/smr_locus/tenk10k_phase1/CD4_TCM/crohns/ENSG00000233276.gwas.tsv
 results/smr_locus/tenk10k_phase1/CD4_TCM/sle/ENSG00000153064.eqtl.tsv
-results/smr_locus/tenk10k_phase1/CD4_TCM/sle/ENSG00000153064.ld	# REVIEW: LD estimated from TenK10K genotypes (in-sample); confirm it may be shared
+results/smr_locus/tenk10k_phase1/CD4_TCM/sle/ENSG00000153064.ld
 results/smr_locus/tenk10k_phase1/CD8_TEM/sle/ENSG00000153064.eqtl.tsv
-results/smr_locus/tenk10k_phase1/CD8_TEM/sle/ENSG00000153064.ld	# REVIEW: LD estimated from TenK10K genotypes (in-sample); confirm it may be shared
+results/smr_locus/tenk10k_phase1/CD8_TEM/sle/ENSG00000153064.ld
 results/smr_locus/tenk10k_phase1/cDC2/crohns/ENSG00000233276.eqtl.tsv
 results/smr_locus/tenk10k_phase1/cDC2/crohns/ENSG00000233276.gwas.tsv
 results/smr_locus/tenk10k_phase1/cDC2/sle/ENSG00000153064.eqtl.tsv
-results/smr_locus/tenk10k_phase1/cDC2/sle/ENSG00000153064.ld	# REVIEW: LD estimated from TenK10K genotypes (in-sample); confirm it may be shared
+results/smr_locus/tenk10k_phase1/cDC2/sle/ENSG00000153064.ld

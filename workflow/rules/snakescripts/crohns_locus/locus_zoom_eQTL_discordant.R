@@ -1,6 +1,6 @@
 # Purpose: Prepare Locus zoom of eQTL
 # Produces resources/crohns_case_study/figures/JAZF1_data.RDS (JAZF1 eQTL in CD4 Naive and cDC2, with LD),
-# which plot_figures/JAZF1_scatterplot.R plots as Supplementary Figure 17.
+# which scripts/8-crohns/plot_figures/JAZF1_scatterplot.R plots as Supplementary Figure 17.
 # Requires individual-level genotypes (PLINK) to compute LD.
 
 # Interactive job

@@ -1,6 +1,6 @@
 # Purpose: Prepare Locus zoom of eQTL for TenK10K
-# Extended Data Figure 9 (GPX1): Rscript scripts/8-crohns/plot_figures/1-generate_locus_zoom_object.R GPX1 3 ENSG00000233276
-# Requires individual-level genotypes (PLINK) to compute LD; plotted by 2-plot_locus_zoom_fig.R.
+# Extended Data Figure 9 (GPX1): rule crohns_gpx1_locus_data in workflow/rules/misc.smk
+# Requires individual-level genotypes (PLINK) to compute LD; plotted by scripts/8-crohns/plot_figures/2-plot_locus_zoom_fig.R.
 
 # Load renv with locuszoomr and tidyverse
 options(renv.config.synchronized.check = FALSE)

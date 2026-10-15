@@ -39,11 +39,6 @@ def ext(*paths, review=""):
     return list(paths)
 
 
-def bundled(*paths, review=""):
-    """Outputs of restricted steps: built here with restricted=true, else from the bundle."""
-    return [] if RESTRICTED else ext(*paths, review=review)
-
-
 def figs(*ids):
     return [f"figures/fig-{i}.{e}" for i in ids for e in ("pdf", "png")]
 
@@ -62,7 +57,6 @@ def log(name):
 
 R = "Rscript {params.script} > {log} 2>&1"
 
-REVIEW_LD = "LD estimated from TenK10K genotypes (in-sample); confirm it may be shared"
 REVIEW_CELL = "cell-level scDRS scores; confirm cell-level data may be shared"
 REVIEW_3P = "third-party file; check redistribution licence or link to source instead"
 
@@ -641,7 +635,6 @@ FIG3_LOCUS = (
         *[f"results/smr_locus/{s}/sle/ENSG00000153064.ld" for s in SLE_LOCI],
         "results/gwas_locus/eczema/tenk10k_phase1/12_6339001_6631955.ld",
         "results/gwas_locus/sle/tenk10k_phase1/4_101311286_102174812.ld",
-        review=REVIEW_LD,
     )
 )
 
@@ -1054,7 +1047,7 @@ rule crohns_fig6_panels:
 rule crohns_gpx1_plot:
     input:
         # a) locus zoom
-        bundled(CD_GPX1, review=REVIEW_LD) or CD_GPX1,
+        ext(CD_GPX1),
         # b, c) cross plots of the MR instruments in CD4 TCM and cDC2
         ext(
             "results/sensitivity/smr/tenk10k_phase1/tenk10k_phase1_sensitivity.snps4msmr.parquet.gz",
@@ -1078,7 +1071,7 @@ rule crohns_gpx1_plot:
 
 rule crohns_jazf1_plot:
     input:
-        bundled(CD_JAZF1, review=REVIEW_LD) or CD_JAZF1,
+        ext(CD_JAZF1),
     output:
         figs("s17"),
     params:
@@ -1151,41 +1144,12 @@ rule crohns_tables:
         R
 
 
-# --- restricted steps: raw single-cell data or individual-level genotypes ----------
+# --- restricted steps: raw single-cell data ----------------------------------------
 # Only defined with `--config restricted=true` (on Gadi, with the raw data mounted).
+# The locus objects that need individual-level genotypes (GPX1, JAZF1) are built by
+# workflow/rules/misc.smk and taken from the bundle here.
 
 if RESTRICTED:
-
-    rule crohns_gpx1_locus_data:
-        input:
-            "resources/pipeline_ma/crohns.ma",
-            [f"resources/matrix_eqtl/tenk10k_phase1/{ct}/chr3_meqtl.tsv" for ct in ("CD4_TCM", "cDC2")],
-            [f"resources/genotypes/tenk10k_phase1/chr3.{x}" for x in ("bed", "bim", "fam")],
-        output:
-            CD_GPX1,
-        log:
-            log("crohns_gpx1_locus_data"),
-        conda:
-            ENV
-        shell:
-            "Rscript scripts/8-crohns/plot_figures/1-generate_locus_zoom_object.R "
-            "GPX1 3 ENSG00000233276 > {log} 2>&1"
-
-    rule crohns_jazf1_locus_data:
-        input:
-            f"{CD}/postprocess/tenk_crohns_raw.RDS",
-            [f"resources/matrix_eqtl/tenk10k_phase1/{ct}/chr7_meqtl.tsv" for ct in ("CD4_Naive", "cDC2")],
-            [f"resources/genotypes/tenk10k_phase1/chr7.{x}" for x in ("bed", "bim", "fam")],
-        output:
-            CD_JAZF1,
-        params:
-            script="scripts/8-crohns/plot_figures/locus_zoom_eQTL_discordant.R",
-        log:
-            log("crohns_jazf1_locus_data"),
-        conda:
-            ENV
-        shell:
-            f"mkdir -p {CD}/figures/ld && " + R
 
     rule crohns_h5ad_major_ct:
         input:

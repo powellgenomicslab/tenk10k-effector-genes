@@ -141,11 +141,7 @@ Some items are not produced by code in this repository:
 - **Your own software.** `make fig-m2 SDM=` uses the R and Python already on your `PATH`. The packages needed are listed in `workflow/envs/figures.yaml`.
 - **Rebuilding the container image.** The image is built from the `Dockerfile`, which `make dockerfile` regenerates from the conda environments. Publish each rebuild under a new tag and update `container:` in `config/figures.yaml`: Snakemake caches images under a name derived from the tag, so a rebuilt image pushed under an existing tag is ignored wherever the old one has been downloaded.
 - **Existing results tree.** If you already have the results tree, run `make link-data DATA_DIR=/path/to/results/root` instead of `make data`. It links each input file listed in `config/figure_inputs.txt` and does not modify the source.
-- **Raw-data steps.** Two kinds of step read individual-level data, which is not shared:
-  - the LD calculations behind the GPX1 and JAZF1 locus plots;
-  - the Crohn's colon UMAPs (Supp. Fig. 25).
-
-  Their summary-level outputs are included in the download, so every other item builds without them. Where the raw data are available, add `ARGS="--config restricted=true"`.
+- **Raw-data steps.** The Crohn's colon UMAPs (Supp. Fig. 25) read raw single-cell data, which is not shared; where it is available, add `ARGS="--config restricted=true"`. The LD behind the GPX1 and JAZF1 locus plots is computed from individual-level genotypes by the analysis pipeline in `workflow/`; only the resulting r² values are in the download.
 
 ### Regenerating the summary statistics
 
