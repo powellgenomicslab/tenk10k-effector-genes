@@ -46,9 +46,13 @@ exactly the inputs that release was tested with.
    compute node.
 5. **Release the code.** Tag and publish a GitHub release (e.g. `v4.1.0`).
    Zenodo archives it and mints the code DOI.
-6. **Publish the data.** Upload `tenk10k_figure_inputs.tar.gz`, and also
-   `INVENTORY.tsv` and `scripts/0-preprocess/BUNDLE_README.md` (as
-   `README.md`) so the contents can be read without downloading the archive.
+6. **Publish the data.** Upload the main results,
+   `tenk10k_phase1_effector_genes.v5.parquet` and its column dictionary
+   `tenk10k_phase1_effector_genes.v5.md` (rule `main_results_release`, written
+   to `results/release/` in the working repository); then
+   `tenk10k_figure_inputs.tar.gz`, and also `INVENTORY.tsv` and
+   `scripts/0-preprocess/BUNDLE_README.md` (as `README.md`) so the contents can
+   be read without downloading the archive.
    Complete the metadata from `zenodo/data.json`, add the code DOI and the
    release tag under `related_identifiers` (relation `isSupplementTo`), and
    publish.

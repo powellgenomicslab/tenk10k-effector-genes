@@ -1,0 +1,56 @@
+source	column	group	description
+cell_type	cell_type	Cell type	Cell type (display label, as in metadata/cell.tsv)
+biosample	cell_type_id	Cell type	Cell type identifier used by the TenK10K sc-eQTL study (WG2 scPred prediction label)
+major_cell_type	major_cell_type	Cell type	Major cell type grouping
+phenotype	pheno_id	Trait	Trait identifier (see metadata/trait.tsv for the GWAS source of each trait)
+pheno_label	pheno_label	Trait	Trait name
+pheno_cat	pheno_cat	Trait	Trait category
+supercategory	supercategory	Trait	Trait supercategory (disease or biomarker)
+probeID	ensembl_gene_id	Gene	Ensembl gene ID (the SMR probe)
+Gene	gene	Gene	Gene symbol
+gene_type	gene_type	Gene	Gene biotype (GENCODE v44)
+ProbeChr	gene_chr	Gene	Chromosome of the gene
+Probe_bp	gene_centre_bp	Gene	Position of the gene centre (GRCh38)
+topSNP	top_instrument	Top instrument	Top cis-eQTL variant used as the SMR instrument (chr:bp:other_allele:effect_allele)
+topSNP_chr	top_instrument_chr	Top instrument	Chromosome of the top instrument
+topSNP_bp	top_instrument_bp	Top instrument	Position of the top instrument (GRCh38)
+A1	top_instrument_ea	Top instrument	Effect allele
+A2	top_instrument_oa	Top instrument	Other allele
+Freq	top_instrument_eaf	Top instrument	Effect allele frequency
+b_GWAS	top_instrument_b_gwas	Top instrument	GWAS effect (beta) of the top instrument
+se_GWAS	top_instrument_se_gwas	Top instrument	Standard error of the GWAS effect
+p_GWAS	top_instrument_p_gwas	Top instrument	GWAS P value of the top instrument
+b_eQTL	top_instrument_b_eqtl	Top instrument	eQTL effect (beta) of the top instrument
+se_eQTL	top_instrument_se_eqtl	Top instrument	Standard error of the eQTL effect
+p_eQTL	top_instrument_p_eqtl	Top instrument	eQTL P value of the top instrument
+b_SMR	top_instrument_b_smr	SMR	SMR causal effect estimate from the top instrument
+se_SMR	top_instrument_se_smr	SMR	Standard error of the SMR estimate
+p_SMR	top_instrument_p_smr	SMR	Single-variant SMR P value
+p_SMR_multi	p_msmr	SMR	Multi-SNP SMR P value (the test used for discovery)
+n_snps_smr	n_var_smr	SMR	Number of variants in the multi-SNP SMR test
+qval_msmr_pheno	qval_msmr_pheno	SMR	q-value of p_msmr (qvalue package), computed per trait
+lfdr_msmr_pheno	lfdr_msmr_pheno	SMR	Local false discovery rate of p_msmr (qvalue package), computed per trait; MR significance is lfdr < 0.05
+p_HEIDI	p_heidi	Sensitivity	HEIDI test P value (low values suggest linkage or pleiotropy)
+nsnp_HEIDI	n_var_heidi	Sensitivity	Number of variants in the HEIDI test
+b_ivw	ivw_b	Sensitivity	IVW-LD MR causal effect estimate (inverse-variance weighted, correlated instruments; MendelianRandomization)
+se_ivw	ivw_se	Sensitivity	Standard error of the IVW-LD estimate
+p_ivw	ivw_p	Sensitivity	IVW-LD P value
+phet_ivw	cochran_p_het	Sensitivity	Cochran's Q heterogeneity P value from IVW-LD MR (low values suggest pleiotropy)
+fstat_ivw	ivw_fstat	Sensitivity	First-stage F-statistic of the IVW-LD instruments
+isq_ivw	ivw_isq	Sensitivity	I-squared heterogeneity, (Q - (k - 1)) / Q, from IVW-LD MR
+b_mrlink2	mrlink2_b	Sensitivity	MR-link-2 causal effect estimate (alpha)
+se_mrlink2	mrlink2_se	Sensitivity	Standard error of the MR-link-2 estimate
+p_mrlink2	mrlink2_p	Sensitivity	MR-link-2 P value of the causal effect
+sigmay_mrlink2	mrlink2_sigma_y	Sensitivity	MR-link-2 pleiotropic variance component (sigma_y)
+sesigmay_mrlink2	mrlink2_se_sigma_y	Sensitivity	Standard error of mrlink2_sigma_y
+psigmay_mrlink2	mrlink2_p_sigma_y	Sensitivity	MR-link-2 P value of sigma_y (low values suggest pleiotropy)
+coloc_pph3_h4	coloc_pp_h3_h4	Colocalisation	coloc posterior probability that both traits have a causal variant in the region (PP.H3 + PP.H4)
+coloc_pph4	coloc_pp_h4	Colocalisation	coloc posterior probability of a shared causal variant (PP.H4)
+mvcoloc_pph4	coloc_susie_pp_h4	Colocalisation	Largest PP.H4 across credible-set pairs from SuSiE-based multi-variant coloc
+mr	mr	Evidence	MR significant: lfdr_msmr_pheno < 0.05
+sensitivity	sensitivity	Evidence	No evidence of pleiotropy: p_heidi >= 0.05 or cochran_p_het >= 0.05 or mrlink2_p_sigma_y >= 0.05 (NA only if none was tested)
+coloc	coloc	Evidence	Colocalised: coloc_pp_h4 >= 0.8 or coloc_susie_pp_h4 >= 0.8 (NA only if neither was tested)
+mr_sens	mr_sens	Evidence	mr and sensitivity
+mr_coloc	mr_coloc	Evidence	mr and coloc
+mr_sens_coloc	mr_sens_coloc	Evidence	mr, sensitivity and coloc
+max_evidence	max_evidence	Evidence	Highest evidence tier met: mr < mr_sens < mr_coloc < mr_sens_coloc (NA if not MR significant)

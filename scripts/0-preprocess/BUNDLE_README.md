@@ -6,6 +6,16 @@ effector genes across complex traits and diseases* (Henry, Senabouth,
 Tyebally et al.; medRxiv doi:10.1101/2025.08.28.25334614). The code is at
 <https://github.com/powellgenomicslab/tenk10k-effector-genes>.
 
+## Main results
+
+The study's main results are not in this archive but next to it in the same
+Zenodo record: `tenk10k_phase1_effector_genes.v5.parquet` (MR, sensitivity and
+colocalisation results for every gene, cell type and trait tested), with its
+column dictionary `tenk10k_phase1_effector_genes.v5.md`. This archive holds
+the inputs for rebuilding the figures and tables, including the same results in
+the column format the scripts read
+(`results/preprocessed/tenk10k_phase1.v5.parquet.gz`).
+
 ## Using the archive
 
 The repository's `make data` downloads this archive, checks every file against

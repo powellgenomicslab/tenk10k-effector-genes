@@ -18,6 +18,38 @@ results. Its two parts are:
 - **Analysis pipelines** (`workflow/`, `sensitivity/`). These are Snakemake pipelines that turn GWAS and single-cell eQTL summary statistics into Mendelian randomisation (MR), sensitivity, colocalisation, MAGMA, scDRS, enrichment and Open Targets results. They need the TenK10K data (not included due to size).
 - **Display items** (`scripts/`). These are the R, Python and Typst scripts that turn those results into every figure and table in the manuscript. Each item has a single command that rebuilds it from summary-level inputs (released separately on Zenodo, doi:[10.5281/zenodo.23406585](https://doi.org/10.5281/zenodo.23406585); see [Data Availability](#data-availability)).
 
+## Main results
+
+> [!IMPORTANT]
+> The study's main results are one file in the Zenodo data record
+> ([doi:10.5281/zenodo.23406585](https://doi.org/10.5281/zenodo.23406585)):
+> **`tenk10k_phase1_effector_genes.v5.parquet`**.
+
+It holds the single-cell eQTL Mendelian randomisation results for every gene,
+cell type and trait tested in TenK10K Phase 1 (7.5 million rows): multi-SNP SMR
+with local false discovery rates, the HEIDI, IVW-LD and MR-link-2 sensitivity
+analyses, coloc and SuSiE-based colocalisation, and the evidence tiers used in
+the manuscript (`mr`, `mr_sens`, `mr_coloc`, `mr_sens_coloc`). Each column is
+described in `tenk10k_phase1_effector_genes.v5.md`, next to it in the record.
+The same descriptions are stored in the file's own metadata, so it documents
+itself.
+
+```r
+df <- arrow::read_parquet("tenk10k_phase1_effector_genes.v5.parquet")
+subset(df, mr_sens_coloc)   # MR, sensitivity and colocalisation all supported
+```
+
+```python
+import pandas as pd
+df = pd.read_parquet("tenk10k_phase1_effector_genes.v5.parquet")
+df[df.mr_sens_coloc]
+```
+
+The file is made from `results/preprocessed/tenk10k_phase1.v5.parquet.gz` by
+the rule `main_results_release` (`workflow/rules/misc.smk`): it has every
+column of that file, renamed and documented in
+[`workflow/config/main_results_columns.tsv`](workflow/config/main_results_columns.tsv).
+
 ## Contents
 
 | Path | Contents |
