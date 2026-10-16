@@ -147,7 +147,13 @@
     "person_or_org": {
       "type": "personal",
       "family_name": "McCloy",
-      "given_name": "Rachael A."
+      "given_name": "Rachael A.",
+      "identifiers": [
+        {
+          "scheme": "orcid",
+          "identifier": "0000-0001-7791-4044"
+        }
+      ]
     },
     "affiliations": [
       {
@@ -285,7 +291,13 @@
     "person_or_org": {
       "type": "personal",
       "family_name": "Dong",
-      "given_name": "Oscar"
+      "given_name": "Oscar",
+      "identifiers": [
+        {
+          "scheme": "orcid",
+          "identifier": "0009-0009-8275-2989"
+        }
+      ]
     },
     "affiliations": [
       {
@@ -303,7 +315,13 @@
     "person_or_org": {
       "type": "personal",
       "family_name": "Harris",
-      "given_name": "Bradley T."
+      "given_name": "Bradley T.",
+      "identifiers": [
+        {
+          "scheme": "orcid",
+          "identifier": "0000-0001-9585-1016"
+        }
+      ]
     },
     "affiliations": [
       {
@@ -315,7 +333,13 @@
     "person_or_org": {
       "type": "personal",
       "family_name": "Alegbe",
-      "given_name": "Tobi"
+      "given_name": "Tobi",
+      "identifiers": [
+        {
+          "scheme": "orcid",
+          "identifier": "0000-0003-1622-0502"
+        }
+      ]
     },
     "affiliations": [
       {
@@ -333,7 +357,13 @@
     "person_or_org": {
       "type": "personal",
       "family_name": "Raine",
-      "given_name": "Tim"
+      "given_name": "Tim",
+      "identifiers": [
+        {
+          "scheme": "orcid",
+          "identifier": "0000-0002-5855-9873"
+        }
+      ]
     },
     "affiliations": [
       {
@@ -348,7 +378,13 @@
     "person_or_org": {
       "type": "personal",
       "family_name": "Anderson",
-      "given_name": "Carl A."
+      "given_name": "Carl A.",
+      "identifiers": [
+        {
+          "scheme": "orcid",
+          "identifier": "0000-0003-1719-7009"
+        }
+      ]
     },
     "affiliations": [
       {
@@ -363,7 +399,13 @@
     "person_or_org": {
       "type": "personal",
       "family_name": "Hemani",
-      "given_name": "Gibran"
+      "given_name": "Gibran",
+      "identifiers": [
+        {
+          "scheme": "orcid",
+          "identifier": "0000-0003-0920-1055"
+        }
+      ]
     },
     "affiliations": [
       {
