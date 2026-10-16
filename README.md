@@ -89,8 +89,8 @@ make fig-m2
 with its caption. To run several scripts at once, add `CORES=N`. Each script
 can use up to about 16 GB of memory, so choose N no larger than your memory in
 GB divided by 16 (for example `CORES=4` with 64 GB). Rebuilding everything takes about
-an hour of computing: on NCI Gadi, `make all` with `CORES=4` finished in 16
-minutes and used at most 50 GB. The first build
+an hour of computing: on NCI Gadi, `make all` with `CORES=4` finished in 18
+minutes and used at most 45 GB. The first build
 installs a pinned conda environment, which takes several minutes;
 later builds reuse it.
 
@@ -118,7 +118,9 @@ not meant for heavy work. Split the work in two:
 
 1. **Download**, once, wherever your site allows jobs with internet access
    (for example a data-transfer queue). Load Apptainer first if it is a
-   module (`module load apptainer`), and allow 16 GB of memory:
+   module (`module load apptainer`), and allow 16 GB of memory and about 6 GB of
+   temporary disk (`make data` unpacks the archive in `$TMPDIR`, which on some
+   clusters is a small per-job disk; on NCI Gadi, request `-l jobfs=20GB`):
 
    ```bash
    make data
