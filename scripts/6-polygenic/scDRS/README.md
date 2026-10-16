@@ -7,7 +7,7 @@ pipeline output. The full table of manuscript items is in `../README.md`.
 |---|---|
 | `plot_scdrs_overall.R` | Fig 4, Extended Data Fig 6, Supp Fig 14 and Supp Table 9 |
 | `compare_scdrs_aifi.R` | Replication in the AIFI Immune Health Atlas (Supp Figs 23–24) |
-| `aifi-labelTransfer.py` | Transfers TenK10K cell-type labels onto the AIFI atlas. It writes the annotated `.h5ad` that the pipeline scores and `compare_scdrs_aifi.R` then summarises |
+| `workflow/rules/snakescripts/scdrs/aifi-labelTransfer.py` (analysis pipeline) | Transfers TenK10K cell-type labels onto the AIFI atlas. It writes the annotated `.h5ad` that the pipeline scores and `compare_scdrs_aifi.R` then summarises |
 | `scdrs_supp_sampling.R` | Crohn's disease robustness to the cell-sampling strategy |
 
 The pipeline computes the scores themselves, not these scripts. See
@@ -16,7 +16,8 @@ parameters are in `resources/scdrs/config/{study}.yaml`.
 
 > [!IMPORTANT]
 > `plot_scdrs_overall.R` and `scdrs_supp_sampling.R` read **per-cell** scDRS
-> scores. These are keyed to individual TenK10K donors and are **not** part of
-> the public data release, so a third party cannot run these two scripts. Only
-> the cell-type-level statistics are released. `aifi-labelTransfer.py` needs the
-> AIFI atlas `.h5ad`, which you obtain from its own source.
+> scores and UMAP coordinates computed by the pipeline. They are shared in the
+> data bundle with anonymised cell IDs (10x barcode and an anonymous code in place
+> of the sequencing pool). The label transfer onto AIFI is a pipeline step
+> (`workflow/rules/snakescripts/scdrs/aifi-labelTransfer.py`) and needs the AIFI
+> atlas `.h5ad`, which you obtain from its own source.

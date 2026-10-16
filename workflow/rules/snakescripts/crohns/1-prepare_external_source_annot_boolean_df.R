@@ -10,7 +10,7 @@ library(here)
 library(tidyverse)
 
 # Gene annotation table 
-df_gene_annot <- data.table::fread("metadata/gencode.v44.gene_type.tsv.gz")
+df_gene_annot <- data.table::fread("resources/misc/gencode.v44.gene_type.tsv")
 
 ############# For every source, generate a dataframe with the column name "Gene"############
 
@@ -51,7 +51,7 @@ df2 <- df2 %>% dplyr::rename(Gene = symbol) %>%
 
 ############ 3: Nearest gene to 320 loci from Liu et al., 2023 
 # Liu et al. 2023 Supplementary Table 8 genes (extracted by
-# workflow/rules/snakescripts/crohns_external/extract_third_party.R)
+# workflow/rules/snakescripts/crohns/extract_third_party.R)
 df3 <- read_tsv(here("resources/crohns_case_study/crohns_relevant_gene_lists/sources/liu2023_st8_genes.tsv"), show_col_types = FALSE) %>% select(Gene) %>% distinct()
 
 ############# 4: Drug target list from literature 

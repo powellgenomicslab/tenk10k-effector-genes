@@ -2,11 +2,11 @@
 # Crohn's disease MR genes, for the "DEG in Matched Major Cell Type" bar of Fig 6a.
 # The DEG table itself is not shared, so the bundle carries this count instead,
 # together with the set of major cell types it was computed for, which
-# plot_figures/1-gene_annotation_barplot.R checks before using it.
+# scripts/8-crohns/plot_figures/1-gene_annotation_barplot.R checks before using it.
 
 library(tidyverse)
 
-# major cell types as defined in plot_figures/1-gene_annotation_barplot.R
+# major cell types as defined in scripts/8-crohns/plot_figures/1-gene_annotation_barplot.R
 tenk_sig <- readRDS("resources/crohns_case_study/postprocess/tenk_crohns_sig.RDS") %>%
   ungroup() %>%
   mutate(major_cell_type = as.character(major_cell_type) %>% dplyr::replace_when(cell_type == "ILC" ~ "NK", cell_type == "Plasmablast" ~ "Plasma B"))

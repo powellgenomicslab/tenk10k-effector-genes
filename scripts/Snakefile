@@ -12,9 +12,9 @@
 #   * one *producer* rule per script, declaring everything it reads and writes;
 #   * one *item* rule per manuscript figure/table (fig_mN, fig_eN, fig_sN, tab_sN)
 #     that simply requests the item's files;
-#   * steps that read raw single-cell or genotype data are only defined with
-#     `--config restricted=true`; otherwise their outputs are taken from the
-#     public summary-statistics bundle (see config/figures.yaml).
+#   * every input comes from the data bundle (see config/figures.yaml); steps
+#     that start from raw or unshared data are in workflow/ (raw -> intermediate),
+#     and items that need them (Supp. Fig. 25) are flagged as not rebuildable.
 #
 # Every external input is declared with ext(), which also records it for the
 # bundle manifest (`make manifest` -> config/figure_inputs.txt).
@@ -23,7 +23,6 @@ configfile: "config/figures.yaml"
 
 containerized: config["container"]
 
-RESTRICTED = bool(config.get("restricted", False))
 ENV = "../workflow/envs/figures.yaml"
 SC_ENV = "../workflow/envs/scverse.yaml"
 
@@ -37,11 +36,6 @@ def ext(*paths, review=""):
     for p in paths:
         EXTERNAL.setdefault(p, review)
     return list(paths)
-
-
-def bundled(*paths, review=""):
-    """Outputs of restricted steps: built here with restricted=true, else from the bundle."""
-    return [] if RESTRICTED else ext(*paths, review=review)
 
 
 def figs(*ids):
@@ -145,7 +139,7 @@ ITEMS = {
     "fig_s22": ("Cells enriched for Crohn's disease across two sampling strategies", figs("s22")),
     "fig_s23": ("Cells sampled from AIFI and TenK10K for scDRS", figs("s23")),
     "fig_s24": ("scDRS Z-scores, TenK10K vs AIFI", figs("s24")),
-    "fig_s25": ("Harmonised major cell types for the MR-DEG comparison (restricted)", panels(
+    "fig_s25": ("Harmonised major cell types for the MR-DEG comparison", panels(
         "8-crohns",
         *[f"umap_{n}.{e}" for n in ("original_annotation", "major_cell_types") for e in ("pdf", "png")],
     )),
@@ -171,9 +165,10 @@ ITEMS = {
     "tab_s20": ("IBDverse effector-gene enrichment", tabs("s20")),
     "tab_s21": ("Crohn's literature annotations", tabs("s21")),
 }
-RESTRICTED_ITEMS = {"fig_s25"}
+# built by workflow/rules/crohns.smk from raw single-cell data, which the bundle lacks
+NOT_REBUILDABLE = {"fig_s25"}
 
-AVAILABLE = [k for k in ITEMS if RESTRICTED or k not in RESTRICTED_ITEMS]
+AVAILABLE = [k for k in ITEMS if k not in NOT_REBUILDABLE]
 
 
 def group(prefix):
@@ -225,14 +220,14 @@ for _item in set(ITEMS) - set(AVAILABLE):
             _item
         localrule: True
         shell:
-            "echo '{rule} needs raw single-cell data: run with --config restricted=true' >&2; exit 1"
+            "echo '{rule} is drawn from raw single-cell data by workflow/rules/crohns.smk; it cannot be rebuilt from the data bundle' >&2; exit 1"
 
 
 rule targets:
     """Print every make target with its manuscript caption."""
     run:
         for k, (caption, _) in ITEMS.items():
-            flag = "" if k in AVAILABLE else "  [needs restricted=true]"
+            flag = "" if k in AVAILABLE else "  [not rebuildable from the data bundle]"
             print(f"  make {k.replace('_', '-', 1):9s} {caption}{flag}")
 
 
@@ -1012,13 +1007,12 @@ CD_MR_DEG = f"{CD}/deg/mr_max_evidence_and_deg_innerjoin_by_majct.RDS"
 CD_DEG_COUNT = f"{CD}/deg/deg_genes_matched_major_ct.tsv"
 CD_GPX1 = f"{CD}/locus_zoom_data/GPX1/tenk10k_GPX1_locus_plot_data.RDS"
 CD_JAZF1 = f"{CD}/figures/JAZF1_data.RDS"
-CD_MAJOR_H5AD = f"{CD}/deg/cd_colon_immune_major_cell_types.h5ad"
 
 
 rule crohns_postprocess:
     input:
         PREPROCESS,
-        bundled(CD_ANNOT) or CD_ANNOT,
+        ext(CD_ANNOT),
     output:
         CD_POST,
     params:
@@ -1034,9 +1028,9 @@ rule crohns_postprocess:
 rule crohns_fig6_panels:
     input:
         CD_POST,
-        bundled(CD_ANNOT) or CD_ANNOT,
-        bundled(CD_DEG_COUNT) or CD_DEG_COUNT,
-        bundled(CD_MR_DEG) or CD_MR_DEG,
+        ext(CD_ANNOT),
+        ext(CD_DEG_COUNT),
+        ext(CD_MR_DEG),
     output:
         FIG6_PANELS,
         f"{CD}/figures/heatmap_objects.RData",
@@ -1162,8 +1156,8 @@ rule crohns_tables:
         f"{CD}/supplementary/crohns_summary_gene_count_df.RData",
         f"{CD}/postprocess/tenk_crohns_sig.RDS",
         f"{CD}/postprocess/tenk_alltraits_sig.RDS",
-        bundled(CD_MR_DEG) or CD_MR_DEG,
-        bundled(CD_ANNOT) or CD_ANNOT,
+        ext(CD_MR_DEG),
+        ext(CD_ANNOT),
         # from the TenK10K_causal_inference_vs_IBDverse submodule
         ext(
             "metadata/cell.tsv",
@@ -1191,113 +1185,3 @@ rule crohns_tables:
         ENV
     shell:
         R
-
-
-# --- restricted steps: inputs that are not shared ---------------------------------------
-# Only defined with `--config restricted=true` (on Gadi, with the full results tree).
-# Otherwise their outputs are taken from the bundle (bundled()). They read raw
-# single-cell data, or third-party tables of which only derived results are shared:
-# the Crohn's literature gene lists and the Kong et al. 2023 DEG table.
-# The locus objects that need individual-level genotypes (GPX1, JAZF1) are built by
-# workflow/rules/misc.smk and taken from the bundle here.
-
-if RESTRICTED:
-
-    rule crohns_external_annot:
-        input:
-            ext("metadata/gencode.v44.gene_type.tsv.gz"),
-            ext(
-                *[
-                    f"{CD}/crohns_relevant_gene_lists/sources/{f}"
-                    for f in (
-                        "Systematic Review of Crohns Disease Genes.csv",
-                        "OT-EFO_0000384-associated-targets-07_04_2026-v26_03.tsv",
-                        "liu2023_st8_genes.tsv",
-                        "drug_target_genes.txt",
-                    )
-                ],
-            ),
-        output:
-            CD_ANNOT,
-        params:
-            script="scripts/8-crohns/prepare_data/1-prepare_external_source_annot_boolean_df.R",
-        log:
-            log("crohns_external_annot"),
-        conda:
-            ENV
-        shell:
-            R
-
-    rule crohns_deg_preprocess:
-        input:
-            ext("metadata/cell.tsv"),
-            ext(
-                f"{CD}/deg/kong2023_immune_deg.parquet",
-            ),
-        output:
-            CD_DEG,
-            f"{CD}/deg/common_gut_cell_types_with_tenk_revision.txt",
-        params:
-            script="scripts/8-crohns/deg/1-prepare_crohns_deg_pre-processed.R",
-        log:
-            log("crohns_deg_preprocess"),
-        conda:
-            ENV
-        shell:
-            R
-
-    rule crohns_mr_deg:
-        input:
-            CD_DEG,
-            f"{CD}/postprocess/tenk_crohns_sig.RDS",
-        output:
-            CD_MR_DEG,
-            [f"{CD}/deg/mr_deg_{x}.txt" for x in ("con", "discon", "mixed")],
-        params:
-            script="scripts/8-crohns/deg/2-mr_deg_comparison_inner_join.R",
-        log:
-            log("crohns_mr_deg"),
-        conda:
-            ENV
-        shell:
-            R
-
-    rule crohns_deg_count:
-        input:
-            CD_DEG,
-            f"{CD}/postprocess/tenk_crohns_sig.RDS",
-        output:
-            CD_DEG_COUNT,
-        params:
-            script="scripts/8-crohns/deg/5-count_matched_deg_genes.R",
-        log:
-            log("crohns_deg_count"),
-        conda:
-            ENV
-        shell:
-            R
-
-
-    rule crohns_h5ad_major_ct:
-        input:
-            f"{CD}/deg/cd_colon_immune.h5ad",
-        output:
-            CD_MAJOR_H5AD,
-        log:
-            log("crohns_h5ad_major_ct"),
-        conda:
-            SC_ENV
-        shell:
-            "python3 scripts/8-crohns/deg/3-prepare_data_for_MR_comparison.py > {log} 2>&1"
-
-    rule crohns_umap:
-        input:
-            CD_MAJOR_H5AD,
-        output:
-            ITEMS["fig_s25"][1],
-        log:
-            log("crohns_umap"),
-        conda:
-            SC_ENV
-        shell:
-            "python3 scripts/8-crohns/deg/4-plot_UMAP_cell_annotation.py > {log} 2>&1"

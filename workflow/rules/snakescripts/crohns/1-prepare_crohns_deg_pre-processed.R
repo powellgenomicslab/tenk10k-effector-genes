@@ -16,7 +16,7 @@ library(here)
 crohns_dir <- here("resources/crohns_case_study")
 # Kong et al. 2023 DEG table, immune cells and discrete model only, with Ensembl IDs
 # (extracted from the published supplementary table by
-# workflow/rules/snakescripts/crohns_external/extract_third_party.R)
+# workflow/rules/snakescripts/crohns/extract_third_party.R)
 deg <- arrow::read_parquet(paste0(crohns_dir, "/deg/kong2023_immune_deg.parquet"))
 
 print("Kong et al DEG colnames: ")
@@ -63,12 +63,12 @@ deg <- deg %>% left_join(maj_annot, by = "gut_cell_type")
 saveRDS(deg, paste0(crohns_dir, "/deg/crohns_deg_pre-processed_revision.RDS"))
 
 # Change the major cell type annotation for ILCs to NK instead of Unconventional T and for Plasmablast to Plasma B instead of B
-# NOTE: metadata/cell.tsv is the authoritative cell map and already carries this revision in its
+# NOTE: resources/metadata/cell_map_revised.tsv (published as metadata/cell.tsv) is the authoritative cell map and already carries this revision in its
 # revision_major_cell_type column (ILC -> NK, Plasmablast -> Plasma B), so it is read directly below
 # and no revised cell map is written.
 ######## 
 
 # Note the shared cell types 
-tenk_maj_annot <- read.delim("metadata/cell.tsv")
+tenk_maj_annot <- read.delim("resources/metadata/cell_map_revised.tsv")
 common_gut_cell_types <- intersect(tenk_maj_annot$revision_major_cell_type, maj_annot$major_cell_type)
 write.table(common_gut_cell_types, paste0(crohns_dir, "/deg/common_gut_cell_types_with_tenk_revision.txt"), sep = "\t", col.names = F, quote = F, row.names = F)
