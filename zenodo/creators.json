@@ -1,0 +1,479 @@
+[
+  {
+    "person_or_org": {
+      "type": "personal",
+      "family_name": "Henry",
+      "given_name": "Albert",
+      "identifiers": [
+        {
+          "scheme": "orcid",
+          "identifier": "0000-0001-7422-2288"
+        }
+      ]
+    },
+    "affiliations": [
+      {
+        "name": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia"
+      },
+      {
+        "name": "Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia"
+      },
+      {
+        "name": "UNSW Cellular Genomics Futures Institute, University of New South Wales, Sydney, NSW, Australia"
+      },
+      {
+        "name": "Institute of Cardiovascular Science, University College London, London, UK"
+      }
+    ]
+  },
+  {
+    "person_or_org": {
+      "type": "personal",
+      "family_name": "Senabouth",
+      "given_name": "Anne",
+      "identifiers": [
+        {
+          "scheme": "orcid",
+          "identifier": "0000-0002-8798-9821"
+        }
+      ]
+    },
+    "affiliations": [
+      {
+        "name": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia"
+      },
+      {
+        "name": "Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia"
+      }
+    ]
+  },
+  {
+    "person_or_org": {
+      "type": "personal",
+      "family_name": "Tyebally",
+      "given_name": "Rika",
+      "identifiers": [
+        {
+          "scheme": "orcid",
+          "identifier": "0009-0006-6090-8979"
+        }
+      ]
+    },
+    "affiliations": [
+      {
+        "name": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia"
+      },
+      {
+        "name": "Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia"
+      }
+    ]
+  },
+  {
+    "person_or_org": {
+      "type": "personal",
+      "family_name": "Bowen",
+      "given_name": "Blake"
+    },
+    "affiliations": [
+      {
+        "name": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia"
+      },
+      {
+        "name": "Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia"
+      },
+      {
+        "name": "UNSW Cellular Genomics Futures Institute, University of New South Wales, Sydney, NSW, Australia"
+      }
+    ]
+  },
+  {
+    "person_or_org": {
+      "type": "personal",
+      "family_name": "Allen",
+      "given_name": "Peter C.",
+      "identifiers": [
+        {
+          "scheme": "orcid",
+          "identifier": "0000-0002-3950-9539"
+        }
+      ]
+    },
+    "affiliations": [
+      {
+        "name": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia"
+      },
+      {
+        "name": "Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia"
+      }
+    ]
+  },
+  {
+    "person_or_org": {
+      "type": "personal",
+      "family_name": "Spenceley",
+      "given_name": "Eleanor",
+      "identifiers": [
+        {
+          "scheme": "orcid",
+          "identifier": "0009-0000-5543-2810"
+        }
+      ]
+    },
+    "affiliations": [
+      {
+        "name": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia"
+      },
+      {
+        "name": "Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia"
+      },
+      {
+        "name": "UNSW Cellular Genomics Futures Institute, University of New South Wales, Sydney, NSW, Australia"
+      }
+    ]
+  },
+  {
+    "person_or_org": {
+      "type": "personal",
+      "family_name": "Sagi-Zsigmond",
+      "given_name": "Eszter"
+    },
+    "affiliations": [
+      {
+        "name": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia"
+      }
+    ]
+  },
+  {
+    "person_or_org": {
+      "type": "personal",
+      "family_name": "McCloy",
+      "given_name": "Rachael A."
+    },
+    "affiliations": [
+      {
+        "name": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia"
+      }
+    ]
+  },
+  {
+    "person_or_org": {
+      "type": "personal",
+      "family_name": "Cuomo",
+      "given_name": "Anna S.E.",
+      "identifiers": [
+        {
+          "scheme": "orcid",
+          "identifier": "0000-0001-5168-6979"
+        }
+      ]
+    },
+    "affiliations": [
+      {
+        "name": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia"
+      },
+      {
+        "name": "Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia"
+      },
+      {
+        "name": "UNSW Cellular Genomics Futures Institute, University of New South Wales, Sydney, NSW, Australia"
+      },
+      {
+        "name": "Centre for Population Genomics, Garvan Institute of Medical Research, Sydney, NSW, Australia"
+      },
+      {
+        "name": "Centre for Population Genomics, Murdoch Children's Research Institute, Melbourne, VIC, Australia"
+      }
+    ]
+  },
+  {
+    "person_or_org": {
+      "type": "personal",
+      "family_name": "Fan",
+      "given_name": "Jianan",
+      "identifiers": [
+        {
+          "scheme": "orcid",
+          "identifier": "0000-0003-4424-9572"
+        }
+      ]
+    },
+    "affiliations": [
+      {
+        "name": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia"
+      },
+      {
+        "name": "Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia"
+      }
+    ]
+  },
+  {
+    "person_or_org": {
+      "type": "personal",
+      "family_name": "Huang",
+      "given_name": "Hao Lawrence",
+      "identifiers": [
+        {
+          "scheme": "orcid",
+          "identifier": "0000-0001-8960-8941"
+        }
+      ]
+    },
+    "affiliations": [
+      {
+        "name": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia"
+      },
+      {
+        "name": "Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia"
+      },
+      {
+        "name": "UNSW Cellular Genomics Futures Institute, University of New South Wales, Sydney, NSW, Australia"
+      }
+    ]
+  },
+  {
+    "person_or_org": {
+      "type": "personal",
+      "family_name": "Tanudisastro",
+      "given_name": "Hope A.",
+      "identifiers": [
+        {
+          "scheme": "orcid",
+          "identifier": "0000-0002-4561-305X"
+        }
+      ]
+    },
+    "affiliations": [
+      {
+        "name": "Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia"
+      },
+      {
+        "name": "Centre for Population Genomics, Garvan Institute of Medical Research, Sydney, NSW, Australia"
+      },
+      {
+        "name": "Centre for Population Genomics, Murdoch Children's Research Institute, Melbourne, VIC, Australia"
+      },
+      {
+        "name": "Faculty of Medicine and Health, University of Sydney, Sydney, NSW, Australia"
+      }
+    ]
+  },
+  {
+    "person_or_org": {
+      "type": "personal",
+      "family_name": "Xue",
+      "given_name": "Angli",
+      "identifiers": [
+        {
+          "scheme": "orcid",
+          "identifier": "0000-0002-0285-0426"
+        }
+      ]
+    },
+    "affiliations": [
+      {
+        "name": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia"
+      },
+      {
+        "name": "Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia"
+      },
+      {
+        "name": "UNSW Cellular Genomics Futures Institute, University of New South Wales, Sydney, NSW, Australia"
+      }
+    ]
+  },
+  {
+    "person_or_org": {
+      "type": "personal",
+      "family_name": "Dong",
+      "given_name": "Oscar"
+    },
+    "affiliations": [
+      {
+        "name": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia"
+      },
+      {
+        "name": "Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia"
+      },
+      {
+        "name": "Faculty of Medicine and Health, University of Sydney, Sydney, NSW, Australia"
+      }
+    ]
+  },
+  {
+    "person_or_org": {
+      "type": "personal",
+      "family_name": "Harris",
+      "given_name": "Bradley T."
+    },
+    "affiliations": [
+      {
+        "name": "Wellcome Sanger Institute, Hinxton CB10 1SA, UK"
+      }
+    ]
+  },
+  {
+    "person_or_org": {
+      "type": "personal",
+      "family_name": "Alegbe",
+      "given_name": "Tobi"
+    },
+    "affiliations": [
+      {
+        "name": "Wellcome Sanger Institute, Hinxton CB10 1SA, UK"
+      },
+      {
+        "name": "Open Targets, Wellcome Genome Campus, Hinxton, CB10 1SA, UK"
+      },
+      {
+        "name": "EMBL-EBI, Hinxton, CB10 1SA, UK"
+      }
+    ]
+  },
+  {
+    "person_or_org": {
+      "type": "personal",
+      "family_name": "Raine",
+      "given_name": "Tim"
+    },
+    "affiliations": [
+      {
+        "name": "Open Targets, Wellcome Genome Campus, Hinxton, CB10 1SA, UK"
+      },
+      {
+        "name": "Addenbrooke's Hospital, Cambridge CB2 0QQ, UK"
+      }
+    ]
+  },
+  {
+    "person_or_org": {
+      "type": "personal",
+      "family_name": "Anderson",
+      "given_name": "Carl A."
+    },
+    "affiliations": [
+      {
+        "name": "Wellcome Sanger Institute, Hinxton CB10 1SA, UK"
+      },
+      {
+        "name": "Open Targets, Wellcome Genome Campus, Hinxton, CB10 1SA, UK"
+      }
+    ]
+  },
+  {
+    "person_or_org": {
+      "type": "personal",
+      "family_name": "Hemani",
+      "given_name": "Gibran"
+    },
+    "affiliations": [
+      {
+        "name": "Medical Research Council (MRC) Integrative Epidemiology Unit, Population Health Sciences, Bristol Medical School, University of Bristol, Bristol, United Kingdom"
+      }
+    ]
+  },
+  {
+    "person_or_org": {
+      "type": "personal",
+      "family_name": "de Lange",
+      "given_name": "Katrina M."
+    },
+    "affiliations": [
+      {
+        "name": "Centre for Population Genomics, Garvan Institute of Medical Research, Sydney, NSW, Australia"
+      },
+      {
+        "name": "Centre for Population Genomics, Murdoch Children's Research Institute, Melbourne, VIC, Australia"
+      }
+    ]
+  },
+  {
+    "person_or_org": {
+      "type": "personal",
+      "family_name": "Figtree",
+      "given_name": "Gemma A.",
+      "identifiers": [
+        {
+          "scheme": "orcid",
+          "identifier": "0000-0002-5080-6083"
+        }
+      ]
+    },
+    "affiliations": [
+      {
+        "name": "Charles Perkins Centre, The University of Sydney, Sydney, NSW, Australia"
+      },
+      {
+        "name": "Kolling Institute of Medical Research, Royal North Shore Hospital, Sydney, NSW, Australia"
+      }
+    ]
+  },
+  {
+    "person_or_org": {
+      "type": "personal",
+      "family_name": "Hewitt",
+      "given_name": "Alex W.",
+      "identifiers": [
+        {
+          "scheme": "orcid",
+          "identifier": "0000-0002-5123-5999"
+        }
+      ]
+    },
+    "affiliations": [
+      {
+        "name": "Menzies Institute for Medical Research, University of Tasmania, Hobart, TAS, Australia"
+      },
+      {
+        "name": "Department of Ophthalmology, Royal Hobart Hospital, Hobart, TAS, Australia"
+      }
+    ]
+  },
+  {
+    "person_or_org": {
+      "type": "personal",
+      "family_name": "MacArthur",
+      "given_name": "Daniel G.",
+      "identifiers": [
+        {
+          "scheme": "orcid",
+          "identifier": "0000-0002-5771-2290"
+        }
+      ]
+    },
+    "affiliations": [
+      {
+        "name": "Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia"
+      },
+      {
+        "name": "Centre for Population Genomics, Garvan Institute of Medical Research, Sydney, NSW, Australia"
+      },
+      {
+        "name": "Centre for Population Genomics, Murdoch Children's Research Institute, Melbourne, VIC, Australia"
+      }
+    ]
+  },
+  {
+    "person_or_org": {
+      "type": "personal",
+      "family_name": "Powell",
+      "given_name": "Joseph E.",
+      "identifiers": [
+        {
+          "scheme": "orcid",
+          "identifier": "0000-0002-5070-4124"
+        }
+      ]
+    },
+    "affiliations": [
+      {
+        "name": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia"
+      },
+      {
+        "name": "Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia"
+      },
+      {
+        "name": "UNSW Cellular Genomics Futures Institute, University of New South Wales, Sydney, NSW, Australia"
+      }
+    ]
+  }
+]
