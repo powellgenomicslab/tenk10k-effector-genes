@@ -14,12 +14,10 @@ exactly the inputs that release was tested with.
 
 ## Once
 
-1. The `creators` in `zenodo/code.zenodo.json` and `zenodo/data.json` follow
-   the manuscript's author list and affiliations. Add ORCIDs (`"orcid"` per
-   creator) if wanted. At step 2 of the first release, once the data DOI
-   replaces the placeholder, `git mv zenodo/code.zenodo.json .zenodo.json`;
-   until the root `.zenodo.json` exists, Zenodo would take the authors from
-   the GitHub contributors.
+1. The `creators` in `.zenodo.json` (code) and `zenodo/data.json` (data)
+   follow the manuscript's author list and affiliations. Add ORCIDs
+   (`"orcid"` per creator) if wanted. The data DOI reserved for the first
+   release is 10.5281/zenodo.23406585 (record 23406585).
 2. A repository owner enables the repository in Zenodo under
    *Account → GitHub*.
 

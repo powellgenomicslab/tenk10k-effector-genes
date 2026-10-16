@@ -118,7 +118,7 @@
       "scheme": "doi"
     },
     {
-      "identifier": "TODO: data record DOI",
+      "identifier": "10.5281/zenodo.23406585",
       "relation": "isSupplementedBy",
       "resource_type": "dataset",
       "scheme": "doi"
