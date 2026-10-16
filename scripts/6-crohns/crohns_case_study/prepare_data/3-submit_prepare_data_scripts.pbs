@@ -1,0 +1,28 @@
+#!/bin/bash -l
+#PBS -P fy54
+#PBS -q normal
+#PBS -N prepare_data
+#PBS -l walltime=00:10:00
+#PBS -l storage=gdata/ei56+gdata/fy54+gdata/io72
+#PBS -l mem=16GB
+#PBS -l ncpus=1
+#PBS -l wd
+#PBS -e /g/data/fy54/rt3501/repos/tenk10k-causal/scripts/crohns_case_study/logs/prepare_data.stderr
+#PBS -o /g/data/fy54/rt3501/repos/tenk10k-causal/scripts/crohns_case_study/logs/prepare_data.stdout
+#PBS -M r.tyebally@garvan.org.au
+#PBS -m ae
+
+
+project_dir=/g/data/fy54/rt3501/repos/tenk10k-causal
+logs_dir=${project_dir}/scripts/crohns_case_study/logs
+
+conda activate tidyverse
+
+script=${project_dir}/scripts/crohns_case_study/prepare_data/1-prepare_external_source_annot_boolean_df.R
+log=${logs_dir}/1-prepare_external_source_annot_boolean_df.log
+
+script2=${project_dir}/scripts/crohns_case_study/prepare_data/2-postprocess.R
+log2=${logs_dir}/2-postprocess.log
+
+/usr/bin/time Rscript ${script} >> ${log} 2>&1
+/usr/bin/time Rscript ${script2} >> ${log2} 2>&1
