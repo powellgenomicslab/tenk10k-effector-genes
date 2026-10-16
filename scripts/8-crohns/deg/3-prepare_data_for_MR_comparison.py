@@ -72,22 +72,7 @@ conditions = [
 
 adata.obs['major_cell_type'] = adata.obs['Celltype'].case_when(conditions)
 adata.obs['major_cell_type'] = adata.obs['major_cell_type'].astype('category')
-
-############################################################################################### 
-# add genes symbols 
-# get gene names from features file of raw data. you can also just string split the features col in adata (formatted as ENSID_genesymbol) to pull out the gene symbol but idk python
-# features = pd.read_csv(f"{data_dir}/features_original.tsv", header=None, sep = "\t")
-# features.columns = ["ensembl_id", "gene_symbol"]
-
-# # used AI for this dictionary 
-# # Create a mapping dictionary from Ensembl ID to gene symbol
-# id_to_symbol = dict(zip(features["ensembl_id"], features["gene_symbol"]))
-
-# # Map the Ensembl IDs in adata.var_names to gene symbols
-# mapped_symbols = [id_to_symbol.get(ensembl_id, ensembl_id) for ensembl_id in adata.var_names]
-
-# # Update adata.var_names with gene symbols
-# adata.var['gene_symbols']= mapped_symbols
+ 
 
 ################################################################################################################################
 # save the object with major cell types  
