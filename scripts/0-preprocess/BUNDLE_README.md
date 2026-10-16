@@ -39,9 +39,11 @@ targets.
   for the few loci that are plotted.
 - **Public-data queries and public references**: Open Targets, ChEMBL,
   STRING, MSigDB and Gene Ontology tables.
-- **Third-party tables and extracts**: published supplementary tables. Two
-  of them, Kong et al. 2023 and Liu et al. 2023, are included only as the
-  extracts the analysis uses.
+- **Third-party tables**: published supplementary tables used as they are.
+  For the Crohn's disease case study, only results derived from the source
+  tables are included (the literature evidence per gene, and the MR genes
+  joined with the single-cell DEGs of Kong et al. 2023), not the tables
+  themselves.
 
 ## Not included
 
@@ -54,9 +56,10 @@ targets.
   original sources (see `INVENTORY.tsv`). The TenK10K sc-eQTL summary
   statistics are released with Cuomo et al. 2025
   (doi:10.1101/2025.03.20.25324352).
-- The single-cell data of Kong et al. 2023 and of the AIFI Immune Health
-  Atlas (Gong et al. 2025), and the original supplementary tables of Kong et
-  al. 2023 and Liu et al. 2023.
+- The single-cell data and DEG table of Kong et al. 2023, the single-cell
+  data of the AIFI Immune Health Atlas (Gong et al. 2025), and the Crohn's
+  disease literature gene lists (Garza-Hernández et al. 2022, Open Targets,
+  Liu et al. 2023, drug-target reviews).
 
 ## Licences
 

@@ -39,6 +39,11 @@ def ext(*paths, review=""):
     return list(paths)
 
 
+def bundled(*paths, review=""):
+    """Outputs of restricted steps: built here with restricted=true, else from the bundle."""
+    return [] if RESTRICTED else ext(*paths, review=review)
+
+
 def figs(*ids):
     return [f"figures/fig-{i}.{e}" for i in ids for e in ("pdf", "png")]
 
@@ -999,41 +1004,17 @@ CD_POST = [
 ]
 CD_DEG = f"{CD}/deg/crohns_deg_pre-processed_revision.RDS"
 CD_MR_DEG = f"{CD}/deg/mr_max_evidence_and_deg_innerjoin_by_majct.RDS"
+# number of Kong et al. DEG genes in the major cell types with Crohn's MR genes (Fig. 6a)
+CD_DEG_COUNT = f"{CD}/deg/deg_genes_matched_major_ct.tsv"
 CD_GPX1 = f"{CD}/locus_zoom_data/GPX1/tenk10k_GPX1_locus_plot_data.RDS"
 CD_JAZF1 = f"{CD}/figures/JAZF1_data.RDS"
 CD_MAJOR_H5AD = f"{CD}/deg/cd_colon_immune_major_cell_types.h5ad"
 
 
-rule crohns_external_annot:
-    input:
-        ext("metadata/gencode.v44.gene_type.tsv.gz"),
-        ext(
-            *[
-                f"{CD}/crohns_relevant_gene_lists/sources/{f}"
-                for f in (
-                    "Systematic Review of Crohns Disease Genes.csv",
-                    "OT-EFO_0000384-associated-targets-07_04_2026-v26_03.tsv",
-                    "liu2023_st8_genes.tsv",
-                    "drug_target_genes.txt",
-                )
-            ],
-        ),
-    output:
-        CD_ANNOT,
-    params:
-        script="scripts/8-crohns/prepare_data/1-prepare_external_source_annot_boolean_df.R",
-    log:
-        log("crohns_external_annot"),
-    conda:
-        ENV
-    shell:
-        R
-
-
 rule crohns_postprocess:
     input:
         PREPROCESS,
-        CD_ANNOT,
+        bundled(CD_ANNOT) or CD_ANNOT,
     output:
         CD_POST,
     params:
@@ -1046,48 +1027,12 @@ rule crohns_postprocess:
         R
 
 
-rule crohns_deg_preprocess:
-    input:
-        ext("metadata/cell.tsv"),
-        ext(
-            f"{CD}/deg/kong2023_immune_deg.parquet",
-        ),
-    output:
-        CD_DEG,
-        f"{CD}/deg/common_gut_cell_types_with_tenk_revision.txt",
-    params:
-        script="scripts/8-crohns/deg/1-prepare_crohns_deg_pre-processed.R",
-    log:
-        log("crohns_deg_preprocess"),
-    conda:
-        ENV
-    shell:
-        R
-
-
-rule crohns_mr_deg:
-    input:
-        CD_DEG,
-        f"{CD}/postprocess/tenk_crohns_sig.RDS",
-    output:
-        CD_MR_DEG,
-        [f"{CD}/deg/mr_deg_{x}.txt" for x in ("con", "discon", "mixed")],
-    params:
-        script="scripts/8-crohns/deg/2-mr_deg_comparison_inner_join.R",
-    log:
-        log("crohns_mr_deg"),
-    conda:
-        ENV
-    shell:
-        R
-
-
 rule crohns_fig6_panels:
     input:
         CD_POST,
-        CD_ANNOT,
-        CD_DEG,
-        CD_MR_DEG,
+        bundled(CD_ANNOT) or CD_ANNOT,
+        bundled(CD_DEG_COUNT) or CD_DEG_COUNT,
+        bundled(CD_MR_DEG) or CD_MR_DEG,
     output:
         ITEMS["fig_m6"][1],
         f"{CD}/figures/heatmap_objects.RData",
@@ -1179,8 +1124,8 @@ rule crohns_tables:
         f"{CD}/supplementary/crohns_summary_gene_count_df.RData",
         f"{CD}/postprocess/tenk_crohns_sig.RDS",
         f"{CD}/postprocess/tenk_alltraits_sig.RDS",
-        CD_MR_DEG,
-        CD_ANNOT,
+        bundled(CD_MR_DEG) or CD_MR_DEG,
+        bundled(CD_ANNOT) or CD_ANNOT,
         # from the TenK10K_causal_inference_vs_IBDverse submodule
         ext(
             f"{CD}/revision/IBDverse_pi1_tables.RData",
@@ -1202,12 +1147,90 @@ rule crohns_tables:
         R
 
 
-# --- restricted steps: raw single-cell data ----------------------------------------
-# Only defined with `--config restricted=true` (on Gadi, with the raw data mounted).
+# --- restricted steps: inputs that are not shared ---------------------------------------
+# Only defined with `--config restricted=true` (on Gadi, with the full results tree).
+# Otherwise their outputs are taken from the bundle (bundled()). They read raw
+# single-cell data, or third-party tables of which only derived results are shared:
+# the Crohn's literature gene lists and the Kong et al. 2023 DEG table.
 # The locus objects that need individual-level genotypes (GPX1, JAZF1) are built by
 # workflow/rules/misc.smk and taken from the bundle here.
 
 if RESTRICTED:
+
+    rule crohns_external_annot:
+        input:
+            ext("metadata/gencode.v44.gene_type.tsv.gz"),
+            ext(
+                *[
+                    f"{CD}/crohns_relevant_gene_lists/sources/{f}"
+                    for f in (
+                        "Systematic Review of Crohns Disease Genes.csv",
+                        "OT-EFO_0000384-associated-targets-07_04_2026-v26_03.tsv",
+                        "liu2023_st8_genes.tsv",
+                        "drug_target_genes.txt",
+                    )
+                ],
+            ),
+        output:
+            CD_ANNOT,
+        params:
+            script="scripts/8-crohns/prepare_data/1-prepare_external_source_annot_boolean_df.R",
+        log:
+            log("crohns_external_annot"),
+        conda:
+            ENV
+        shell:
+            R
+
+    rule crohns_deg_preprocess:
+        input:
+            ext("metadata/cell.tsv"),
+            ext(
+                f"{CD}/deg/kong2023_immune_deg.parquet",
+            ),
+        output:
+            CD_DEG,
+            f"{CD}/deg/common_gut_cell_types_with_tenk_revision.txt",
+        params:
+            script="scripts/8-crohns/deg/1-prepare_crohns_deg_pre-processed.R",
+        log:
+            log("crohns_deg_preprocess"),
+        conda:
+            ENV
+        shell:
+            R
+
+    rule crohns_mr_deg:
+        input:
+            CD_DEG,
+            f"{CD}/postprocess/tenk_crohns_sig.RDS",
+        output:
+            CD_MR_DEG,
+            [f"{CD}/deg/mr_deg_{x}.txt" for x in ("con", "discon", "mixed")],
+        params:
+            script="scripts/8-crohns/deg/2-mr_deg_comparison_inner_join.R",
+        log:
+            log("crohns_mr_deg"),
+        conda:
+            ENV
+        shell:
+            R
+
+    rule crohns_deg_count:
+        input:
+            CD_DEG,
+            f"{CD}/postprocess/tenk_crohns_sig.RDS",
+        output:
+            CD_DEG_COUNT,
+        params:
+            script="scripts/8-crohns/deg/5-count_matched_deg_genes.R",
+        log:
+            log("crohns_deg_count"),
+        conda:
+            ENV
+        shell:
+            R
+
 
     rule crohns_h5ad_major_ct:
         input:

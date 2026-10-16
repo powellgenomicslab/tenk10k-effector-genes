@@ -9,11 +9,9 @@ metadata/otp.xlsx
 metadata/table_column_names.xlsx
 metadata/trait.tsv
 metadata/trait_category.tsv
-resources/crohns_case_study/crohns_relevant_gene_lists/sources/OT-EFO_0000384-associated-targets-07_04_2026-v26_03.tsv
-resources/crohns_case_study/crohns_relevant_gene_lists/sources/Systematic Review of Crohns Disease Genes.csv
-resources/crohns_case_study/crohns_relevant_gene_lists/sources/drug_target_genes.txt
-resources/crohns_case_study/crohns_relevant_gene_lists/sources/liu2023_st8_genes.tsv
-resources/crohns_case_study/deg/kong2023_immune_deg.parquet
+resources/crohns_case_study/crohns_relevant_gene_lists/external_source_gene_annot_df.RDS
+resources/crohns_case_study/deg/deg_genes_matched_major_ct.tsv
+resources/crohns_case_study/deg/mr_max_evidence_and_deg_innerjoin_by_majct.RDS
 resources/crohns_case_study/figures/JAZF1_data.RDS
 resources/crohns_case_study/locus_zoom_data/GPX1/tenk10k_GPX1_locus_plot_data.RDS
 resources/crohns_case_study/revision/IBDverse_pi1_tables.RData

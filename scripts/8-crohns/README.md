@@ -14,9 +14,10 @@ They then compare the results with IBDverse. Together the scripts produce Figure
 | `prepare_data/2-postprocess.R` | all (input) | – | `scripts/0-preprocess/preprocess_results.R` inputs, coloc v3 and mvcoloc parquet, `external_source_gene_annot_df.RDS` | `resources/crohns_case_study/postprocess/{tenk_crohns_raw,tenk_crohns_sig,tenk_alltraits_raw,tenk_alltraits_sig,eqtlgen_alltraits_raw,df_coloc,df_mvcoloc}.RDS` |
 | `deg/1-prepare_crohns_deg_pre-processed.R` | Fig 6a–c, Supp Tab 18 (input) | – | `resources/crohns_case_study/deg/kong2023_immune_deg.parquet` (extract of the Kong et al. 2023 DEG table; see below), `metadata/cell.tsv` | `resources/crohns_case_study/deg/crohns_deg_pre-processed_revision.RDS`, `common_gut_cell_types_with_tenk_revision.txt` |
 | `deg/2-mr_deg_comparison_inner_join.R` | Fig 6a–c, Supp Tab 16, 18 (input) | – | `crohns_deg_pre-processed_revision.RDS`, `tenk_crohns_sig.RDS` | `resources/crohns_case_study/deg/mr_max_evidence_and_deg_innerjoin_by_majct.RDS`, `mr_deg_{con,discon,mixed}.txt` |
+| `deg/5-count_matched_deg_genes.R` | Fig 6a (input) | – | `crohns_deg_pre-processed_revision.RDS`, `tenk_crohns_sig.RDS` | `resources/crohns_case_study/deg/deg_genes_matched_major_ct.tsv` |
 | `deg/3-prepare_data_for_MR_comparison.py` | Supp Fig 25 (input) | – | `resources/crohns_case_study/deg/cd_colon_immune.h5ad` | `resources/crohns_case_study/deg/cd_colon_immune_major_cell_types.h5ad` |
 | `deg/4-plot_UMAP_cell_annotation.py` | Supp Fig 25 (harmonised major cell types) | `make fig-s25` | `cd_colon_immune_major_cell_types.h5ad` | `figures/panels/8-crohns/umap_{original_annotation,major_cell_types}.{png,pdf}` |
-| `plot_figures/1-gene_annotation_barplot.R` | Fig 6a | `make fig-m6` | `tenk_crohns_sig.RDS`, `mr_max_evidence_and_deg_innerjoin_by_majct.RDS`, `external_source_gene_annot_df.RDS`, `crohns_deg_pre-processed_revision.RDS`, `eqtlgen_alltraits_raw.RDS` | `figures/panels/8-crohns/fig6a_ext_source_annotation_barplot.{png,pdf}` |
+| `plot_figures/1-gene_annotation_barplot.R` | Fig 6a | `make fig-m6` | `tenk_crohns_sig.RDS`, `mr_max_evidence_and_deg_innerjoin_by_majct.RDS`, `external_source_gene_annot_df.RDS`, `deg_genes_matched_major_ct.tsv`, `eqtlgen_alltraits_raw.RDS` | `figures/panels/8-crohns/fig6a_ext_source_annotation_barplot.{png,pdf}` |
 | `plot_figures/3-annotated_heatmap.R` | Fig 6b | `make fig-m6` | `tenk_crohns_raw.RDS`, `mr_max_evidence_and_deg_innerjoin_by_majct.RDS` | `figures/panels/8-crohns/fig6b_heatmap_canonical_deg_mrsenscoloc.{png,pdf}`, `resources/crohns_case_study/figures/heatmap_objects.RData` |
 | `plot_figures/4-mr_deg_scatterplot.R` | Fig 6c | `make fig-m6` | `mr_max_evidence_and_deg_innerjoin_by_majct.RDS` | `figures/panels/8-crohns/fig6c_mr_deg_annot.{png,pdf}`, `resources/crohns_case_study/figures/mr_deg_scatterplot_objects.RData` |
 | `workflow/rules/snakescripts/crohns_locus/1-generate_locus_zoom_object.R` | ED Fig 9 (input) | rule `crohns_gpx1_locus_data` (`workflow/`) | `resources/pipeline_ma/crohns.ma`, `resources/matrix_eqtl/tenk10k_phase1/{CD4_TCM,cDC2}/chr3_meqtl.tsv`, `resources/genotypes/tenk10k_phase1/chr3.*` | `resources/crohns_case_study/locus_zoom_data/GPX1/tenk10k_GPX1_locus_plot_data.RDS` |
@@ -40,22 +41,26 @@ They then compare the results with IBDverse. Together the scripts produce Figure
 
 Figure 6 is assembled from the panels in `figures/panels/8-crohns/`, and no script does the assembly. Panel 6d is not produced here. It comes from the IBDverse comparison (`TenK10K_causal_inference_vs_IBDverse/scripts/enrichment.r`), as does Supplementary Figure 24 (π1 replication, `pi1_estimate.r`).
 
-## Third-party tables
+## Shared and restricted steps
 
-Two published supplementary tables are used through extracts, which are shared in
-the data bundle in place of the original files. Both extracts are made by
-`crohns_third_party_extracts` in `workflow/rules/misc.smk`
-(`workflow/rules/snakescripts/crohns_external/extract_third_party.R`):
+The literature gene lists (Garza-Hernández et al. 2022, Open Targets, Liu et al.
+2023, drug-target reviews) and the single-cell DEG table of Kong et al. 2023,
+*Immunity* 56:444 (doi:10.1016/j.immuni.2023.01.002), are not shared. The data
+bundle carries only results derived from them:
 
-- `deg/kong2023_immune_deg.parquet`: the immune-cell rows and discrete-model
-  columns of the DEG table in Kong et al. 2023, *Immunity* 56:444,
-  doi:10.1016/j.immuni.2023.01.002, with each gene's Ensembl ID from the
-  study's feature list.
-- `crohns_relevant_gene_lists/sources/liu2023_st8_genes.tsv`: the gene symbols
-  in Supplementary Table 8 of Liu et al. 2023, *Nat Genet*,
-  doi:10.1038/s41588-023-01384-0.
+- `crohns_relevant_gene_lists/external_source_gene_annot_df.RDS`, the
+  literature evidence per gene (`prepare_data/1-…`);
+- `deg/mr_max_evidence_and_deg_innerjoin_by_majct.RDS`, the MR genes joined
+  with the DEGs in the matched major cell type (`deg/2-…`);
+- `deg/deg_genes_matched_major_ct.tsv`, the number of DEG genes in the matched
+  major cell types, which Fig 6a reports (`deg/5-…`).
 
-The downstream outputs are identical to those built from the original tables.
+The steps that build these (`prepare_data/1-…`, `deg/1-…`, `deg/2-…`, `deg/5-…`)
+run only with `--config restricted=true`, where the source tables are
+available; the Kong DEG table and the Liu et al. gene symbols are extracted from
+the published supplementary files by `crohns_third_party_extracts` in
+`workflow/rules/misc.smk`. Otherwise the shared files are used, and the figures
+and tables built from them are identical.
 
 ## Restricted inputs
 

@@ -60,9 +60,11 @@ plot_data2 <- plot_data %>%
   left_join(annot_df %>% select(-prop), by = "annotation")
 
 # Fill up total lit with values 
-deg <- readRDS("resources/crohns_case_study/deg/crohns_deg_pre-processed_revision.RDS")
-deg <- deg %>% filter(major_cell_type %in% tenk_sig$major_cell_type)
-length(unique(deg$Gene)) # 5667
+# Number of Kong et al. DEG genes in the matched major cell types, shared as a count
+# (written by deg/5-count_matched_deg_genes.R from the DEG table, which is not shared)
+deg_count <- read_tsv("resources/crohns_case_study/deg/deg_genes_matched_major_ct.tsv", show_col_types = FALSE)
+stopifnot(identical(deg_count$major_cell_types, paste(sort(unique(tenk_sig$major_cell_type)), collapse = ";")))
+n_deg_genes <- deg_count$n_genes # 5667
 
 bulkeqtlgen <- readRDS("resources/crohns_case_study/postprocess/eqtlgen_alltraits_raw.RDS") %>% 
   filter(phenotype == "crohns") %>% 
@@ -70,7 +72,7 @@ bulkeqtlgen <- readRDS("resources/crohns_case_study/postprocess/eqtlgen_alltrait
 length(unique(bulkeqtlgen$Gene)) # 578
 
 plot_data2[plot_data2$annotation == "*Bulk eQTLGen MR", ]$total_lit = length(unique(bulkeqtlgen$Gene))
-plot_data2[plot_data2$annotation == "*DEG in Matched Major Cell Type", ]$total_lit = length(unique(deg$Gene))
+plot_data2[plot_data2$annotation == "*DEG in Matched Major Cell Type", ]$total_lit = n_deg_genes
 plot_data2[plot_data2$annotation == "No Literature Annotation", ]$total_lit = as.numeric(plot_data2[plot_data2$annotation == "Any Literature Annotation",]$total_lit)
 
 # Make factor 
