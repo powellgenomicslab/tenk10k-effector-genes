@@ -27,7 +27,7 @@ They then compare the results with IBDverse. Together the scripts produce Figure
 | `plot_figures/ibdverse_novelty_by_celltype.R` | Extended Data Fig 10 | `make fig-e10` | `results/pi1_mr_novelty_results/tenk_not_novel_res_relative_celltype.tsv` (from the IBDverse comparison) | `figures/fig-e10.{png,pdf}` |
 | `supplementary/1-prepare_supplementary_table_overall_results.R` | – (input to Supp Tab script) | – | `tenk_crohns_sig.RDS` | `resources/crohns_case_study/supplementary/crohns_summary_gene_count_df.RData` |
 | `supplementary/2-*.R` | Supp Tab 16–18, 21 | sourced by `3-` | as above | data frames in the session |
-| `supplementary/3-prepare_supplementary_tables_all.R` | Supp Tab 16–21 | `make tab-s16` … `make tab-s21` | outputs above, `resources/crohns_case_study/revision/{IBDverse_pi1_tables.RData,OR_IBDverse_coloc_genes_in_CD_MR_genes.RDS}`, `metadata/table_column_names.xlsx` | `tables/tab-s16.tsv` … `tables/tab-s21.tsv` |
+| `supplementary/3-prepare_supplementary_tables_all.R` | Supp Tab 16–21 | `make tab-s16` … `make tab-s21` | outputs above, `results/pi1_mr_novelty_results/{pi1_combined.tsv,pi1_all.txt,tenk_not_novel_res_relative.tsv,prop_blood_ibdverse.csv}` (from the IBDverse comparison), `metadata/cell.tsv`, `metadata/table_column_names.xlsx` | `tables/tab-s16.tsv` … `tables/tab-s21.tsv` |
 
 ## Run order
 

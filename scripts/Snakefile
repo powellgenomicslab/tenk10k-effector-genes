@@ -1166,8 +1166,16 @@ rule crohns_tables:
         bundled(CD_ANNOT) or CD_ANNOT,
         # from the TenK10K_causal_inference_vs_IBDverse submodule
         ext(
-            f"{CD}/revision/IBDverse_pi1_tables.RData",
-            f"{CD}/revision/OR_IBDverse_coloc_genes_in_CD_MR_genes.RDS",
+            "metadata/cell.tsv",
+            *[
+                f"results/pi1_mr_novelty_results/{f}"
+                for f in (
+                    "pi1_combined.tsv",
+                    "pi1_all.txt",
+                    "tenk_not_novel_res_relative.tsv",
+                    "prop_blood_ibdverse.csv",
+                )
+            ],
         ),
         "scripts/8-crohns/supplementary/2-prepare_annot.R",
         "scripts/8-crohns/supplementary/2-prepare_crohns_annotated_results.R",

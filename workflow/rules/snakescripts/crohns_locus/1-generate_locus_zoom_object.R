@@ -38,9 +38,9 @@ print("Get eQTL for: ")
 target_gene
 gene_ens
 #cellType <- c("BIN", "BMem", "CD4NC", "CD4ET","CD4SOX4", "CD8ET","CD8NC", "CD8S100B","DC","MonoNC", "MonoC", "NK","NKR","Plasma")
-cellType <- readLines("resources/crohns_case_study/figures/tenk10k_celltypes.txt")
+#cellType <- readLines("resources/crohns_case_study/figures/tenk10k_celltypes.txt")
 #cellType <- c("CD4_Naive", "CD4_TCM", "cDC2", "MAIT")
-#cellType <- c("CD4_TCM", "cDC2")
+cellType <- c("CD4_TCM", "cDC2")
 
 gwas_name <- "crohns"
 gwas_fp <- paste0("resources/pipeline_ma/", gwas_name, ".ma")

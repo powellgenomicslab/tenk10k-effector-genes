@@ -14,8 +14,6 @@ resources/crohns_case_study/deg/deg_genes_matched_major_ct.tsv
 resources/crohns_case_study/deg/mr_max_evidence_and_deg_innerjoin_by_majct.RDS
 resources/crohns_case_study/figures/JAZF1_data.RDS
 resources/crohns_case_study/locus_zoom_data/GPX1/tenk10k_GPX1_locus_plot_data.RDS
-resources/crohns_case_study/revision/IBDverse_pi1_tables.RData
-resources/crohns_case_study/revision/OR_IBDverse_coloc_genes_in_CD_MR_genes.RDS
 resources/enrichment/gmt/GO_bp_2024_terms.tsv
 resources/enrichment/string_id_map.tsv
 resources/misc/HOUNKPE_HOUSEKEEPING_GENES.v2026.1.Hs.tsv
@@ -44,6 +42,8 @@ results/otp/26.03/all_drug_mechanism_chembl.tsv
 results/otp/26.03/all_drug_molecule_chembl.tsv
 results/otp/26.03/otp_assoc_datasource.gz.parquet
 results/otp/26.03/otp_assoc_overall.gz.parquet
+results/pi1_mr_novelty_results/pi1_all.txt
+results/pi1_mr_novelty_results/pi1_combined.tsv
 results/pi1_mr_novelty_results/prop_blood_ibdverse.csv
 results/pi1_mr_novelty_results/tenk_not_novel_res_relative.tsv
 results/pi1_mr_novelty_results/tenk_not_novel_res_relative_celltype.tsv
