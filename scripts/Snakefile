@@ -91,6 +91,21 @@ WRITE_TABLE = ["scripts/util/write_table.R"] + LABELS
 # item rule -> (caption, files). Items with no code in this repository are listed
 # in README.md instead.
 
+FIG6_PANELS = panels(
+    "8-crohns",
+    *[
+        f"{p}.{e}"
+        for p in (
+            "fig6a_ext_source_annotation_barplot",
+            "fig6b_heatmap_canonical_deg_mrsenscoloc",
+            "fig6c_mr_deg_annot",
+        )
+        for e in ("pdf", "png")
+    ],
+)
+
+FIG6D_PANEL = panels("8-crohns", "fig6d_ibdverse_blood_enrichment.pdf", "fig6d_ibdverse_blood_enrichment.png")
+
 ITEMS = {
     "fig_m1": ("Study design and overview of tested genes and traits", figs("m1")),
     "fig_m2": ("Overview of MR results", figs("m2")),
@@ -98,19 +113,8 @@ ITEMS = {
     "fig_m4": ("Polygenic enrichment of complex traits across immune cell types", figs("m4")),
     "fig_m5": ("Single-cell MR supports drug target validation", figs("m5")),
     "fig_m6": (
-        "Crohn's disease triangulation, panels a-c (assembled by hand; 6d from the IBDverse submodule)",
-        panels(
-            "8-crohns",
-            *[
-                f"{p}.{e}"
-                for p in (
-                    "fig6a_ext_source_annotation_barplot",
-                    "fig6b_heatmap_canonical_deg_mrsenscoloc",
-                    "fig6c_mr_deg_annot",
-                )
-                for e in ("pdf", "png")
-            ],
-        ),
+        "Crohn's disease triangulation",
+        figs("m6"),
     ),
     "fig_e1": ("Pleiotropic genes (MYRF, ERBB2)", figs("e1")),
     "fig_e2": ("MR support by sensitivity analyses per trait category", figs("e2")),
@@ -384,8 +388,8 @@ rule fig1_typst:
     conda:
         ENV
     shell:
-        "(typst compile --root . {input.typ} figures/fig-m1.pdf && "
-        "typst compile --root . --ppi 300 {input.typ} figures/fig-m1.png) > {log} 2>&1"
+        "(typst compile --root . --font-path $CONDA_PREFIX/fonts {input.typ} figures/fig-m1.pdf && "
+        "typst compile --root . --font-path $CONDA_PREFIX/fonts --ppi 300 {input.typ} figures/fig-m1.png) > {log} 2>&1"
 
 
 rule mr_heatmap_diseases:
@@ -1034,7 +1038,7 @@ rule crohns_fig6_panels:
         bundled(CD_DEG_COUNT) or CD_DEG_COUNT,
         bundled(CD_MR_DEG) or CD_MR_DEG,
     output:
-        ITEMS["fig_m6"][1],
+        FIG6_PANELS,
         f"{CD}/figures/heatmap_objects.RData",
         f"{CD}/figures/mr_deg_scatterplot_objects.RData",
     log:
@@ -1045,6 +1049,40 @@ rule crohns_fig6_panels:
         "(Rscript scripts/8-crohns/plot_figures/1-gene_annotation_barplot.R && "
         "Rscript scripts/8-crohns/plot_figures/3-annotated_heatmap.R && "
         "Rscript scripts/8-crohns/plot_figures/4-mr_deg_scatterplot.R) > {log} 2>&1"
+
+
+rule crohns_fig6d:
+    input:
+        # from the TenK10K_causal_inference_vs_IBDverse analysis (summarise.r, branch new_annot)
+        ext(
+            "results/pi1_mr_novelty_results/prop_blood_ibdverse.csv",
+            "results/pi1_mr_novelty_results/tenk_not_novel_res_relative.tsv",
+        ),
+    output:
+        FIG6D_PANEL,
+    params:
+        script="scripts/8-crohns/plot_figures/ibdverse_blood_enrichment.R",
+    log:
+        log("crohns_fig6d"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule fig6_typst:
+    input:
+        typ="scripts/8-crohns/fig6.typ",
+        panels=FIG6_PANELS + FIG6D_PANEL,
+    output:
+        figs("m6"),
+    log:
+        log("fig6_typst"),
+    conda:
+        ENV
+    shell:
+        "(typst compile --root . --font-path $CONDA_PREFIX/fonts {input.typ} figures/fig-m6.pdf && "
+        "typst compile --root . --font-path $CONDA_PREFIX/fonts --ppi 300 {input.typ} figures/fig-m6.png) > {log} 2>&1"
 
 
 rule crohns_gpx1_plot:

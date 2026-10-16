@@ -44,6 +44,8 @@ results/otp/26.03/all_drug_mechanism_chembl.tsv
 results/otp/26.03/all_drug_molecule_chembl.tsv
 results/otp/26.03/otp_assoc_datasource.gz.parquet
 results/otp/26.03/otp_assoc_overall.gz.parquet
+results/pi1_mr_novelty_results/prop_blood_ibdverse.csv
+results/pi1_mr_novelty_results/tenk_not_novel_res_relative.tsv
 results/pi1_mr_novelty_results/tenk_not_novel_res_relative_celltype.tsv
 results/preprocessed/tenk10k_phase1.v5.parquet.gz
 results/scDeepID/pathway_test_full.csv

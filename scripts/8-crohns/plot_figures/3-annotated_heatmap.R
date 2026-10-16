@@ -52,6 +52,8 @@ max_ptransform <- plot_data %>% pull(p_transform) %>% abs() %>% max(na.rm = TRUE
     labs(colour = NULL, x = NULL, fill = bquote(-log[10]~italic(P) %*% "direction of effect"), size = 5, shape = NULL) +
     #theme_minimal() +
     scale_y_discrete(limits = rev) +
+    # fixed legend order (otherwise it can change between runs)
+    guides(fill = guide_colourbar(order = 1), shape = guide_legend(order = 2)) +
     theme(text = element_text(family = "Helvetica"),
           axis.ticks = element_blank(),
           axis.title.x = element_blank(), axis.title.y = element_blank(),

@@ -2,9 +2,12 @@ FROM condaforge/miniforge3:latest
 LABEL io.github.snakemake.containerized="true"
 LABEL org.opencontainers.image.source=https://github.com/powellgenomicslab/tenk10k-effector-genes
 LABEL io.github.snakemake.conda_env_hash="14336bddede0507f63ea45e8de10b4e392b7100488ef5b0e0c3dfb89cbbe1a09"
+
+# Step 2: Retrieve conda environments
+
 # Conda environment:
 #   source: workflow/envs/figures.yaml
-#   prefix: /conda-envs/0e5d19ca8ec224084e72c6f4857c698c
+#   prefix: /conda-envs/d0dbc9ad2051ad75ff2038ee5493aedc
 #   # Environment for the manuscript figure and table scripts in scripts/
 #   # (referenced from scripts/Snakefile as "../workflow/envs/figures.yaml").
 #   #
@@ -79,10 +82,11 @@ LABEL io.github.snakemake.conda_env_hash="14336bddede0507f63ea45e8de10b4e392b710
 #     # compiling oaqc in figures.post-deploy.sh
 #     - cxx-compiler
 #     - make
-RUN mkdir -p /conda-envs/0e5d19ca8ec224084e72c6f4857c698c
-COPY workflow/envs/figures.yaml /conda-envs/0e5d19ca8ec224084e72c6f4857c698c/environment.yaml
-COPY workflow/envs/figures.linux-64.pin.txt /conda-envs/0e5d19ca8ec224084e72c6f4857c698c/pin.txt
-COPY workflow/envs/figures.post-deploy.sh /conda-envs/0e5d19ca8ec224084e72c6f4857c698c/post-deploy.sh
+RUN mkdir -p /conda-envs/d0dbc9ad2051ad75ff2038ee5493aedc
+COPY workflow/envs/figures.yaml /conda-envs/d0dbc9ad2051ad75ff2038ee5493aedc/environment.yaml
+COPY workflow/envs/figures.linux-64.pin.txt /conda-envs/d0dbc9ad2051ad75ff2038ee5493aedc/pin.txt
+COPY workflow/envs/figures.post-deploy.sh /conda-envs/d0dbc9ad2051ad75ff2038ee5493aedc/post-deploy.sh
+
 # Conda environment:
 #   source: workflow/envs/scverse.yaml
 #   prefix: /conda-envs/4c190834c12b1a68e32971e995c9caf0
@@ -109,7 +113,9 @@ COPY workflow/envs/figures.post-deploy.sh /conda-envs/0e5d19ca8ec224084e72c6f485
 RUN mkdir -p /conda-envs/4c190834c12b1a68e32971e995c9caf0
 COPY workflow/envs/scverse.yaml /conda-envs/4c190834c12b1a68e32971e995c9caf0/environment.yaml
 
-RUN conda create --yes --prefix /conda-envs/0e5d19ca8ec224084e72c6f4857c698c --file /conda-envs/0e5d19ca8ec224084e72c6f4857c698c/pin.txt && \
-    conda run --prefix /conda-envs/0e5d19ca8ec224084e72c6f4857c698c bash /conda-envs/0e5d19ca8ec224084e72c6f4857c698c/post-deploy.sh && \
+# Step 3: Generate conda environments
+
+RUN conda create --yes --prefix /conda-envs/d0dbc9ad2051ad75ff2038ee5493aedc --file /conda-envs/d0dbc9ad2051ad75ff2038ee5493aedc/pin.txt && \
+    conda run --prefix /conda-envs/d0dbc9ad2051ad75ff2038ee5493aedc bash /conda-envs/d0dbc9ad2051ad75ff2038ee5493aedc/post-deploy.sh && \
     conda env create --prefix /conda-envs/4c190834c12b1a68e32971e995c9caf0 --file /conda-envs/4c190834c12b1a68e32971e995c9caf0/environment.yaml && \
     conda clean --all -y

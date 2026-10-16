@@ -98,7 +98,9 @@ lock:
 	conda-lock lock --mamba -f workflow/envs/figures.yaml -p linux-64 -p osx-arm64 \
 	  --kind explicit --filename-template 'workflow/envs/figures.{platform}.pin.txt'
 
+# written to Dockerfile.new first, so that a failure leaves Dockerfile intact
 dockerfile:
 	$(SNAKEMAKE) --snakefile scripts/Snakefile --workflow-profile none \
-	  --containerize dockerfile -- containerize > Dockerfile
-	python3 workflow/envs/pin_dockerfile.py Dockerfile
+	  --containerize -- containerize > Dockerfile.new
+	python3 workflow/envs/pin_dockerfile.py Dockerfile.new
+	mv Dockerfile.new Dockerfile

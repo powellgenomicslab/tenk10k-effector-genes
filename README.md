@@ -168,8 +168,8 @@ Dependencies between scripts are resolved automatically. For example, `make fig-
 
 Some items are not produced by code in this repository:
 - **Fig. 1a** is BioRender artwork, provided in `figures/biorender/`.
-- **Fig. 6** is assembled by hand from panels a–c (`make fig-m6`) and panel d.
-- **Fig. 6d and Supp. Figs. 18–19** come from the [`TenK10K_causal_inference_vs_IBDverse`](TenK10K_causal_inference_vs_IBDverse) submodule.
+- **Fig. 6** is assembled by `make fig-m6` (`scripts/8-crohns/fig6.typ`); panel d is ported from the IBDverse comparison (`scripts/8-crohns/plot_figures/ibdverse_blood_enrichment.R`).
+- **Supp. Figs. 18–19** come from the [`TenK10K_causal_inference_vs_IBDverse`](TenK10K_causal_inference_vs_IBDverse) submodule.
 - **ED Fig. 7 and Supp. Fig. 15** come from scDeepID, in a separate repository.
 - **Supp. Fig. 20** (genes tested per cell type) is not yet linked to a script.
 

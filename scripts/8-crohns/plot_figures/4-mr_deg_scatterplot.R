@@ -38,7 +38,7 @@ scatterplot <- ggplot(mr_deg, aes(x = p_transform_mr, y = p_transform_deg, colou
   coord_fixed() +
   scale_y_continuous(n.breaks = 5) +
   scale_x_continuous(n.breaks = 5) +
-  geom_text_repel(size = 5, fontface = "italic", max.overlaps = Inf) + 
+  geom_text_repel(size = 5, fontface = "italic", max.overlaps = Inf, seed = 1, max.time = Inf) + 
   theme_minimal() +
   geom_hline(yintercept = 0, linewidth = 0.2, alpha = 0.5) +
   geom_vline(xintercept = 0, linewidth = 0.2, alpha = 0.5) +
@@ -77,7 +77,7 @@ scatterplot_all_in_one <- ggplot(mr_deg, aes(x = p_transform_mr, y = p_transform
   # scale_x_continuous(limits = c(-mr_scale, mr_scale), n.breaks = 10) +
   scale_y_continuous(limits = c(-9, 14), n.breaks = 10) +
   scale_x_continuous(limits = c(-17.5, 13), n.breaks = 10) +
-  geom_text_repel(key_glyph = "point", size = 3.5, fontface = "italic", max.overlaps = Inf) + 
+  geom_text_repel(key_glyph = "point", size = 3.5, fontface = "italic", max.overlaps = Inf, seed = 1, max.time = Inf) + 
   theme_minimal() +
   geom_hline(yintercept = 0, linewidth = 0.2, alpha = 0.5) +
   geom_vline(xintercept = 0, linewidth = 0.2, alpha = 0.5) +
