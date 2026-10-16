@@ -1,0 +1,1187 @@
+# Rebuild every manuscript figure and table from summary-level inputs.
+#
+#   make fig-m3     Main Figure 3              -> figures/fig-m3.{pdf,png}
+#   make fig-e3     Extended Data Figure 3     -> figures/fig-e3.{pdf,png}
+#   make fig-s3     Supplementary Figure 3     -> figures/fig-s3.{pdf,png}
+#   make tab-s3     Supplementary Table 3      -> tables/tab-s3.tsv
+#
+# The Makefile is a thin front door to this file; run from the repository root:
+#   snakemake --snakefile scripts/Snakefile --cores 1 --sdm conda fig_m3
+#
+# Layout:
+#   * one *producer* rule per script, declaring everything it reads and writes;
+#   * one *item* rule per manuscript figure/table (fig_mN, fig_eN, fig_sN, tab_sN)
+#     that simply requests the item's files;
+#   * every input comes from the data bundle (see config/figures.yaml); steps
+#     that start from raw or unshared data are in workflow/ (raw -> intermediate),
+#     and items that need them (Supp. Fig. 25) are flagged as not rebuildable.
+#
+# Every external input is declared with ext(), which also records it for the
+# bundle manifest (`make manifest` -> config/figure_inputs.txt).
+
+configfile: "config/figures.yaml"
+
+containerized: config["container"]
+
+ENV = "../workflow/envs/figures.yaml"
+SC_ENV = "../workflow/envs/scverse.yaml"
+
+# --- helpers --------------------------------------------------------------------
+
+EXTERNAL = {}  # path -> review note ("" if none); written to the bundle manifest
+
+
+def ext(*paths, review=""):
+    """Declare external (bundle) inputs; `review` flags files to confirm before deposit."""
+    for p in paths:
+        EXTERNAL.setdefault(p, review)
+    return list(paths)
+
+
+def figs(*ids):
+    return [f"figures/fig-{i}.{e}" for i in ids for e in ("pdf", "png")]
+
+
+def tabs(*ids):
+    return [f"tables/tab-{i}.tsv" for i in ids]
+
+
+def panels(folder, *names):
+    return [f"figures/panels/{folder}/{n}" for n in names]
+
+
+def log(name):
+    return f"logs/figures/{name}.log"
+
+
+R = "Rscript {params.script} > {log} 2>&1"
+
+
+META = ext(
+    "metadata/cell.tsv",
+    "metadata/trait.tsv",
+    "metadata/trait_category.tsv",
+    "metadata/gencode.v44.gene_type.tsv.gz",
+)
+LABELS = ext("metadata/table_column_names.xlsx")
+V5 = ext("results/preprocessed/tenk10k_phase1.v5.parquet.gz")
+MAGMA = ext("results/aggregate/tenk10k_phase1.magma.gz.parquet")
+
+# everything scripts/0-preprocess/preprocess_results.R reads
+PREPROCESS = (
+    ["scripts/0-preprocess/preprocess_results.R"]
+    + META
+    + V5
+    + MAGMA
+    + ext(
+        "results/aggregate/eqtlgen2020.msmr.parquet.gz",
+        "results/aggregate/coloc/tenk10k_phase1.coloc.v3.parquet.gz",
+        "results/aggregate/coloc/tenk10k_phase1.mvcoloc.parquet.gz",
+    )
+)
+WRITE_TABLE = ["scripts/util/write_table.R"] + LABELS
+
+# --- manuscript items -----------------------------------------------------------
+# item rule -> (caption, files). Items with no code in this repository are listed
+# in README.md instead.
+
+FIG6_PANELS = panels(
+    "8-crohns",
+    *[
+        f"{p}.{e}"
+        for p in (
+            "fig6a_ext_source_annotation_barplot",
+            "fig6b_heatmap_canonical_deg_mrsenscoloc",
+            "fig6c_mr_deg_annot",
+        )
+        for e in ("pdf", "png")
+    ],
+)
+
+FIG6D_PANEL = panels("8-crohns", "fig6d_ibdverse_blood_enrichment.pdf", "fig6d_ibdverse_blood_enrichment.png")
+
+ITEMS = {
+    "fig_m1": ("Study design and overview of tested genes and traits", figs("m1")),
+    "fig_m2": ("Overview of MR results", figs("m2")),
+    "fig_m3": ("Examples of cell-type-specific effector genes (TAPBPL, BANK1)", figs("m3")),
+    "fig_m4": ("Polygenic enrichment of complex traits across immune cell types", figs("m4")),
+    "fig_m5": ("Single-cell MR supports drug target validation", figs("m5")),
+    "fig_m6": (
+        "Crohn's disease triangulation",
+        figs("m6"),
+    ),
+    "fig_e1": ("Pleiotropic genes (MYRF, ERBB2)", figs("e1")),
+    "fig_e2": ("MR support by sensitivity analyses per trait category", figs("e2")),
+    "fig_e3": ("MR by number of instruments", figs("e3")),
+    "fig_e4": ("Overlap of sc-eQTL MR with MAGMA and eQTLGen MR", figs("e4")),
+    "fig_e5": ("STRING enrichment of CD4 CTL effector genes", figs("e5")),
+    "fig_e6": ("scDRS for Crohn's disease across all cell types", figs("e6")),
+    "fig_e8": ("All 122 MR-supported target-indication pairs", figs("e8")),
+    "fig_e9": ("GPX1: locus zoom and cross plots in CD4 TCM and cDC2", figs("e9")),
+    "fig_e10": ("IBDverse effector-gene enrichment by blood-cell fraction", figs("e10")),
+    "fig_s1": ("MR associations across cell types: diseases", figs("s1")),
+    "fig_s2": ("MR associations across cell types: biomarker traits", figs("s2")),
+    "fig_s3": ("Associations vs tests per cell type", figs("s3")),
+    "fig_s4": ("Cell-type-exclusive associations", figs("s4")),
+    "fig_s5": ("CAD MR gene P values, TenK10K vs Ray et al.", figs("s5")),
+    "fig_s6": ("CAD MR gene effects, TenK10K vs Ray et al.", figs("s6")),
+    "fig_s7": ("FADS locus pleiotropy by cell type", figs("s7")),
+    "fig_s8": ("MR-colocalisation overlap", figs("s8")),
+    "fig_s9": ("MAGMA vs MR gene counts per trait", figs("s9")),
+    "fig_s10": ("Gene-trait overlap with MAGMA", figs("s10")),
+    "fig_s11": ("Gene-trait overlap with eQTLGen MR", figs("s11")),
+    "fig_s12": ("Multiple sclerosis STRING network", figs("s12")),
+    "fig_s13": ("STRING betweenness of MR-nominated genes", figs("s13")),
+    "fig_s14": ("scDRS trait x cell type grid", figs("s14")),
+    "fig_s16": ("Power projection for MoA-MR concordance", figs("s16")),
+    "fig_s17": ("JAZF1 eQTL effects in cDC2 and naive CD4 T", figs("s17")),
+    "fig_s21": ("scDRS for Crohn's disease across two sampling strategies", figs("s21")),
+    "fig_s22": ("Cells enriched for Crohn's disease across two sampling strategies", figs("s22")),
+    "fig_s23": ("Cells sampled from AIFI and TenK10K for scDRS", figs("s23")),
+    "fig_s24": ("scDRS Z-scores, TenK10K vs AIFI", figs("s24")),
+    "fig_s25": ("Harmonised major cell types for the MR-DEG comparison", panels(
+        "8-crohns",
+        *[f"umap_{n}.{e}" for n in ("original_annotation", "major_cell_types") for e in ("pdf", "png")],
+    )),
+    "tab_s1": ("Cell types", tabs("s1")),
+    "tab_s2": ("Traits", tabs("s2")),
+    "tab_s3": ("MR summary", tabs("s3")),
+    "tab_s4": ("Trait-trait Spearman correlations", tabs("s4")),
+    "tab_s5": ("Gene pleiotropy", tabs("s5")),
+    "tab_s6": ("MR vs MAGMA", tabs("s6")),
+    "tab_s7": ("MR vs eQTLGen MR", tabs("s7")),
+    "tab_s8": ("CD4 CTL STRING enrichment", tabs("s8")),
+    "tab_s9": ("scDRS results", tabs("s9")),
+    "tab_s10": ("scDeepID pathways", tabs("s10")),
+    "tab_s11": ("Drug targets with OTP and MR support", tabs("s11")),
+    "tab_s12": ("Target-indication support statistics", tabs("s12")),
+    "tab_s13": ("Drugs for MR-supported target-indication pairs", tabs("s13")),
+    "tab_s14": ("MoA-MR concordance and power", tabs("s14")),
+    "tab_s15": ("OT association scores by evidence source", tabs("s15")),
+    "tab_s16": ("Crohn's disease effector genes, annotated", tabs("s16")),
+    "tab_s17": ("Crohn's genes shared with immune diseases", tabs("s17")),
+    "tab_s18": ("MR-DEG comparison", tabs("s18")),
+    "tab_s19": ("IBDverse eQTL replication", tabs("s19")),
+    "tab_s20": ("IBDverse effector-gene enrichment", tabs("s20")),
+    "tab_s21": ("Crohn's literature annotations", tabs("s21")),
+}
+# built by workflow/rules/crohns.smk from raw single-cell data, which the bundle lacks
+NOT_REBUILDABLE = {"fig_s25"}
+
+AVAILABLE = [k for k in ITEMS if k not in NOT_REBUILDABLE]
+
+
+def group(prefix):
+    return [f for k in AVAILABLE if k.startswith(prefix) for f in ITEMS[k][1]]
+
+
+localrules: all, figs_m, figs_e, figs_s, tabs_s, targets, manifest, inventory, containerize
+
+
+rule all:
+    input:
+        [f for k in AVAILABLE for f in ITEMS[k][1]],
+
+
+rule figs_m:
+    input:
+        group("fig_m"),
+
+
+rule figs_e:
+    input:
+        group("fig_e"),
+
+
+rule figs_s:
+    input:
+        group("fig_s"),
+
+
+rule tabs_s:
+    input:
+        group("tab_s"),
+
+
+for _item in AVAILABLE:
+
+    rule:
+        name:
+            _item
+        localrule: True
+        input:
+            ITEMS[_item][1],
+
+
+for _item in set(ITEMS) - set(AVAILABLE):
+
+    rule:
+        name:
+            _item
+        localrule: True
+        shell:
+            "echo '{rule} is drawn from raw single-cell data by workflow/rules/crohns.smk; it cannot be rebuilt from the data bundle' >&2; exit 1"
+
+
+rule targets:
+    """Print every make target with its manuscript caption."""
+    run:
+        for k, (caption, _) in ITEMS.items():
+            flag = "" if k in AVAILABLE else "  [not rebuildable from the data bundle]"
+            print(f"  make {k.replace('_', '-', 1):9s} {caption}{flag}")
+
+
+rule manifest:
+    """Write the bundle allow-list: every external input of every rule."""
+    run:
+        with open("config/figure_inputs.txt", "w") as fh:
+            fh.write(
+                "# Files read by scripts/Snakefile that are not produced by it.\n"
+                "# Generated by `make manifest`; do not edit. Lines tagged REVIEW must be\n"
+                "# confirmed shareable before scripts/0-preprocess/make_figure_bundle.sh\n"
+                "# will include them (--include-review). Tracked files (metadata/,\n"
+                "# scripts/) are listed for completeness and are not bundled.\n"
+            )
+            for p in sorted(EXTERNAL):
+                note = EXTERNAL[p]
+                fh.write(f"{p}\t# REVIEW: {note}\n" if note else f"{p}\n")
+
+
+def item_label(k):
+    kind, n = k.split("_")
+    return {"fig_m": "Fig. ", "fig_e": "ED Fig. ", "fig_s": "Supp. Fig. ", "tab_s": "Supp. Table "}[
+        f"{kind}_{n[0]}"
+    ] + n[1:]
+
+
+rule inventory:
+    """Write INVENTORY.tsv: every bundled file with its size, SHA-256, the display
+    items that read it, and the description, source and licence given in
+    config/figure_inputs_annotation.tsv (first matching pattern). With
+    `--config checksums=false` the sha256 column is left as the empty-input hash."""
+    run:
+        import csv, fnmatch, hashlib, os
+
+        producer = {str(f): r for r in workflow.rules for f in r.output}
+
+        def externals(rule, seen):
+            found = set()
+            for f in map(str, rule.input):
+                if f not in producer:
+                    found.add(f)
+                elif producer[f].name not in seen:
+                    seen.add(producer[f].name)
+                    found |= externals(producer[f], seen)
+            return found
+
+        used_by = {}
+        for k in ITEMS:
+            for f in externals(workflow.get_rule(k), {k}):
+                used_by.setdefault(f, []).append(item_label(k))
+
+        with open("config/figure_inputs_annotation.tsv") as fh:
+            notes = list(csv.DictReader(fh, delimiter="\t"))
+        unmatched, hit = [], set()
+        rows = []
+        for p in sorted(EXTERNAL):
+            if p.startswith(("metadata/", "scripts/", "config/")):
+                continue
+            note = next((n for n in notes if fnmatch.fnmatch(p, n["pattern"])), None)
+            if note is None:
+                unmatched.append(p)
+                continue
+            hit.add(note["pattern"])
+            sha = hashlib.sha256()
+            if config.get("checksums", True):
+                with open(p, "rb") as fh:
+                    for block in iter(lambda: fh.read(1 << 20), b""):
+                        sha.update(block)
+            rows.append([
+                p, os.path.getsize(p), sha.hexdigest(), note["category"],
+                note["description"], "; ".join(used_by.get(p, [])),
+                note["source"], note["licence"],
+                "yes" if EXTERNAL[p] else "",
+            ])
+        if unmatched:
+            raise ValueError("no annotation pattern matches: " + ", ".join(unmatched))
+        for n in notes:
+            if n["pattern"] not in hit:
+                print(f"warning: annotation pattern matches no file: {n['pattern']}")
+        with open("INVENTORY.tsv", "w", newline="") as fh:
+            w = csv.writer(fh, delimiter="\t", lineterminator="\n")
+            w.writerow(["path", "size_bytes", "sha256", "category", "description",
+                        "used_by", "source", "licence", "review"])
+            w.writerows(rows)
+        print(f"wrote INVENTORY.tsv: {len(rows)} files, {sum(r[1] for r in rows) / 1e9:.2f} GB")
+
+
+# Data-free rules naming each software environment, so that
+# `snakemake --containerize containerize` (make dockerfile) can collect the
+# environments without any inputs present.
+rule env_figures:
+    output:
+        temp(touch("logs/figures/.env_figures")),
+    conda:
+        ENV
+    shell:
+        "true"
+
+
+rule env_scverse:
+    output:
+        temp(touch("logs/figures/.env_scverse")),
+    conda:
+        SC_ENV
+    shell:
+        "true"
+
+
+rule containerize:
+    input:
+        rules.env_figures.output,
+        rules.env_scverse.output,
+
+
+rule download_inputs:
+    """Fetch the public summary-statistics bundle and verify checksums."""
+    localrule: True
+    params:
+        url=config["bundle_url"],
+    shell:
+        "bash scripts/0-preprocess/download_figure_bundle.sh {params.url:q}"
+
+
+# --- 1-overview ----------------------------------------------------------------
+
+
+rule study_design:
+    input:
+        PREPROCESS,
+        WRITE_TABLE,
+    output:
+        panels("1-overview", "panel_b.svg", "panel_c.svg"),
+        tabs("s1", "s2"),
+    params:
+        script="scripts/1-overview/study_design.R",
+    log:
+        log("study_design"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule fig1_typst:
+    input:
+        typ="scripts/1-overview/fig1.typ",
+        assets=["figures/biorender/infographics_v5.pdf"]
+        + panels("1-overview", "panel_b.svg", "panel_c.svg"),
+    output:
+        figs("m1"),
+    log:
+        log("fig1_typst"),
+    conda:
+        ENV
+    shell:
+        "(typst compile --root . --font-path $CONDA_PREFIX/fonts {input.typ} figures/fig-m1.pdf && "
+        "typst compile --root . --font-path $CONDA_PREFIX/fonts --ppi 300 {input.typ} figures/fig-m1.png) > {log} 2>&1"
+
+
+rule mr_heatmap_diseases:
+    input:
+        META,
+        V5,
+        MAGMA,
+    output:
+        figs("s1"),
+    params:
+        script="scripts/1-overview/mr_heatmap_celltype_diseases.R",
+    log:
+        log("mr_heatmap_diseases"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule mr_heatmap_biotraits:
+    input:
+        META,
+        V5,
+        MAGMA,
+    output:
+        figs("s2"),
+    params:
+        script="scripts/1-overview/mr_heatmap_celltype_biotraits.R",
+    log:
+        log("mr_heatmap_biotraits"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule smr_overview_scatter:
+    input:
+        PREPROCESS,
+    output:
+        figs("s3", "s9"),
+    params:
+        script="scripts/1-overview/fig_smr_overview_scatter.R",
+    log:
+        log("smr_overview_scatter"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule celltype_exclusive_assoc:
+    input:
+        PREPROCESS,
+    output:
+        figs("s4"),
+    params:
+        script="scripts/1-overview/celltype_exclusive_assoc.R",
+    log:
+        log("celltype_exclusive_assoc"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule compare_ray_tenk10k:
+    input:
+        PREPROCESS,
+        ext("resources/misc/onek1k_cad_mr_ray2025.txt"),
+    output:
+        figs("s5", "s6"),
+        panels("1-overview", "compare_ray_tenk10k_overlap.pdf", "compare_ray_tenk10k_overlap.png"),
+    params:
+        script="scripts/1-overview/compare_ray_tenk10k.R",
+    log:
+        log("compare_ray_tenk10k"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule tab_smr_overview:
+    input:
+        PREPROCESS,
+        WRITE_TABLE,
+    output:
+        tabs("s3"),
+    params:
+        script="scripts/1-overview/tab_smr_overview.R",
+    log:
+        log("tab_smr_overview"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+# --- 2-trait --------------------------------------------------------------------
+
+SPEARMAN = "results/rrho/spearman_corr_all_trait_combos_strictmr.tsv"
+
+
+rule spearman_corr:
+    input:
+        V5,
+        ext("metadata/trait.tsv"),
+    output:
+        SPEARMAN,
+    params:
+        script="scripts/2-trait/fig_2_heatmap_spearman_calculation.R",
+    log:
+        log("spearman_corr"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule fig2_heatmap_panel:
+    input:
+        PREPROCESS,
+        SPEARMAN,
+    output:
+        panels(
+            "2-trait",
+            "figure_2_heatmap_disease_only.rds",
+            "figure_2_heatmap_legend_disease.rds",
+        ),
+    params:
+        script="scripts/2-trait/fig_2_heatmap.R",
+    log:
+        log("fig2_heatmap_panel"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule pleiotropy_panels:
+    input:
+        V5,
+        META,
+        SPEARMAN,
+    output:
+        panels(
+            "2-trait",
+            "n_phenotypes_by_n_celltypes_split.rds",
+            "fig_1_pleiotropic_genes_scatter.rds",
+        ),
+    params:
+        script="scripts/2-trait/gene_features_pleiotropy.R",
+    log:
+        log("pleiotropy_panels"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule overview_combined:
+    input:
+        panels(
+            "2-trait",
+            "figure_2_heatmap_disease_only.rds",
+            "figure_2_heatmap_legend_disease.rds",
+            "n_phenotypes_by_n_celltypes_split.rds",
+            "fig_1_pleiotropic_genes_scatter.rds",
+        ),
+        panels("3-pleiotropy", "evidence_tally_plot.rds"),
+    output:
+        figs("m2", "e1"),
+    params:
+        script="scripts/2-trait/overview_combined.R",
+    log:
+        log("overview_combined"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule fads_locus:
+    input:
+        V5,
+        META,
+    output:
+        figs("s7"),
+        panels(
+            "2-trait",
+            "fads_locus_pleiotropic_scatter.pdf",
+            "fads_locus_pleiotropic_scatter.png",
+        ),
+    params:
+        script="scripts/2-trait/myrf_locus_supplementary_heatmap.R",
+    log:
+        log("fads_locus"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule tab_spearman_corr:
+    input:
+        SPEARMAN,
+        WRITE_TABLE,
+    output:
+        tabs("s4"),
+    params:
+        script="scripts/2-trait/tab_spearman_corr.R",
+    log:
+        log("tab_spearman_corr"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule tab_gene_pleiotropy:
+    input:
+        PREPROCESS,
+        SPEARMAN,
+        WRITE_TABLE,
+    output:
+        tabs("s5"),
+    params:
+        script="scripts/2-trait/tab_gene_pleiotropy.R",
+    log:
+        log("tab_gene_pleiotropy"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+# --- 3-pleiotropy ---------------------------------------------------------------
+
+
+rule count_evidence:
+    input:
+        V5,
+    output:
+        panels("3-pleiotropy", "evidence_tally_plot.rds"),
+        figs("e2"),
+    params:
+        script="scripts/3-pleiotropy/count_evidence.R",
+    log:
+        log("count_evidence"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule mr_stat_by_n_instrument:
+    input:
+        PREPROCESS,
+    output:
+        figs("e3"),
+    params:
+        script="scripts/3-pleiotropy/mr_stat_by_n_instrument.R",
+    log:
+        log("mr_stat_by_n_instrument"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule coloc_mr_overlap:
+    input:
+        PREPROCESS,
+    output:
+        figs("s8"),
+    params:
+        script="scripts/3-pleiotropy/coloc_mr_overlap.R",
+    log:
+        log("coloc_mr_overlap"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+# --- 4-comparison ---------------------------------------------------------------
+
+ECZEMA_GENES = [
+    "ENSG00000139192",
+    "ENSG00000215039",
+    "ENSG00000139190",
+    "ENSG00000111639",
+    "ENSG00000010292",
+]
+SLE_LOCI = [
+    "eqtlgen2020/bulk_wb",
+    "tenk10k_phase1/B_naive",
+    "tenk10k_phase1/B_memory",
+    "tenk10k_phase1/CD4_TCM",
+    "tenk10k_phase1/CD8_TEM",
+    "tenk10k_phase1/cDC2",
+]
+FIG3_LOCUS = (
+    ext("results/sensitivity/smr/tenk10k_phase1/CD14_Mono/eczema/all_chr.snps4msmr.list")
+    + ext(
+        *[
+            f"results/smr_locus/tenk10k_phase1/CD14_Mono/eczema/{g}.{x}"
+            for g in ECZEMA_GENES
+            for x in ("eqtl.tsv", "gwas.tsv")
+        ],
+        *[f"results/smr_locus/{s}/sle/ENSG00000153064.eqtl.tsv" for s in SLE_LOCI],
+        "results/gwas_locus/eczema/tenk10k_phase1/12_6339001_6631955.gwas.tsv",
+        "results/gwas_locus/sle/tenk10k_phase1/4_101311286_102174812.gwas.tsv",
+    )
+    + ext(
+        *[f"results/smr_locus/tenk10k_phase1/CD14_Mono/eczema/{g}.ld" for g in ECZEMA_GENES],
+        *[f"results/smr_locus/{s}/sle/ENSG00000153064.ld" for s in SLE_LOCI],
+        "results/gwas_locus/eczema/tenk10k_phase1/12_6339001_6631955.ld",
+        "results/gwas_locus/sle/tenk10k_phase1/4_101311286_102174812.ld",
+    )
+)
+
+
+rule mr_example:
+    input:
+        PREPROCESS,
+        FIG3_LOCUS,
+    output:
+        figs("m3"),
+    params:
+        script="scripts/4-comparison/mr_example.R",
+    log:
+        log("mr_example"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule mr_overlap:
+    input:
+        PREPROCESS,
+    output:
+        figs("e4"),
+    params:
+        script="scripts/4-comparison/mr_overlap.R",
+    log:
+        log("mr_overlap"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule mr_gene_overlap:
+    input:
+        PREPROCESS,
+    output:
+        figs("s10", "s11"),
+    params:
+        script="scripts/4-comparison/fig_mr_gene_overlap.R",
+    log:
+        log("mr_gene_overlap"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule tab_mr_overlap:
+    input:
+        PREPROCESS,
+        WRITE_TABLE,
+    output:
+        tabs("s6", "s7"),
+    params:
+        script="scripts/4-comparison/tab_mr_overlap.R",
+    log:
+        log("tab_mr_overlap"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+# --- 5-pathways -----------------------------------------------------------------
+
+STRING_CD4CTL = "results/enrichment/tenk10k_phase1_mr_strict/mr_strict/CD4_CTL.string_rank_api.trimmed"
+
+
+rule enrichment_features:
+    input:
+        V5,
+        META,
+        SPEARMAN,
+        ext(
+            f"{STRING_CD4CTL}.tsv",
+            f"{STRING_CD4CTL}.ppi_network.tsv",
+            f"{STRING_CD4CTL}.bipartite.tsv",
+            "resources/enrichment/string_id_map.tsv",
+        ),
+        ext("resources/misc/HOUNKPE_HOUSEKEEPING_GENES.v2026.1.Hs.tsv"),
+    output:
+        figs("e5", "s12", "s13"),
+    params:
+        script="scripts/5-pathways/enrichment_features.R",
+    log:
+        log("enrichment_features"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule tab_enrich_cd4ctl:
+    input:
+        ext("metadata/trait.tsv", f"{STRING_CD4CTL}.tsv"),
+        WRITE_TABLE,
+    output:
+        tabs("s8"),
+    params:
+        script="scripts/5-pathways/tab_enrich_cd4ctl.R",
+    log:
+        log("tab_enrich_cd4ctl"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+# --- 6-polygenic ----------------------------------------------------------------
+
+SCDRS_STATS = ext(
+    "results/aggregate/tenk10k_phase1.scdrs.cell_type_stats.tsv",
+    "results/aggregate/tenk10k_phase1.scdrs.cell_type_top.tsv",
+)
+SCDRS_CELL = ext(
+    "results/aggregate/tenk10k_phase1.scdrs.cell_score.anon.parquet.gz",
+    "results/aggregate/tenk10k_phase1.scdrs.cell_mcp.anon.parquet.gz",
+)
+
+
+rule scdrs_overall:
+    input:
+        SCDRS_STATS,
+        SCDRS_CELL,
+        META,
+        WRITE_TABLE,
+    output:
+        figs("m4", "e6", "s14"),
+        tabs("s9"),
+    params:
+        script="scripts/6-polygenic/scDRS/plot_scdrs_overall.R",
+    log:
+        log("scdrs_overall"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule compare_scdrs_aifi:
+    input:
+        SCDRS_STATS[0],
+        META,
+        # produced by the main workflow from the AIFI atlas (see aifi_label_transfer)
+        ext("results/aggregate/immune_health_atlas_annotated.scdrs.cell_type_stats.tsv"),
+    output:
+        figs("s23", "s24"),
+    params:
+        script="scripts/6-polygenic/scDRS/compare_scdrs_aifi.R",
+    log:
+        log("compare_scdrs_aifi"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule scdrs_supp_sampling:
+    input:
+        SCDRS_STATS,
+        SCDRS_CELL,
+        ext(
+            "results/misc/tenk10k_prop_sample.crohns.cell_score.anon.parquet.gz",
+        ),
+        ext("metadata/cell.tsv"),
+    output:
+        figs("s21", "s22"),
+    params:
+        script="scripts/6-polygenic/scDRS/scdrs_supp_sampling.R",
+    log:
+        log("scdrs_supp_sampling"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule tab_scdeep_id:
+    input:
+        ext(
+            "results/scDeepID/pathway_test_full.csv",
+            "resources/enrichment/gmt/GO_bp_2024_terms.tsv",
+        ),
+        WRITE_TABLE,
+    output:
+        tabs("s10"),
+    params:
+        script="scripts/6-polygenic/scDeepID/tab_scdeep_id.R",
+    log:
+        log("tab_scdeep_id"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+# --- 7-drug ---------------------------------------------------------------------
+
+OTP = "results/otp/26.03"
+OTP_CONCORDANCE = f"{OTP}/otp_concordance_by_phase.tsv"
+
+
+rule otp_combined:
+    input:
+        PREPROCESS,
+        WRITE_TABLE,
+        ext("metadata/otp.xlsx", "resources/misc/chembl_action_type.tsv"),
+        ext(
+            *[
+                f"{OTP}/{f}"
+                for f in (
+                    "all_disease.tsv",
+                    "all_drug_mechanism_chembl.tsv",
+                    "all_drug_evidence_chembl.tsv",
+                    "all_drug_molecule_chembl.tsv",
+                    "otp_assoc_overall.gz.parquet",
+                    "otp_assoc_datasource.gz.parquet",
+                )
+            ]
+        ),
+    output:
+        OTP_CONCORDANCE,
+        figs("m5"),
+        tabs("s11", "s12", "s13", "s15"),
+    params:
+        script="scripts/7-drug/otp_combined.R",
+    log:
+        log("otp_combined"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule otp_power_projection:
+    input:
+        OTP_CONCORDANCE,
+        WRITE_TABLE,
+    output:
+        figs("s16"),
+        tabs("s14"),
+    params:
+        script="scripts/7-drug/otp_power_projection.R",
+    log:
+        log("otp_power_projection"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule otp_ti_mr_all:
+    input:
+        PREPROCESS,
+        ext("metadata/otp.xlsx"),
+        ext(
+            *[
+                f"{OTP}/{f}"
+                for f in (
+                    "all_disease.tsv",
+                    "all_drug_evidence_chembl.tsv",
+                    "otp_assoc_overall.gz.parquet",
+                )
+            ]
+        ),
+    output:
+        figs("e8"),
+    params:
+        script="scripts/7-drug/otp_ti_mr_all.R",
+    log:
+        log("otp_ti_mr_all"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+# --- 8-crohns -------------------------------------------------------------------
+
+CD = "resources/crohns_case_study"
+CD_ANNOT = f"{CD}/crohns_relevant_gene_lists/external_source_gene_annot_df.RDS"
+CD_POST = [
+    f"{CD}/postprocess/{f}.RDS"
+    for f in (
+        "df_coloc",
+        "df_mvcoloc",
+        "eqtlgen_alltraits_raw",
+        "tenk_alltraits_raw",
+        "tenk_alltraits_sig",
+        "tenk_crohns_raw",
+        "tenk_crohns_sig",
+    )
+]
+CD_DEG = f"{CD}/deg/crohns_deg_pre-processed_revision.RDS"
+CD_MR_DEG = f"{CD}/deg/mr_max_evidence_and_deg_innerjoin_by_majct.RDS"
+# number of Kong et al. DEG genes in the major cell types with Crohn's MR genes (Fig. 6a)
+CD_DEG_COUNT = f"{CD}/deg/deg_genes_matched_major_ct.tsv"
+CD_GPX1 = f"{CD}/locus_zoom_data/GPX1/tenk10k_GPX1_locus_plot_data.RDS"
+CD_JAZF1 = f"{CD}/figures/JAZF1_data.RDS"
+
+
+rule crohns_postprocess:
+    input:
+        PREPROCESS,
+        ext(CD_ANNOT),
+    output:
+        CD_POST,
+    params:
+        script="scripts/8-crohns/prepare_data/2-postprocess.R",
+    log:
+        log("crohns_postprocess"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule crohns_fig6_panels:
+    input:
+        CD_POST,
+        ext(CD_ANNOT),
+        ext(CD_DEG_COUNT),
+        ext(CD_MR_DEG),
+    output:
+        FIG6_PANELS,
+        f"{CD}/figures/heatmap_objects.RData",
+        f"{CD}/figures/mr_deg_scatterplot_objects.RData",
+    log:
+        log("crohns_fig6_panels"),
+    conda:
+        ENV
+    shell:
+        "(Rscript scripts/8-crohns/plot_figures/1-gene_annotation_barplot.R && "
+        "Rscript scripts/8-crohns/plot_figures/3-annotated_heatmap.R && "
+        "Rscript scripts/8-crohns/plot_figures/4-mr_deg_scatterplot.R) > {log} 2>&1"
+
+
+rule crohns_fig6d:
+    input:
+        # from the TenK10K_causal_inference_vs_IBDverse analysis (summarise.r, branch new_annot)
+        ext(
+            "results/pi1_mr_novelty_results/prop_blood_ibdverse.csv",
+            "results/pi1_mr_novelty_results/tenk_not_novel_res_relative.tsv",
+        ),
+    output:
+        FIG6D_PANEL,
+    params:
+        script="scripts/8-crohns/plot_figures/ibdverse_blood_enrichment.R",
+    log:
+        log("crohns_fig6d"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule fig6_typst:
+    input:
+        typ="scripts/8-crohns/fig6.typ",
+        panels=FIG6_PANELS + FIG6D_PANEL,
+    output:
+        figs("m6"),
+    log:
+        log("fig6_typst"),
+    conda:
+        ENV
+    shell:
+        "(typst compile --root . --font-path $CONDA_PREFIX/fonts {input.typ} figures/fig-m6.pdf && "
+        "typst compile --root . --font-path $CONDA_PREFIX/fonts --ppi 300 {input.typ} figures/fig-m6.png) > {log} 2>&1"
+
+
+rule crohns_gpx1_plot:
+    input:
+        # a) locus zoom
+        ext(CD_GPX1),
+        # b, c) cross plots of the MR instruments in CD4 TCM and cDC2
+        ext(
+            "results/sensitivity/smr/tenk10k_phase1/tenk10k_phase1_sensitivity.snps4msmr.parquet.gz",
+            *[
+                f"results/smr_locus/tenk10k_phase1/{ct}/crohns/ENSG00000233276.{x}"
+                for ct in ("CD4_TCM", "cDC2")
+                for x in ("eqtl.tsv", "gwas.tsv")
+            ],
+        ),
+    output:
+        figs("e9"),
+    params:
+        script="scripts/8-crohns/plot_figures/2-plot_locus_zoom_fig.R",
+    log:
+        log("crohns_gpx1_plot"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule crohns_jazf1_plot:
+    input:
+        ext(CD_JAZF1),
+    output:
+        figs("s17"),
+    params:
+        script="scripts/8-crohns/plot_figures/JAZF1_scatterplot.R",
+    log:
+        log("crohns_jazf1_plot"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule ibdverse_novelty:
+    input:
+        # from the TenK10K_causal_inference_vs_IBDverse submodule (summarise.r)
+        ext("results/pi1_mr_novelty_results/tenk_not_novel_res_relative_celltype.tsv"),
+    output:
+        figs("e10"),
+    params:
+        script="scripts/8-crohns/plot_figures/ibdverse_novelty_by_celltype.R",
+    log:
+        log("ibdverse_novelty"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule crohns_supp_counts:
+    input:
+        f"{CD}/postprocess/tenk_crohns_sig.RDS",
+    output:
+        f"{CD}/supplementary/crohns_summary_gene_count_df.RData",
+    params:
+        script="scripts/8-crohns/supplementary/1-prepare_supplementary_table_overall_results.R",
+    log:
+        log("crohns_supp_counts"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+rule crohns_tables:
+    input:
+        WRITE_TABLE,
+        f"{CD}/supplementary/crohns_summary_gene_count_df.RData",
+        f"{CD}/postprocess/tenk_crohns_sig.RDS",
+        f"{CD}/postprocess/tenk_alltraits_sig.RDS",
+        ext(CD_MR_DEG),
+        ext(CD_ANNOT),
+        # from the TenK10K_causal_inference_vs_IBDverse submodule
+        ext(
+            "metadata/cell.tsv",
+            *[
+                f"results/pi1_mr_novelty_results/{f}"
+                for f in (
+                    "pi1_combined.tsv",
+                    "pi1_all.txt",
+                    "tenk_not_novel_res_relative.tsv",
+                    "prop_blood_ibdverse.csv",
+                )
+            ],
+        ),
+        "scripts/8-crohns/supplementary/2-prepare_annot.R",
+        "scripts/8-crohns/supplementary/2-prepare_crohns_annotated_results.R",
+        "scripts/8-crohns/supplementary/2-prepare_supplementary_table_cd_genes_in_immune_diseases.R",
+        "scripts/8-crohns/supplementary/2-prepare_supplementary_table_mr_deg.R",
+    output:
+        tabs("s16", "s17", "s18", "s19", "s20", "s21"),
+    params:
+        script="scripts/8-crohns/supplementary/3-prepare_supplementary_tables_all.R",
+    log:
+        log("crohns_tables"),
+    conda:
+        ENV
+    shell:
+        R

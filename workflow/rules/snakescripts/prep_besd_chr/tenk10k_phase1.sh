@@ -2,13 +2,17 @@
 # Purpose: Prepare BESD and EPI files for TenK10K phase1 analysis
 # Input: BESD source directory, GTF file
 # Output: Linked BESD/ESI files and processed EPI files per cell and chromosome
-# NOTE: Hardcoded paths below (/g/data/ei56/, /g/data/fy54/) are specific to NCI Gadi; update for other environments
-/bin/bash -l
+#
+# This script stages pre-built BESD/ESI files; it does not build them. The
+# SAIGE-QTL -> BESD conversion lives in the external TenK10K_SMR repository
+# (see workflow/README.md). Override the two paths below via the environment,
+# e.g. TENK10K_BESD_DIR=/my/besd GENCODE_GTF=/my/genes.gtf.gz.
+set -euo pipefail
 
 # prepare BESD file for tenk10k phase1
 
-SOURCE_DIR="/g/data/ei56/as8574/analysis/TenK10K_SMR/inputs/besd"
-GTF="/g/data/fy54/reference/GRCh38-gencode-v44/genes/genes.gtf.gz"
+SOURCE_DIR="${TENK10K_BESD_DIR:?set TENK10K_BESD_DIR to the directory of pre-built BESD files}"
+GTF="${GENCODE_GTF:?set GENCODE_GTF to the GENCODE v44 gene annotation GTF}"
 
 CELLS=($(find "${SOURCE_DIR}" -mindepth 1 -maxdepth 1 -type d | xargs basename -a))
 

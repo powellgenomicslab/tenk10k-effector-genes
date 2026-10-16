@@ -4,7 +4,7 @@
 library(readxl)
 library(tidyverse)
 
-df_trait_meta <- read_excel("resources/metadata/trait_metadata_curated.xlsx")
+df_trait_meta <- fread("metadata/trait.tsv")
 
 df_trait_meta |> 
     filter(include) |> 

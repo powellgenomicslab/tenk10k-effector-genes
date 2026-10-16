@@ -1,0 +1,26 @@
+# params to adjust in scDRS run
+gs_src_species: "human"
+gs_dst_species: "human"
+h5ad_species: "human"
+raw_count: True
+filter_data: False
+n_ctrl: 1000
+adj_prop_col: predicted_labels
+sample_by_col: predicted_labels
+group_stats_col: predicted_labels
+max_cells_per_cell_type: 10000
+sample_fraction: 0.1
+return_ctrl_raw_score: False
+return_ctrl_norm_score: True
+
+# preprocessing params
+pp_n_mean_bin: 20
+pp_n_var_bin: 20
+
+# columns for various downstream analysis
+regress_out_cols:
+  - n_umis
+  - pct_counts_mito
+
+harmony_batch_col: batch_id
+

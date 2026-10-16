@@ -1,0 +1,9 @@
+# Configuration for scripts/Snakefile (manuscript figures and tables).
+
+# Container holding the figures conda environment, used with
+# `--sdm conda apptainer`. Built from the generated Dockerfile; see README.md.
+container: "docker://ghcr.io/powellgenomicslab/tenk10k-effector-genes:v4.2"
+
+# Public bundle of summary-level inputs: Zenodo dataset doi:10.5281/zenodo.23406585
+# (record 23406585). `make data` downloads and verifies it; see RELEASING.md.
+bundle_url: "https://zenodo.org/records/23406585/files/tenk10k_figure_inputs.tar.gz?download=1"

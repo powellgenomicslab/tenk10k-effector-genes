@@ -1,0 +1,10 @@
+# Multivariant coloc configuration
+# Strategy: nci-parallel handles ALL parallelism, R runs single-threaded
+
+mvcoloc_batch_size:        8       # traits per PBS job
+mvcoloc_nthreads_per_task: 1       # FIXED: no internal parallelism
+mvcoloc_mem_gb_per_task:   4       # ~1-2 GB actual, 4 GB headroom
+mvcoloc_jobfs_gb_per_task: 2       # plink temp files
+mvcoloc_ncpus_per_node:    48      # Gadi hardware (fixed)
+mvcoloc_nnodes:            2       # 2 nodes × 48 = 96 concurrent tasks
+mvcoloc_walltime:          "12:00:00"

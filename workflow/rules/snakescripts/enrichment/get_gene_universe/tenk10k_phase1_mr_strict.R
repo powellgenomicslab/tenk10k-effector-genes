@@ -6,7 +6,7 @@ library(arrow)
 library(readxl)
 
 OUTPUT <- snakemake@output
-df_trait_map <- read_xlsx("resources/metadata/trait_metadata_curated.xlsx") |>
+df_trait_map <- fread("metadata/trait.tsv") |>
   filter(include)
 
 phenotypes <- df_trait_map$trait_id

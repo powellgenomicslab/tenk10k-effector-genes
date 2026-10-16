@@ -1,0 +1,15 @@
+# Mapping of site-local files to symlink into the working directory.
+#
+# Read at parse time by get_file_map() in workflow/rules/init.smk, so this file
+# must exist before any rule can be evaluated. Replace the `source` paths below
+# with the locations on your own system; `target` paths are relative to the
+# working directory and should be left as they are.
+#
+# The corresponding rule is init_file_nci. Name this file after your host and
+# pass the matching name to get_file_map() if you are not running on NCI.
+
+directories:
+  # Local copy of the Open Targets Platform data release
+  otp_output:
+    source: /path/to/reference_data/otp_output
+    target: resources/nci/otp_output
