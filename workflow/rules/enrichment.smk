@@ -228,3 +228,29 @@ rule aggregate_enrichment:
             done
         ) | gzip -c > {output}
         """
+
+
+rule string_trim_publications:
+    """
+    Copy of the STRING enrichment table for the data bundle without the
+    "Publications" term source (about 98% of rows), which the figure and table
+    scripts filter out. The gene-term (bipartite) table is copied unchanged,
+    because the PPI network figure counts each gene's phenotypes across all
+    sources, and so is the network, so that all three files share the
+    .trimmed prefix.
+    """
+    input:
+        enrich = "results/enrichment/{set}/{subset}/{biosample}.string_rank_api.tsv",
+        bipartite = "results/enrichment/{set}/{subset}/{biosample}.string_rank_api.bipartite.tsv",
+        network = "results/enrichment/{set}/{subset}/{biosample}.string_rank_api.ppi_network.tsv"
+    output:
+        enrich = "results/enrichment/{set}/{subset}/{biosample}.string_rank_api.trimmed.tsv",
+        bipartite = "results/enrichment/{set}/{subset}/{biosample}.string_rank_api.trimmed.bipartite.tsv",
+        network = "results/enrichment/{set}/{subset}/{biosample}.string_rank_api.trimmed.ppi_network.tsv"
+    shell:
+        r"""
+        awk -F'\t' 'NR == 1 {{for (k = 1; k <= NF; k++) if ($k == "source") c = k; print; next}}
+                    $c != "Publications"' {input.enrich} > {output.enrich}
+        cp {input.bipartite} {output.bipartite}
+        cp {input.network} {output.network}
+        """

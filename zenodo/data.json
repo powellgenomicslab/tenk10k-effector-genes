@@ -1,0 +1,153 @@
+{
+  "title": "TenK10K Phase 1 effector genes: inputs for the figures and tables",
+  "upload_type": "dataset",
+  "description": "<p><strong>Main results:</strong> <code>tenk10k_phase1_effector_genes.v5.parquet</code> holds the single-cell eQTL Mendelian randomisation, sensitivity and colocalisation results for every gene, cell type and trait tested in TenK10K Phase 1 (7.5 million rows); <code>tenk10k_phase1_effector_genes.v5.md</code> describes each column, and the descriptions are also stored in the file's metadata.</p><p><strong>Figure and table inputs:</strong> <code>tenk10k_figure_inputs.tar.gz</code> holds the summary-level data needed to rebuild every figure and supplementary table of <em>Single-cell genetics identifies cell type-specific causal mechanisms in complex traits and diseases</em> (medRxiv doi:10.1101/2025.08.28.25334614) with the companion code release (<code>make data</code> downloads and verifies this record). INVENTORY.tsv lists each file with its size, SHA-256, the display items that use it, its source and its licence. No individual-level data or genotypes are included; cell-level scDRS files carry anonymised cell identifiers.</p><p>Albert Henry, Anne Senabouth and Rika Tyebally contributed equally. Correspondence: Joseph E. Powell (j.powell@garvan.org.au).</p>",
+  "creators": [
+    {
+      "name": "Henry, Albert",
+      "affiliation": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia; Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia; UNSW Cellular Genomics Futures Institute, University of New South Wales, Sydney, NSW, Australia; Institute of Cardiovascular Science, University College London, London, UK",
+      "orcid": "0000-0001-7422-2288"
+    },
+    {
+      "name": "Senabouth, Anne",
+      "affiliation": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia; Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia",
+      "orcid": "0000-0002-8798-9821"
+    },
+    {
+      "name": "Tyebally, Rika",
+      "affiliation": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia; Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia",
+      "orcid": "0009-0006-6090-8979"
+    },
+    {
+      "name": "Bowen, Blake",
+      "affiliation": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia; Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia; UNSW Cellular Genomics Futures Institute, University of New South Wales, Sydney, NSW, Australia"
+    },
+    {
+      "name": "Allen, Peter C.",
+      "affiliation": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia; Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia",
+      "orcid": "0000-0002-3950-9539"
+    },
+    {
+      "name": "Spenceley, Eleanor",
+      "affiliation": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia; Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia; UNSW Cellular Genomics Futures Institute, University of New South Wales, Sydney, NSW, Australia",
+      "orcid": "0009-0000-5543-2810"
+    },
+    {
+      "name": "Sagi-Zsigmond, Eszter",
+      "affiliation": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia"
+    },
+    {
+      "name": "McCloy, Rachael A.",
+      "affiliation": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia",
+      "orcid": "0000-0001-7791-4044"
+    },
+    {
+      "name": "Cuomo, Anna S.E.",
+      "affiliation": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia; Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia; UNSW Cellular Genomics Futures Institute, University of New South Wales, Sydney, NSW, Australia; Centre for Population Genomics, Garvan Institute of Medical Research, Sydney, NSW, Australia; Centre for Population Genomics, Murdoch Children's Research Institute, Melbourne, VIC, Australia",
+      "orcid": "0000-0001-5168-6979"
+    },
+    {
+      "name": "Fan, Jianan",
+      "affiliation": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia; Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia",
+      "orcid": "0000-0003-4424-9572"
+    },
+    {
+      "name": "Huang, Hao Lawrence",
+      "affiliation": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia; Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia; UNSW Cellular Genomics Futures Institute, University of New South Wales, Sydney, NSW, Australia",
+      "orcid": "0000-0001-8960-8941"
+    },
+    {
+      "name": "Tanudisastro, Hope A.",
+      "affiliation": "Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia; Centre for Population Genomics, Garvan Institute of Medical Research, Sydney, NSW, Australia; Centre for Population Genomics, Murdoch Children's Research Institute, Melbourne, VIC, Australia; Faculty of Medicine and Health, University of Sydney, Sydney, NSW, Australia",
+      "orcid": "0000-0002-4561-305X"
+    },
+    {
+      "name": "Xue, Angli",
+      "affiliation": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia; Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia; UNSW Cellular Genomics Futures Institute, University of New South Wales, Sydney, NSW, Australia",
+      "orcid": "0000-0002-0285-0426"
+    },
+    {
+      "name": "Dong, Oscar",
+      "affiliation": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia; Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia; Faculty of Medicine and Health, University of Sydney, Sydney, NSW, Australia",
+      "orcid": "0009-0009-8275-2989"
+    },
+    {
+      "name": "Harris, Bradley T.",
+      "affiliation": "Wellcome Sanger Institute, Hinxton CB10 1SA, UK",
+      "orcid": "0000-0001-9585-1016"
+    },
+    {
+      "name": "Alegbe, Tobi",
+      "affiliation": "Wellcome Sanger Institute, Hinxton CB10 1SA, UK; Open Targets, Wellcome Genome Campus, Hinxton, CB10 1SA, UK; EMBL-EBI, Hinxton, CB10 1SA, UK",
+      "orcid": "0000-0003-1622-0502"
+    },
+    {
+      "name": "Raine, Tim",
+      "affiliation": "Open Targets, Wellcome Genome Campus, Hinxton, CB10 1SA, UK; Addenbrooke's Hospital, Cambridge CB2 0QQ, UK",
+      "orcid": "0000-0002-5855-9873"
+    },
+    {
+      "name": "Anderson, Carl A.",
+      "affiliation": "Wellcome Sanger Institute, Hinxton CB10 1SA, UK; Open Targets, Wellcome Genome Campus, Hinxton, CB10 1SA, UK",
+      "orcid": "0000-0003-1719-7009"
+    },
+    {
+      "name": "Hemani, Gibran",
+      "affiliation": "Medical Research Council (MRC) Integrative Epidemiology Unit, Population Health Sciences, Bristol Medical School, University of Bristol, Bristol, United Kingdom",
+      "orcid": "0000-0003-0920-1055"
+    },
+    {
+      "name": "de Lange, Katrina M.",
+      "affiliation": "Centre for Population Genomics, Garvan Institute of Medical Research, Sydney, NSW, Australia; Centre for Population Genomics, Murdoch Children's Research Institute, Melbourne, VIC, Australia"
+    },
+    {
+      "name": "Figtree, Gemma A.",
+      "affiliation": "Charles Perkins Centre, The University of Sydney, Sydney, NSW, Australia; Kolling Institute of Medical Research, Royal North Shore Hospital, Sydney, NSW, Australia",
+      "orcid": "0000-0002-5080-6083"
+    },
+    {
+      "name": "Hewitt, Alex W.",
+      "affiliation": "Menzies Institute for Medical Research, University of Tasmania, Hobart, TAS, Australia; Department of Ophthalmology, Royal Hobart Hospital, Hobart, TAS, Australia",
+      "orcid": "0000-0002-5123-5999"
+    },
+    {
+      "name": "MacArthur, Daniel G.",
+      "affiliation": "Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia; Centre for Population Genomics, Garvan Institute of Medical Research, Sydney, NSW, Australia; Centre for Population Genomics, Murdoch Children's Research Institute, Melbourne, VIC, Australia",
+      "orcid": "0000-0002-5771-2290"
+    },
+    {
+      "name": "Powell, Joseph E.",
+      "affiliation": "Translational Genomics Program, Garvan Institute of Medical Research, Sydney, NSW, Australia; Faculty of Medicine and Health, University of New South Wales, Sydney, NSW, Australia; UNSW Cellular Genomics Futures Institute, University of New South Wales, Sydney, NSW, Australia",
+      "orcid": "0000-0002-5070-4124"
+    }
+  ],
+  "license": "cc-by-sa-4.0",
+  "keywords": [
+    "single-cell eQTL",
+    "Mendelian randomisation",
+    "effector genes",
+    "colocalisation",
+    "scDRS",
+    "TenK10K"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "10.1101/2025.08.28.25334614",
+      "relation": "isSupplementTo",
+      "resource_type": "publication-preprint",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "TODO: code release DOI",
+      "relation": "isSupplementTo",
+      "resource_type": "software",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "https://github.com/powellgenomicslab/tenk10k-effector-genes/tree/TODO-tag",
+      "relation": "isSupplementTo",
+      "resource_type": "software",
+      "scheme": "url"
+    }
+  ]
+}

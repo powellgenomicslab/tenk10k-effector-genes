@@ -12,7 +12,7 @@ df_gene <- df_msmr_tenk10k %>%
   group_by(cell_type, major_cell_type, probeID, Gene, gene_type) %>% 
   summarise(mr = max(mr), .groups = "drop") %>%
   mutate(gene_cat = ifelse(
-    mr == 1, "≥1 trait", "No association"))
+    mr == 1, "≥1 trait(s)", "No association"))
 
 df_overall <- df_gene %>% 
   group_by(probeID) %>% 
@@ -115,51 +115,84 @@ df_traits <- df_msmr_tenk10k[,
         legend.justification = c(1,1))
 )
 
-infographic <- png::readPNG("figures/study_design/infographics_v4.png", native = TRUE)
+# editable PDF for Nature (180 mm wide, text 5-7 pt, Helvetica): save panels at
+# final size, assemble with the vector infographic in Typst (scripts/1-overview/fig1.typ).
+# Panels are saved as SVG: Typst keeps SVG text as live text and embeds the fonts.
+# (cairo_pdf gives uneven letter spacing at small sizes; pdf() does not embed fonts.)
+panel_w <- 176 / 25.4  # 180 mm page minus 2 x 2 mm margins
 
-plots <- (wrap_elements(full = infographic) /
-          wrap_elements(full = p_gene) / 
-          wrap_elements(full = p_traits)) +
-  plot_layout(heights = c(0.6, 0.2, 0.45)) +
-  plot_annotation(tag_levels = "a") &
-  theme(plot.tag = element_text(face = "bold"),
-        plot.tag.position = c(0, 0.97),
-        plot.background = element_rect(fill = "white", color = NA))
+theme_print <- theme(text = element_text(family = "Helvetica"),
+                     line = element_line(linewidth = 0.3),
+                     geom = element_geom(linewidth = 0.3, borderwidth = 0.3))
 
-ggsave(plots, 
-       filename = "figures/study_design/study_design_summary.png", 
-       width = 9.5, height = 12, units = "in", dpi = 300, 
-       scaling = 1.05,
-       device = agg_png)
+p_gene_print <- p_gene +
+  theme_print +
+  theme(axis.text.x = element_text(angle = 40, hjust = 1, vjust = 1, size = 5.5),
+        axis.text.y = element_text(size = 5.5),
+        axis.title = element_text(size = 6.5),
+        strip.text.x = element_text(size = 6, face = "bold"),
+        legend.title = element_text(size = 6.5),
+        legend.text = element_text(size = 6),
+        legend.key.size = unit(0.6, "lines"),
+        panel.spacing.x = unit(3, "pt"),
+        plot.margin = margin(2, 2, 2, 2))
 
+p_traits_print <- p_traits +
+  scale_x_discrete(expand = expansion(add = 0.5)) +
+  scale_size_continuous(
+    range = c(0.6, 3),
+    labels = scales::number_format(scale = 1e-3, suffix = "k"),
+    name = "Effective GWAS\nsample size",
+    guide = guide_legend(nrow = 2, order = 2, override.aes = list(
+      fill = "gray", color = "black"))) +
+  theme_print +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 5),
+        axis.text.y = element_text(size = 5.5),
+        axis.title = element_text(size = 6.5),
+        legend.title = element_text(size = 6.5),
+        legend.text = element_text(size = 6, margin = margin(l = 1.5)),
+        legend.key.size = unit(0.55, "lines"),
+        legend.position = "top",
+        legend.justification = c(1, 0),
+        legend.box = "horizontal",
+        legend.box.just = "top",
+        legend.margin = margin(),
+        legend.box.spacing = unit(1, "pt"),
+        legend.key.spacing.y = unit(0, "pt"),
+        legend.key.spacing.x = unit(2, "pt"),
+        legend.spacing.x = unit(8, "pt"),
+        panel.spacing.x = unit(1, "pt"),
+        plot.margin = margin(2, 2, 2, 2))
 
-ggsave(plots, 
-       filename = "figures/publication_pdf/Fig1 - Study Design.pdf", 
-       width = 9.5/1.05, height = 12/1.05, units = "in", dpi = 320, 
-       # scaling = 1.05,
-       device = cairo_pdf)
+dir.create("figures/panels/1-overview", recursive = TRUE, showWarnings = FALSE)
+ggsave(p_gene_print, filename = "figures/panels/1-overview/panel_b.svg",
+       width = panel_w, height = 30 / 25.4, units = "in", device = svglite::svglite)
+ggsave(p_traits_print, filename = "figures/panels/1-overview/panel_c.svg",
+       width = panel_w, height = 72 / 25.4, units = "in", device = svglite::svglite)
+# requires figures/panels/1-overview/infographics_v5.pdf (untracked BioRender asset)
+# Figure 1 is assembled from these panels by scripts/1-overview/fig1.typ (`make fig-m1`)
 
 # get numbers
 df_traits[supercategory=="disease",.N]
-df_gene[,n_distinct(Gene), by = gene_cat]
-
-
+# df_gene[,n_distinct(Gene), by = gene_cat]
 
 # write supplementary table
-df_celltype <- df_gene %>%
-  group_by(gene_cat, cell_type) %>%
-  tally() %>%
-  ungroup() %>%
-  pivot_wider(names_from = gene_cat, values_from = n, values_fill = 0) %>%
-  mutate(n_gene = `Protein-coding` + `Non-coding`) %>%
+source("scripts/util/write_table.R")
+
+df_celltype <- df_gene %>% 
+  group_by(gene_cat, cell_type) %>% 
+  tally() %>% 
+  ungroup() %>% 
+  pivot_wider(names_from = gene_cat, values_from = n, values_fill = 0) %>% 
+  mutate(n_gene = `No association` + `≥1 trait(s)`) %>% 
   left_join(df_cell_map, by = "cell_type")
 
-writexl::write_xlsx(df_celltype, "tables/celltype_summary.xlsx")
+write_table(df_celltype, "celltype_summary", 1)
 
-df_trait_summary <- df_traits %>%
+df_traits %>% 
   rename(trait_id = phenotype) %>%
   arrange(supercategory, pheno_cat, study, pheno_label) %>%
-  mutate(across(starts_with("n_"), as.numeric))
-writexl::write_xlsx(df_trait_summary, "tables/trait_summary.xlsx")
+  mutate(across(starts_with("n_"), as.numeric)) %>% 
+  write_table("trait_summary", 2)
 
 

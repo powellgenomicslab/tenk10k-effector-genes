@@ -328,3 +328,28 @@ rule scdrs_aggregate_score:
 #             --flag-return-ctrl-norm-score {params.return_ctrl_norm_score}  
 #         """
 
+
+
+rule scdrs_anonymise_cell_ids:
+    """
+    Copies of the cell-level scDRS files shared in the data bundle, with the
+    sequencing-pool part of each cell ID replaced by an anonymous code. The
+    pool-to-code map is kept in resources/ and is not shared.
+    """
+    input:
+        cells = [
+            "results/aggregate/tenk10k_phase1.scdrs.cell_score.tsv.parquet.gz",
+            "results/aggregate/tenk10k_phase1.scdrs.cell_mcp.tsv.parquet.gz",
+            "results/misc/tenk10k_prop_sample.crohns.cell_score.tsv.parquet.gz",
+        ]
+    output:
+        cells = [
+            "results/aggregate/tenk10k_phase1.scdrs.cell_score.anon.parquet.gz",
+            "results/aggregate/tenk10k_phase1.scdrs.cell_mcp.anon.parquet.gz",
+            "results/misc/tenk10k_prop_sample.crohns.cell_score.anon.parquet.gz",
+        ]
+    params:
+        pool_map = "resources/scdrs/pool_id_map.private.tsv"
+    conda: "scverse"
+    log: "logs/scdrs/anonymise_cell_ids.log"
+    script: "snakescripts/scdrs/anonymise_cell_ids.py"

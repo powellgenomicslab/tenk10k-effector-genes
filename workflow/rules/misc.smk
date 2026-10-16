@@ -54,3 +54,91 @@ rule extract_gwas_locus:
               --ld-snp $TOPVAR \
               --out {params.out_prefix}
         """
+# Crohn's disease locus objects for the manuscript figures (ED Fig. 9, Supp. Fig. 17).
+# Each combines eQTL and GWAS statistics with LD (r2 to the index variant) computed
+# by PLINK from the TenK10K genotypes; only the r2 values are written out, never
+# the genotypes. PLINK must be on PATH, as for extract_gwas_locus.
+
+rule crohns_gpx1_locus_data:
+    input:
+        gwas = "resources/pipeline_ma/crohns.ma",
+        eqtl = expand("resources/matrix_eqtl/tenk10k_phase1/{ct}/chr3_meqtl.tsv", ct = ["CD4_TCM", "cDC2"]),
+        bfile = expand("resources/genotypes/tenk10k_phase1/chr3.{ext}", ext = ["bed", "bim", "fam"])
+    output:
+        "resources/crohns_case_study/locus_zoom_data/GPX1/tenk10k_GPX1_locus_plot_data.RDS"
+    log:
+        "logs/crohns_locus/GPX1.log"
+    conda: "../envs/figures.yaml"
+    shell:
+        "Rscript workflow/rules/snakescripts/crohns_locus/1-generate_locus_zoom_object.R "
+        "GPX1 3 ENSG00000233276 > {log} 2>&1"
+
+rule crohns_jazf1_locus_data:
+    input:
+        # MR results annotated for Crohn's disease, written by
+        # scripts/8-crohns/prepare_data/2-postprocess.R; only the JAZF1 probe ID,
+        # chromosome and top eQTL variants are read from it
+        mr = "resources/crohns_case_study/postprocess/tenk_crohns_raw.RDS",
+        eqtl = expand("resources/matrix_eqtl/tenk10k_phase1/{ct}/chr7_meqtl.tsv", ct = ["CD4_Naive", "cDC2"]),
+        bfile = expand("resources/genotypes/tenk10k_phase1/chr7.{ext}", ext = ["bed", "bim", "fam"])
+    output:
+        "resources/crohns_case_study/figures/JAZF1_data.RDS"
+    log:
+        "logs/crohns_locus/JAZF1.log"
+    conda: "../envs/figures.yaml"
+    shell:
+        "mkdir -p resources/crohns_case_study/figures/ld && "
+        "Rscript workflow/rules/snakescripts/crohns_locus/locus_zoom_eQTL_discordant.R > {log} 2>&1"
+
+# Extracts of two published supplementary tables (Kong et al. 2023, Liu et al. 2023)
+# used by the Crohn's case study. The originals are not redistributed; the figure
+# harness reads these extracts, which are shared in the data bundle with a citation.
+
+rule crohns_third_party_extracts:
+    input:
+        kong = "resources/crohns_case_study/deg/Kongetal2023_supplementary/Kongetal2023_Crohns-sc_DEG.xlsx",
+        features = "resources/crohns_case_study/deg/features_original.tsv",
+        liu = "resources/crohns_case_study/crohns_relevant_gene_lists/sources/41588_2023_1384_MOESM4_ESM_Liuetal2023_SupTable.xlsx"
+    output:
+        kong = "resources/crohns_case_study/deg/kong2023_immune_deg.parquet",
+        liu = "resources/crohns_case_study/crohns_relevant_gene_lists/sources/liu2023_st8_genes.tsv"
+    log:
+        "logs/crohns_locus/third_party_extracts.log"
+    conda: "../envs/figures.yaml"
+    shell:
+        "Rscript workflow/rules/snakescripts/crohns_external/extract_third_party.R > {log} 2>&1"
+
+# The main results as a standalone file for the Zenodo data record: every column
+# of the integrated table, with clear names and with the column descriptions of
+# workflow/config/main_results_columns.tsv stored in the Parquet metadata.
+
+rule main_results_release:
+    input:
+        results = "results/preprocessed/tenk10k_phase1.v5.parquet.gz"
+    output:
+        parquet = "results/release/tenk10k_phase1_effector_genes.v5.parquet",
+        md = "results/release/tenk10k_phase1_effector_genes.v5.md"
+    params:
+        columns = f"{workflow.basedir}/config/main_results_columns.tsv",
+        meta = {
+            "title": "TenK10K Phase 1 effector genes: main results",
+            "description": (
+                "Single-cell eQTL Mendelian randomisation results for every gene, cell type "
+                "and trait tested in TenK10K Phase 1: multi-SNP SMR with local FDR, the "
+                "HEIDI, IVW-LD and MR-link-2 sensitivity analyses, coloc and SuSiE-based "
+                "colocalisation, and the evidence tiers used in the manuscript."
+            ),
+            "version": "summary statistics v5, colocalisation v3",
+            "doi": "10.5281/zenodo.23406585",
+            "licence": "CC BY-SA 4.0",
+            "citation": (
+                "Henry A, Senabouth A, Tyebally R, et al. Single-cell genetics identifies "
+                "cell type-specific causal mechanisms in complex traits and diseases. "
+                "medRxiv 2025.08.28.25334614 (2025). doi:10.1101/2025.08.28.25334614"
+            ),
+            "code": "https://github.com/powellgenomicslab/tenk10k-effector-genes",
+        }
+    log:
+        "logs/release/main_results.log"
+    conda: "scverse"
+    script: "snakescripts/release/main_results.py"
