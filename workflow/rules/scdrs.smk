@@ -353,3 +353,36 @@ rule scdrs_anonymise_cell_ids:
     conda: "scverse"
     log: "logs/scdrs/anonymise_cell_ids.log"
     script: "snakescripts/scdrs/anonymise_cell_ids.py"
+
+rule scdeepid_bcell_extract:
+    """
+    Per-cell scDeepID scores of the B cells sampled for scDRS (Extended Data Fig 7):
+    UMAP, cell type and the five pathways shown, with the anonymised cell IDs of
+    scdrs_anonymise_cell_ids. The pathway test for all pathways (Supp Table 10,
+    Supp Fig 15) comes with the scDeepID run as results/scDeepID/pathway_test_full.csv
+    and is used here to check that the scores are from that run. The scDeepID model
+    is at https://github.com/powellgenomicslab/scDeepID_TenK10K_manuscripts.
+    """
+    input:
+        pathway = "resources/scDeepID/tk_bcell/pathway_scores.h5ad",
+        umap = "resources/scDeepID/tk_bcell/attention_umap.h5ad",
+        reference = "results/scDeepID/pathway_test_full.csv",
+        cell_score = "results/aggregate/tenk10k_phase1.scdrs.cell_score.tsv.parquet.gz",
+        cell_mcp = "results/aggregate/tenk10k_phase1.scdrs.cell_mcp.tsv.parquet.gz",
+    output:
+        cells = "results/scDeepID/tenk10k_bcell.sle.ed_fig7_pathways.anon.parquet",
+    params:
+        pool_map = "resources/scdrs/pool_id_map.private.tsv",
+        # Extended Data Fig 7, in the order shown
+        pathways = [
+            "GOBP_NON_CANONICAL_NF_KAPPAB_SIGNAL_TRANSDUCTION",
+            "GOBP_POSITIVE_REGULATION_OF_INFLAMMATORY_RESPONSE",
+            "GOBP_POSITIVE_REGULATION_OF_ERK1_AND_ERK2_CASCADE",
+            "GOBP_POSITIVE_REGULATION_OF_CANONICAL_NF_KAPPAB_SIGNAL_TRANSDUCTION",
+            "GOBP_REGULATION_OF_CELL_MORPHOGENESIS",
+        ],
+    resources:
+        mem = "32GB"
+    conda: "../envs/scverse.yaml"
+    log: "logs/scdrs/scdeepid_bcell_extract.log"
+    script: "snakescripts/scdeepid/bcell_extract.py"

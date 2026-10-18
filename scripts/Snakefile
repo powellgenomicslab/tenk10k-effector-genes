@@ -116,6 +116,7 @@ ITEMS = {
     "fig_e4": ("Overlap of sc-eQTL MR with MAGMA and eQTLGen MR", figs("e4")),
     "fig_e5": ("STRING enrichment of CD4 CTL effector genes", figs("e5")),
     "fig_e6": ("scDRS for Crohn's disease across all cell types", figs("e6")),
+    "fig_e7": ("scDeepID cell function scores in SLE-enriched B cells", figs("e7")),
     "fig_e8": ("All 122 MR-supported target-indication pairs", figs("e8")),
     "fig_e9": ("GPX1: locus zoom and cross plots in CD4 TCM and cDC2", figs("e9")),
     "fig_e10": ("IBDverse effector-gene enrichment by blood-cell fraction", figs("e10")),
@@ -133,6 +134,7 @@ ITEMS = {
     "fig_s12": ("Multiple sclerosis STRING network", figs("s12")),
     "fig_s13": ("STRING betweenness of MR-nominated genes", figs("s13")),
     "fig_s14": ("scDRS trait x cell type grid", figs("s14")),
+    "fig_s15": ("scDeepID cell function scores by GO category, SLE-enriched B cells", figs("s15")),
     "fig_s16": ("Power projection for MoA-MR concordance", figs("s16")),
     "fig_s17": ("JAZF1 eQTL effects in cDC2 and naive CD4 T", figs("s17")),
     "fig_s21": ("scDRS for Crohn's disease across two sampling strategies", figs("s21")),
@@ -165,8 +167,11 @@ ITEMS = {
     "tab_s20": ("IBDverse effector-gene enrichment", tabs("s20")),
     "tab_s21": ("Crohn's literature annotations", tabs("s21")),
 }
-# built by workflow/rules/crohns.smk from raw single-cell data, which the bundle lacks
-NOT_REBUILDABLE = {"fig_s25"}
+# items the bundle cannot rebuild, and why
+NOT_REBUILDABLE = {
+    "fig_s25": "is drawn from raw single-cell data by workflow/rules/crohns.smk",
+    "fig_e7": "needs the per-cell scDeepID scores (rule scdeepid_bcell_extract), not yet in the bundle",
+}
 
 AVAILABLE = [k for k in ITEMS if k not in NOT_REBUILDABLE]
 
@@ -219,8 +224,10 @@ for _item in set(ITEMS) - set(AVAILABLE):
         name:
             _item
         localrule: True
+        params:
+            why=NOT_REBUILDABLE[_item],
         shell:
-            "echo '{rule} is drawn from raw single-cell data by workflow/rules/crohns.smk; it cannot be rebuilt from the data bundle' >&2; exit 1"
+            "echo '{rule} {params.why}; it cannot be rebuilt from the data bundle' >&2; exit 1"
 
 
 rule targets:
@@ -902,6 +909,45 @@ rule tab_scdeep_id:
         ENV
     shell:
         R
+
+
+rule scdeepid_categories:
+    input:
+        ext("results/scDeepID/pathway_test_full.csv"),
+    output:
+        figs("s15"),
+    params:
+        script="scripts/6-polygenic/scDeepID/plot_scdeepid_categories.R",
+    log:
+        log("scdeepid_categories"),
+    conda:
+        ENV
+    shell:
+        R
+
+
+# Declared only once the per-cell scDeepID file is in the bundle; remove fig_e7 from
+# NOT_REBUILDABLE to switch it on (the file then enters the manifest).
+if "fig_e7" not in NOT_REBUILDABLE:
+
+    rule scdeepid_bcell:
+        input:
+            SCDRS_CELL,
+            # from rule scdeepid_bcell_extract in workflow/rules/scdrs.smk
+            ext(
+                "results/scDeepID/tenk10k_bcell.sle.ed_fig7_pathways.anon.parquet",
+                "results/scDeepID/pathway_test_full.csv",
+            ),
+        output:
+            figs("e7"),
+        params:
+            script="scripts/6-polygenic/scDeepID/plot_scdeepid_bcell.R",
+        log:
+            log("scdeepid_bcell"),
+        conda:
+            ENV
+        shell:
+            R
 
 
 # --- 7-drug ---------------------------------------------------------------------

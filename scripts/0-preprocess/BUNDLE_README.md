@@ -62,6 +62,8 @@ targets.
   statistics computed from the genotypes; no genotypes are included. In the
   cell-level scDRS files, each cell ID is the 10x barcode followed by an
   anonymous code in place of the sequencing pool.
+- The scDeepID cell function scores of individual B cells. The test of each
+  cell function between SLE-enriched and other B cells is included.
 - Full GWAS and eQTL summary statistics. These are available from their
   original sources (see `INVENTORY.tsv`). The TenK10K sc-eQTL summary
   statistics are released with Cuomo et al. 2025
