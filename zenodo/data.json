@@ -136,18 +136,6 @@
       "relation": "isSupplementTo",
       "resource_type": "publication-preprint",
       "scheme": "doi"
-    },
-    {
-      "identifier": "TODO: code release DOI",
-      "relation": "isSupplementTo",
-      "resource_type": "software",
-      "scheme": "doi"
-    },
-    {
-      "identifier": "https://github.com/powellgenomicslab/tenk10k-effector-genes/tree/TODO-tag",
-      "relation": "isSupplementTo",
-      "resource_type": "software",
-      "scheme": "url"
     }
   ]
 }

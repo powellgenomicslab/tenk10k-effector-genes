@@ -44,20 +44,45 @@ exactly the inputs that release was tested with.
    set `bundle_url` to `file:///path/to/tenk10k_figure_inputs.tar.gz`, then run
    `make data`, `make dry-run` (no missing inputs), and build a few items on a
    compute node.
-5. **Release the code.** Tag and publish a GitHub release (e.g. `v4.1.0`).
-   Zenodo archives it and mints the code DOI.
-6. **Publish the data.** Upload the main results,
-   `tenk10k_phase1_effector_genes.v5.parquet` and its column dictionary
+5. **Publish the data.** The record holds five files, all in `data/zenodo/`
+   once the bundle is built: the main results,
+   `tenk10k_phase1_effector_genes.v5.parquet`, and its column dictionary
    `tenk10k_phase1_effector_genes.v5.md` (rule `main_results_release`, written
-   to `results/release/` in the working repository); then
-   `tenk10k_figure_inputs.tar.gz`, and also `INVENTORY.tsv` and
-   `scripts/0-preprocess/BUNDLE_README.md` (as `README.md`) so the contents can
-   be read without downloading the archive.
-   Complete the metadata from `zenodo/data.json`, add the code DOI and the
-   release tag under `related_identifiers` (relation `isSupplementTo`), and
-   publish.
-7. **Check the link.** In a fresh clone of the release tag, run `make data` and
-   build one item.
+   to `results/release/` in the working repository); the bundle,
+   `tenk10k_figure_inputs.tar.gz`; and `INVENTORY.tsv` and
+   `scripts/0-preprocess/BUNDLE_README.md` (as `README.md`), so the contents can
+   be read without downloading the archive. Keep the file names: `make data`
+   downloads the bundle by name. Upload them with `zenodo/upload_data.py`
+   (below) or in the browser, complete the metadata from `zenodo/data.json`,
+   set access to public, and submit the draft to the `powellgenomicslab`
+   community; it is published when a community curator accepts it. Files cannot
+   be changed once published; a change needs a new version, with a new DOI.
+6. **Check the link.** In a fresh clone, run `make data` (it downloads from the
+   published record and checks every file) and build one item.
+7. **Release the code** (can come later). Merge into `main`, then tag and
+   publish a GitHub release (e.g. `v4.1.0`); Zenodo archives it and mints the
+   code DOI. Then edit the data record's metadata to add the code DOI under
+   related works (relation "is supplement to"); editing metadata does not
+   create a new version.
+
+### Uploading with the API
+
+`zenodo/upload_data.py` uploads the five files to the reserved draft, checks
+each against Zenodo's MD5 (skipping files already uploaded unchanged), attaches
+the draft to the community, and stops before publishing. `--metadata` also sets
+the metadata from `zenodo/data.json`, keeping the reserved DOI; leave it out if
+the metadata was entered in the browser. It reads a personal access token
+(scope `deposit:write`) from `~/.zenodo_token`, which must be readable only by
+you. On NCI Gadi, run it in the `copyq` queue, the only one with internet:
+
+```bash
+chmod 600 ~/.zenodo_token
+qsub -P fy54 -q copyq -l ncpus=1,mem=4GB,walltime=02:00:00,storage=gdata/fy54 \
+  -j oe -o zenodo_upload.log -- /bin/bash -c \
+  'cd /g/data/fy54/analysis/tenk10k-effector-genes && python3 zenodo/upload_data.py --record 23406585 --dry-run'
+```
+
+Check the log, then run it again without `--dry-run`.
 
 ## Licences
 
