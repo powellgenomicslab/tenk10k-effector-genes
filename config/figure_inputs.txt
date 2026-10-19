@@ -49,6 +49,7 @@ results/pi1_mr_novelty_results/tenk_not_novel_res_relative.tsv
 results/pi1_mr_novelty_results/tenk_not_novel_res_relative_celltype.tsv
 results/preprocessed/tenk10k_phase1.v5.parquet.gz
 results/scDeepID/pathway_test_full.csv
+results/scDeepID/tenk10k_bcell.sle.ed_fig7_pathways.anon.parquet
 results/sensitivity/smr/tenk10k_phase1/CD14_Mono/eczema/all_chr.snps4msmr.list
 results/sensitivity/smr/tenk10k_phase1/tenk10k_phase1_sensitivity.snps4msmr.parquet.gz
 results/smr_locus/eqtlgen2020/bulk_wb/sle/ENSG00000153064.eqtl.tsv

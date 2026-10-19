@@ -1,6 +1,6 @@
 # Supp Fig 15: mean scDeepID cell function scores in SLE-enriched (scDRS Monte Carlo
-# P < 0.05) and other B cells, for the top 30 cell functions (FDR < 0.05, ranked by
-# one-sided t-test P) in each of 7 GO biological-process categories.
+# P < 0.05) and other B cells, for the top 30 cell functions (FDR < 0.05, ranked by FDR
+# of the one-sided t-test) in each of 7 GO biological-process categories.
 
 library(tidyverse)
 library(patchwork)
@@ -14,7 +14,7 @@ categories <- str_subset(names(df_test), "^cat_")
 plot_category <- function(cat) {
   df <- df_test |>
     filter(.data[[cat]], fdr < 0.05) |>
-    arrange(p_value) |>
+    arrange(fdr, p_value) |>
     head(30) |>
     mutate(label = fct_rev(fct_inorder(str_to_sentence(str_replace_all(str_remove(pathway, "^GOBP_"), "_", " ")))))
   df |>

@@ -170,7 +170,6 @@ ITEMS = {
 # items the bundle cannot rebuild, and why
 NOT_REBUILDABLE = {
     "fig_s25": "is drawn from raw single-cell data by workflow/rules/crohns.smk",
-    "fig_e7": "needs the per-cell scDeepID scores (rule scdeepid_bcell_extract), not yet in the bundle",
 }
 
 AVAILABLE = [k for k in ITEMS if k not in NOT_REBUILDABLE]
@@ -926,28 +925,24 @@ rule scdeepid_categories:
         R
 
 
-# Declared only once the per-cell scDeepID file is in the bundle; remove fig_e7 from
-# NOT_REBUILDABLE to switch it on (the file then enters the manifest).
-if "fig_e7" not in NOT_REBUILDABLE:
-
-    rule scdeepid_bcell:
-        input:
-            SCDRS_CELL,
-            # from rule scdeepid_bcell_extract in workflow/rules/scdrs.smk
-            ext(
-                "results/scDeepID/tenk10k_bcell.sle.ed_fig7_pathways.anon.parquet",
-                "results/scDeepID/pathway_test_full.csv",
-            ),
-        output:
-            figs("e7"),
-        params:
-            script="scripts/6-polygenic/scDeepID/plot_scdeepid_bcell.R",
-        log:
-            log("scdeepid_bcell"),
-        conda:
-            ENV
-        shell:
-            R
+rule scdeepid_bcell:
+    input:
+        SCDRS_CELL,
+        # from rule scdeepid_bcell_extract in workflow/rules/scdrs.smk
+        ext(
+            "results/scDeepID/tenk10k_bcell.sle.ed_fig7_pathways.anon.parquet",
+            "results/scDeepID/pathway_test_full.csv",
+        ),
+    output:
+        figs("e7"),
+    params:
+        script="scripts/6-polygenic/scDeepID/plot_scdeepid_bcell.R",
+    log:
+        log("scdeepid_bcell"),
+    conda:
+        ENV
+    shell:
+        R
 
 
 # --- 7-drug ---------------------------------------------------------------------

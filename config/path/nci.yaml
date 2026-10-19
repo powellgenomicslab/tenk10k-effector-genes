@@ -17,8 +17,8 @@ directories:
 files:
   # scDeepID B-cell model outputs (pathway scores and attention UMAP)
   scdeepid_bcell_pathway:
-    source: /path/to/scDeepID/tk_bcell/pathway_scores.h5ad
-    target: resources/scDeepID/tk_bcell/pathway_scores.h5ad
+    source: /path/to/scDeepID/tk_bcell/pathway_attributions.h5ad
+    target: resources/scDeepID/tk_bcell/pathway_attributions.h5ad
   scdeepid_bcell_umap:
     source: /path/to/scDeepID/tk_bcell/attention_umap.h5ad
     target: resources/scDeepID/tk_bcell/attention_umap.h5ad
