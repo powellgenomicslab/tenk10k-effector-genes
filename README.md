@@ -206,6 +206,22 @@ Third-party data (please refer to the original publications for access):
 - [AIFI Immune Health Atlas (Gong et al. 2025)](https://doi.org/10.1038/s41586-025-09686-5)
 - [IBDverse single-cell transcriptomics atlas (Alegbe T, Harris BT, et al.)](https://doi.org/10.6019/S-BSST2922)
 
+## Contributors
+
+Albert Henry wrote and maintains the code, with contributions to the following
+sections from:
+
+| Section | Contributors |
+|---|---|
+| [`1-overview`](scripts/1-overview/README.md) | Anne Senabouth |
+| [`2-trait`](scripts/2-trait/README.md) | Blake Bowen |
+| [`3-pleiotropy`](scripts/3-pleiotropy/README.md) | Anne Senabouth |
+| [`4-comparison`](scripts/4-comparison/README.md) | Jayden Fan, Oscar Dong |
+| [`6-polygenic`](scripts/6-polygenic/README.md) | Peter Allen (scDRS comparison with the AIFI Immune Health Atlas), Lawrence Huang (scDeepID) |
+| [`8-crohns`](scripts/8-crohns/README.md) | Rika Tyebally; Bradley T. Harris (comparison with IBDverse) |
+
+Code curation and release preparation were assisted by Claude (Anthropic).
+
 ## Citation
 
 If you use this code or data in your research, please consider citing
