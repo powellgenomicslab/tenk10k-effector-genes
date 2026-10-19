@@ -208,17 +208,17 @@ Third-party data (please refer to the original publications for access):
 
 ## Contributors
 
-| Contributor | Role |
-|---|---|
-| Albert Henry | Lead developer and maintainer; all sections |
-| Anne Senabouth | Code for [`1-overview`](scripts/1-overview/README.md) and [`3-pleiotropy`](scripts/3-pleiotropy/README.md) |
-| Blake Bowen | Code for [`2-trait`](scripts/2-trait/README.md) |
-| Jayden Fan | Code for [`4-comparison`](scripts/4-comparison/README.md) |
-| Oscar Dong | Code for [`4-comparison`](scripts/4-comparison/README.md) |
-| Peter Allen | Code for [`6-polygenic`](scripts/6-polygenic/README.md): scDRS comparison with the AIFI Immune Health Atlas |
-| Lawrence Huang | Code for [`6-polygenic`](scripts/6-polygenic/README.md): scDeepID |
-| Rika Tyebally | Code for [`8-crohns`](scripts/8-crohns/README.md) |
-| Bradley T. Harris | Code for [`8-crohns`](scripts/8-crohns/README.md): comparison with IBDverse |
+The code in this repository was written by:
+
+- Albert Henry
+- Anne Senabouth
+- Blake Bowen
+- Jayden Fan
+- Oscar Dong
+- Peter Allen
+- Lawrence Huang
+- Rika Tyebally
+- Bradley T. Harris
 
 > [!NOTE]
 > **Use of AI.** Claude (Anthropic) was used to organise and curate this
