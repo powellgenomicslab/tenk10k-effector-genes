@@ -210,15 +210,15 @@ Third-party data (please refer to the original publications for access):
 
 The code in this repository was written by:
 
-- Albert Henry
-- Anne Senabouth
-- Blake Bowen
+- Albert Henry ([@alhenry](https://github.com/alhenry))
+- Anne Senabouth ([@asenabouth](https://github.com/asenabouth))
+- Blake Bowen ([@blake-bowen](https://github.com/blake-bowen))
 - Jayden Fan
 - Oscar Dong
-- Peter Allen
-- Lawrence Huang
-- Rika Tyebally
-- Bradley T. Harris
+- Peter Allen ([@PeterCAllen](https://github.com/PeterCAllen))
+- Lawrence Huang ([@Hao-Lawrence-Huang](https://github.com/Hao-Lawrence-Huang))
+- Rika Tyebally ([@riktye](https://github.com/riktye))
+- Bradley T. Harris ([@BradleyH017](https://github.com/BradleyH017))
 
 > [!NOTE]
 > **Use of AI.** Claude (Anthropic) was used to organise and curate this
