@@ -208,17 +208,17 @@ Third-party data (please refer to the original publications for access):
 
 ## Contributors
 
-Albert Henry wrote and maintains the code, with contributions to the following
-sections from:
-
-| Section | Contributors |
+| Contributor | Role |
 |---|---|
-| [`1-overview`](scripts/1-overview/README.md) | Anne Senabouth |
-| [`2-trait`](scripts/2-trait/README.md) | Blake Bowen |
-| [`3-pleiotropy`](scripts/3-pleiotropy/README.md) | Anne Senabouth |
-| [`4-comparison`](scripts/4-comparison/README.md) | Jayden Fan, Oscar Dong |
-| [`6-polygenic`](scripts/6-polygenic/README.md) | Peter Allen (scDRS comparison with the AIFI Immune Health Atlas), Lawrence Huang (scDeepID) |
-| [`8-crohns`](scripts/8-crohns/README.md) | Rika Tyebally; Bradley T. Harris (comparison with IBDverse) |
+| Albert Henry | Lead developer and maintainer; all sections |
+| Anne Senabouth | Code for [`1-overview`](scripts/1-overview/README.md) and [`3-pleiotropy`](scripts/3-pleiotropy/README.md) |
+| Blake Bowen | Code for [`2-trait`](scripts/2-trait/README.md) |
+| Jayden Fan | Code for [`4-comparison`](scripts/4-comparison/README.md) |
+| Oscar Dong | Code for [`4-comparison`](scripts/4-comparison/README.md) |
+| Peter Allen | Code for [`6-polygenic`](scripts/6-polygenic/README.md): scDRS comparison with the AIFI Immune Health Atlas |
+| Lawrence Huang | Code for [`6-polygenic`](scripts/6-polygenic/README.md): scDeepID |
+| Rika Tyebally | Code for [`8-crohns`](scripts/8-crohns/README.md) |
+| Bradley T. Harris | Code for [`8-crohns`](scripts/8-crohns/README.md): comparison with IBDverse |
 
 > [!NOTE]
 > **Use of AI.** Claude (Anthropic) was used to organise and curate this
