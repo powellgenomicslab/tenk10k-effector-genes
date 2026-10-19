@@ -354,14 +354,34 @@ rule scdrs_anonymise_cell_ids:
     log: "logs/scdrs/anonymise_cell_ids.log"
     script: "snakescripts/scdrs/anonymise_cell_ids.py"
 
+rule scdeepid_pathway_test:
+    """
+    scDeepID cell function scores of the B cells sampled for scDRS, compared between
+    SLE-enriched and other cells, with the GO categories of each cell function
+    (Supp Table 10, Supp Fig 15, Extended Data Fig 7). Ported from the scDeepID
+    revision notebook, kept without outputs as
+    snakescripts/scdeepid/revision_cleanup_v3_github.ipynb. go-basic.obo is GO release
+    2026-03-25 (http://purl.obolibrary.org/obo/go/releases/2026-03-25/go-basic.obo).
+    """
+    input:
+        pathway = "resources/scDeepID/tk_bcell/pathway_attributions.h5ad",
+        go_obo = "resources/scDeepID/go-basic.obo",
+        cell_score = "results/aggregate/tenk10k_phase1.scdrs.cell_score.tsv.parquet.gz",
+        cell_mcp = "results/aggregate/tenk10k_phase1.scdrs.cell_mcp.tsv.parquet.gz",
+    output:
+        test = "results/scDeepID/pathway_test_full.csv",
+    resources:
+        mem = "32GB"
+    conda: "../envs/scverse.yaml"
+    log: "logs/scdrs/scdeepid_pathway_test.log"
+    script: "snakescripts/scdeepid/pathway_test.py"
+
 rule scdeepid_bcell_extract:
     """
     Per-cell scDeepID scores of the B cells sampled for scDRS (Extended Data Fig 7):
     UMAP, cell type and the five cell functions shown, with the anonymised cell IDs
-    of scdrs_anonymise_cell_ids. The pathway test for all pathways, with their GO
-    categories (Supp Table 10, Supp Fig 15), is written by the scDeepID revision
-    notebook (revision_cleanup_v3_github.ipynb) as results/scDeepID/pathway_test_full.csv;
-    here it picks the pathways shown and checks that the scores are from the same run,
+    of scdrs_anonymise_cell_ids. The pathway test of scdeepid_pathway_test picks the
+    pathways shown and checks that the scores are from the same run, scDeepID
     exp_10k_tr_revision/bcell_human_gobp_2024_ep10_lr0.02_bs32_rentention0.0_maxgs400.
     The scDeepID model is at https://github.com/powellgenomicslab/scDeepID_TenK10K_manuscripts.
     """

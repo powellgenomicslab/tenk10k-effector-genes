@@ -11,6 +11,9 @@ dependencies:
   - pyarrow
   - numpy
   - pandas
+  - scipy
+  - statsmodels
+  - networkx
   - pyyaml
   - git
   - pip

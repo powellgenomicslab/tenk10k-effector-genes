@@ -22,3 +22,6 @@ files:
   scdeepid_bcell_umap:
     source: /path/to/scDeepID/tk_bcell/attention_umap.h5ad
     target: resources/scDeepID/tk_bcell/attention_umap.h5ad
+  scdeepid_go_obo:
+    source: /path/to/scDeepID/go-basic.obo
+    target: resources/scDeepID/go-basic.obo

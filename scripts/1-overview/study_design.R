@@ -21,7 +21,7 @@ df_overall <- df_gene %>%
          major_cell_type = "Overall")
 
 pals <- paletteer::paletteer_d("MexBrewer::Frida")
-(p_gene <- bind_rows(df_gene, df_overall) %>%
+p_gene <- bind_rows(df_gene, df_overall) %>%
   mutate(cell_type = factor(cell_type, c("Overall", levels(df_gene$cell_type))),
          major_cell_type = factor(major_cell_type, c("Overall", levels(df_cell_map$major_cell_type)))) %>% 
   ggplot(aes(x = cell_type, group = fct_rev(gene_cat))) +
@@ -51,7 +51,6 @@ pals <- paletteer::paletteer_d("MexBrewer::Frida")
         legend.key.spacing.y = unit(0.25, "lines"),
         panel.grid.major.y = element_line(color = "gray90"),
         legend.position = "right")
-)
 
 df_traits <- df_msmr_tenk10k[,
   .(n_tested = .SD[,uniqueN(probeID)],
@@ -66,7 +65,7 @@ df_traits <- df_msmr_tenk10k[,
   mutate(pheno_label = fct_reorder(label, n_mr), .by = pheno_cat) %>% 
   mutate(scaled_n_eff = scales::rescale(n_eff, to = c(7e3, 1e4)))
 
-(p_traits <- df_traits %>% 
+p_traits <- df_traits %>% 
   ggplot(aes(x = pheno_label, fill = pheno_cat)) +
   theme_classic() +
   # geom_point() +
@@ -113,7 +112,6 @@ df_traits <- df_msmr_tenk10k[,
         plot.margin = margin(),
         legend.position.inside = c(1,1.065),
         legend.justification = c(1,1))
-)
 
 # editable PDF for Nature (180 mm wide, text 5-7 pt, Helvetica): save panels at
 # final size, assemble with the vector infographic in Typst (scripts/1-overview/fig1.typ).
