@@ -213,8 +213,8 @@ The code in this repository was written by:
 - Albert Henry ([@alhenry](https://github.com/alhenry))
 - Anne Senabouth ([@asenabouth](https://github.com/asenabouth))
 - Blake Bowen ([@blake-bowen](https://github.com/blake-bowen))
-- Jayden Fan
-- Oscar Dong
+- Jayden Fan ([@camwew](https://github.com/camwew))
+- Oscar Dong ([@OscarADong](https://github.com/OscarADong))
 - Peter Allen ([@PeterCAllen](https://github.com/PeterCAllen))
 - Lawrence Huang ([@Hao-Lawrence-Huang](https://github.com/Hao-Lawrence-Huang))
 - Rika Tyebally ([@riktye](https://github.com/riktye))
