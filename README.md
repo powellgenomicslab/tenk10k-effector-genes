@@ -89,10 +89,10 @@ make fig-m2
 with its caption. To run several scripts at once, add `CORES=N`. Each script
 can use up to about 16 GB of memory, so choose N no larger than your memory in
 GB divided by 16 (for example `CORES=4` with 64 GB). Rebuilding everything takes about
-an hour of computing: on NCI Gadi, `make all` with `CORES=4` finished in 18
-minutes and used at most 45 GB. The first build
-installs a pinned conda environment, which takes several minutes;
-later builds reuse it.
+an hour of computing: from a fresh clone on NCI Gadi, `make data` took under a
+minute and `make all` with `CORES=4` took 21 minutes and at most 47 GB. The first
+build installs a pinned conda environment, which takes several minutes; later
+builds reuse it.
 
 > [!NOTE]
 > The data record ([doi:10.5281/zenodo.23406585](https://doi.org/10.5281/zenodo.23406585)) will be published with the
@@ -153,7 +153,7 @@ directory; if your data are linked from elsewhere (see `make link-data` under
 | `make list` | Every target, with its caption |
 | `make figures/panels/<folder>/<file>` | One output file by path, such as a panel saved on its own (e.g. `make figures/panels/1-overview/panel_b.svg`). Scripts that draw several panels write them all |
 
-Dependencies between scripts are resolved automatically. For example, `make fig-m2` first builds the panels that Fig. 2 is assembled from. To build several items in parallel, add `CORES=N`, allowing about 16 GB of memory per core.
+Dependencies between scripts are resolved automatically. For example, `make fig-m2` first builds the panels that Fig. 2 is assembled from.
 
 ### Display items by Results subsection
 
@@ -164,15 +164,14 @@ Dependencies between scripts are resolved automatically. For example, `make fig-
 | Assessing horizontal pleiotropy via sensitivity analyses and colocalisation | Fig. 2c; ED Figs. 2–3; Supp. Fig. 8 | [`3-pleiotropy`](scripts/3-pleiotropy/README.md) |
 | Single-cell eQTL enhances identification of effector genes | Fig. 3; ED Fig. 4; Supp. Figs. 9–11; Supp. Tables 6–7 | [`4-comparison`](scripts/4-comparison/README.md) |
 | Identifying disease-relevant biological pathways | ED Fig. 5; Supp. Figs. 12–13; Supp. Table 8 | [`5-pathways`](scripts/5-pathways/README.md) |
-| Polygenic enrichment reveals trait-relevant immune cell types | Fig. 4; ED Fig. 6; Supp. Figs. 14, 21–24; Supp. Tables 9–10 | [`6-polygenic`](scripts/6-polygenic/README.md) |
+| Polygenic enrichment reveals trait-relevant immune cell types | Fig. 4; ED Figs. 6–7; Supp. Figs. 14–15, 21–24; Supp. Tables 9–10 | [`6-polygenic`](scripts/6-polygenic/README.md) |
 | Single-cell MR supports drug target discovery | Fig. 5; ED Fig. 8; Supp. Fig. 16; Supp. Tables 11–15 | [`7-drug`](scripts/7-drug/README.md) |
-| Triangulation of evidence prioritises effector genes for Crohn's disease | Fig. 6a–c; ED Figs. 9–10; Supp. Figs. 17, 25 (raw data only); Supp. Tables 16–21 | [`8-crohns`](scripts/8-crohns/README.md) |
+| Triangulation of evidence prioritises effector genes for Crohn's disease | Fig. 6; ED Figs. 9–10; Supp. Figs. 17, 25 (raw data only); Supp. Tables 16–21 | [`8-crohns`](scripts/8-crohns/README.md) |
 
 Some items are not produced by code in this repository:
 - **Fig. 1a** is BioRender artwork, provided in `figures/biorender/`.
 - **Fig. 6** is assembled by `make fig-m6` (`scripts/8-crohns/fig6.typ`); panel d is ported from the IBDverse comparison (`scripts/8-crohns/plot_figures/ibdverse_blood_enrichment.R`).
 - **Supp. Figs. 18–19** come from the [`TenK10K_causal_inference_vs_IBDverse`](TenK10K_causal_inference_vs_IBDverse) submodule.
-- **ED Fig. 7 and Supp. Fig. 15** come from scDeepID, in a separate repository.
 - **Supp. Fig. 20** (genes tested per cell type) is not yet linked to a script.
 
 ### Options
@@ -180,7 +179,7 @@ Some items are not produced by code in this repository:
 - **Your own software.** `make fig-m2 SDM=` uses the R and Python already on your `PATH`. The packages needed are listed in `workflow/envs/figures.yaml`.
 - **Rebuilding the container image.** The image is built from the `Dockerfile`, which `make dockerfile` regenerates from the conda environments. Publish each rebuild under a new tag and update `container:` in `config/figures.yaml`: Snakemake caches images under a name derived from the tag, so a rebuilt image pushed under an existing tag is ignored wherever the old one has been downloaded.
 - **Existing results tree.** If you already have the results tree, run `make link-data DATA_DIR=/path/to/results/root` instead of `make data`. It links each input file listed in `config/figure_inputs.txt` and does not modify the source.
-- **Not rebuildable from the download.** Supp. Fig. 25 (UMAPs of the Kong et al. 2023 colon immune cells) needs their single-cell data, which is not shared, so it is drawn by the analysis pipeline (`workflow/rules/crohns.smk`); `make fig-s25` says so. Everything else is built from the download alone: steps that start from raw or unshared data (genotype LD, the Crohn's literature and DEG tables, the AIFI label transfer) are in `workflow/`, and only their results are in the download.
+- **Not rebuildable from the download.** Supp. Fig. 25 (UMAPs of the Kong et al. 2023 colon immune cells) needs their single-cell data, which is not shared, so it is drawn by the analysis pipeline (`workflow/rules/crohns.smk`); `make fig-s25` says so. Everything else is built from the download alone: steps that start from raw or unshared data (genotype LD, the Crohn's literature and DEG tables, the AIFI label transfer, the scDeepID cell function scores) are in `workflow/`, and only their results are in the download.
 
 ### Regenerating the summary statistics
 
