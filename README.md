@@ -220,7 +220,12 @@ sections from:
 | [`6-polygenic`](scripts/6-polygenic/README.md) | Peter Allen (scDRS comparison with the AIFI Immune Health Atlas), Lawrence Huang (scDeepID) |
 | [`8-crohns`](scripts/8-crohns/README.md) | Rika Tyebally; Bradley T. Harris (comparison with IBDverse) |
 
-Code curation and release preparation were assisted by Claude (Anthropic).
+> [!NOTE]
+> **Use of AI.** Claude (Anthropic) was used to organise and curate this
+> repository for release: arranging the code by manuscript section, writing the
+> build pipeline and documentation, and checking that every display item can be
+> rebuilt from the released data. The analyses, and the code that implements
+> them, are the work of the people named above.
 
 ## Citation
 
