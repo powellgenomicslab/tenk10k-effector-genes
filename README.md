@@ -1,7 +1,7 @@
 # TenK10K Phase1 effector genes identification manuscript
 
-![Static Badge](https://img.shields.io/badge/version-preprint_v4-red)
-[![medRxiv](https://img.shields.io/badge/medRxiv-10.1101%2F2025.08.28.25334614-B31B1B)](https://www.medrxiv.org/content/10.1101/2025.08.28.25334614v4)
+[![medRxiv](https://img.shields.io/badge/medRxiv-10.1101%2F2025.08.28.25334614-B31B1B)](https://doi.org/10.1101/2025.08.28.25334614)
+[![Data](https://img.shields.io/badge/data-10.5281%2Fzenodo.23406585-1682D4)](https://doi.org/10.5281/zenodo.23406585)
 
 
 
@@ -214,7 +214,7 @@ If you use this code or data in your research, please consider citing
 
 Henry, A., Senabouth, A., Tyebally, R., et al. Single-cell genetics identifies cell type-specific causal mechanisms in complex traits and diseases. medRxiv 2025.08.28.25334614 (2025) doi:10.1101/2025.08.28.25334614
 
-[medRxiv link](https://www.medrxiv.org/content/10.1101/2025.08.28.25334614v2)
+[medRxiv link](https://doi.org/10.1101/2025.08.28.25334614)
 
 See *References* section in the manuscript for additional citations of methods and data sources.
 
