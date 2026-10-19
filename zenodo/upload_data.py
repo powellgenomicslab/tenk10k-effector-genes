@@ -4,7 +4,8 @@
 Uploads the files of the data record (data/zenodo/ by default) to an existing,
 unpublished Zenodo draft, checking each file's MD5 against Zenodo's, and skips
 files already uploaded unchanged. With --metadata it also sets the draft's
-metadata from zenodo/data.json, keeping the reserved DOI. It then attaches the
+metadata from zenodo/data.json, keeping the reserved DOI and setting access to
+open (make data downloads without logging in). It then attaches the
 draft to a Zenodo community (default: powellgenomicslab), so that it is
 submitted there for review. It never publishes: check the draft in the browser
 and click "Submit for review"; the record is published when a community
@@ -76,17 +77,32 @@ def md5sum(path):
     return h.hexdigest()
 
 
-def upload(path, url, token):
-    # curl streams the file and shows progress; the token goes in a header read
-    # from stdin, so it does not appear in the process list
-    cmd = ["curl", "--silent", "--show-error", "--retry", "3", "-H", "@-",
-           "--upload-file", path, "--write-out", "\n%{http_code}", url]
+def upload(record, path, token, replace):
+    """Upload one file with the draft-files API: register, send the content, commit."""
+    key = os.path.basename(path)
+    files = f"records/{record}/draft/files"
+    if replace:
+        api("DELETE", f"{files}/{key}", token)
+    api("POST", files, token, [{"key": key}])
+    # curl streams the file; the token goes in a header read from stdin, so it
+    # does not appear in the process list. No automatic retry: a failed attempt
+    # is reported with how much was sent, and the next run resumes from the draft.
+    cmd = ["curl", "--silent", "--show-error", "-H", "@-", "-H", "Content-Type: application/octet-stream",
+           "--upload-file", path, "--write-out",
+           "\n%{http_code} %{size_upload} %{speed_upload} %{time_total}", f"{API}/{files}/{key}/content"]
     res = subprocess.run(cmd, input=f"Authorization: Bearer {token}\n", universal_newlines=True,
                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    body, _, code = res.stdout.rpartition("\n")
+    body, _, stats = res.stdout.rpartition("\n")
+    code, sent, speed, secs = (stats.split() + ["-"] * 4)[:4]
+    report = f"HTTP {code}, sent {float(sent or 0) / 1e6:,.1f} MB in {float(secs or 0) / 60:.1f} min " \
+             f"({float(speed or 0) / 1e6:.2f} MB/s)" if code != "-" else "no response"
     if res.returncode != 0 or not code.startswith("2"):
-        sys.exit(f"upload of {os.path.basename(path)} failed (HTTP {code or '-'}):\n{body}{res.stderr}")
-    return json.loads(body)
+        print(f"    failed: {report}\n    {res.stderr.strip()}\n    {body.strip()[:300]}", flush=True)
+        # an uncommitted entry left on the draft makes later metadata updates fail
+        api("DELETE", f"{files}/{key}", token)
+        return None
+    print(f"    sent: {report}", flush=True)
+    return api("POST", f"{files}/{key}/commit", token)
 
 
 def main():
@@ -114,26 +130,31 @@ def main():
         sys.exit(f"record {args.record} is already published; upload a new version instead")
     doi = dep.get("metadata", {}).get("prereserve_doi", {}).get("doi")
     print(f"draft {args.record}: '{dep.get('title') or '(untitled)'}', reserved DOI {doi}")
-    bucket = dep["links"]["bucket"]
-    present = {o["key"]: o for o in api("GET", bucket, token).get("contents", [])}
+    present = {e["key"]: e for e in api("GET", f"records/{args.record}/draft/files", token).get("entries", [])}
 
-    # 2. files
-    for path in paths:
+    # 2. files, smallest first, so that a failure on a large file leaves the rest uploaded
+    failed = []
+    for path in sorted(paths, key=os.path.getsize):
         name = os.path.basename(path)
         local = md5sum(path)
-        remote = present.get(name, {}).get("checksum", "")
+        entry = present.get(name, {})
+        remote = entry.get("checksum", "") if entry.get("status") == "completed" else ""
         size = os.path.getsize(path) / 1e6
         if remote == f"md5:{local}":
             print(f"  {name} ({size:,.1f} MB): already uploaded")
             continue
         if args.dry_run:
-            print(f"  {name} ({size:,.1f} MB): would upload" + (" (replacing a different copy)" if remote else ""))
+            print(f"  {name} ({size:,.1f} MB): would upload" + (" (replacing a different copy)" if entry else ""))
             continue
         print(f"  {name} ({size:,.1f} MB): uploading ...", flush=True)
-        result = upload(path, f"{bucket}/{name}", token)
-        if result.get("checksum") != f"md5:{local}":
-            sys.exit(f"  {name}: checksum mismatch after upload ({result.get('checksum')} vs md5:{local})")
-        print(f"  {name}: uploaded, MD5 verified")
+        result = upload(args.record, path, token, replace=bool(entry))
+        if result is None:
+            failed.append(name)
+        elif result.get("checksum") != f"md5:{local}":
+            print(f"    checksum mismatch after upload ({result.get('checksum')} vs md5:{local})")
+            failed.append(name)
+        else:
+            print("    committed, MD5 verified", flush=True)
     extra = sorted(set(present) - set(FILES))
     if extra:
         print(f"  note: the draft also holds {extra}; delete them in the browser if unintended")
@@ -143,6 +164,7 @@ def main():
         meta = dict(dep.get("metadata", {}))
         new = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.json")))
         meta.update({k: new[k] for k in METADATA_KEYS if k in new})
+        meta["access_right"] = "open"
         if args.dry_run:
             print(f"metadata: would set {', '.join(k for k in METADATA_KEYS if k in new)} from data.json")
         else:
@@ -160,6 +182,8 @@ def main():
                 {"receiver": {"community": comm["id"]}, "type": "community-submission"})
             print(f"community: draft attached to '{title}' ({args.community})")
 
+    if failed:
+        sys.exit(f"\nNot all files uploaded: {failed}. Rerun to retry them; uploaded files are skipped.")
     print(f"\nNot published. Check the draft at https://zenodo.org/uploads/{args.record}, then click "
           f"'Submit for review'" + ("; the record is published when a curator accepts it." if args.community
                                      else "/'Publish'."))
