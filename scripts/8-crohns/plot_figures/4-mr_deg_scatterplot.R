@@ -109,7 +109,7 @@ save(scatterplot, scatterplot_all_in_one, file = "resources/crohns_case_study/fi
 
 # Figure 6c panel
 dir.create("figures/panels/8-crohns", recursive = TRUE, showWarnings = FALSE)
-ggsave("figures/panels/8-crohns/fig6c_mr_deg_annot.png", scatterplot_all_in_one, device = ragg::agg_png(),
+ggsave("figures/panels/8-crohns/fig6c_mr_deg_annot.png", scatterplot_all_in_one, device = ragg::agg_png,
        width = 5.0, height = 5, bg = "white", scaling = 0.7, dpi = 500)
 
 ggsave("figures/panels/8-crohns/fig6c_mr_deg_annot.pdf", scatterplot_all_in_one, device = cairo_pdf,

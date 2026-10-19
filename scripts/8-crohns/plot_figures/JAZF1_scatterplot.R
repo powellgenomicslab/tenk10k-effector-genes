@@ -19,7 +19,8 @@ plot_data <- join %>% filter(p_CD4Naive < 0.05 | p_cDC2 < 0.05) %>%
       aes(label = marker_label),
       min.segment.length = 0,
       max.overlaps = Inf,
-      segment.size = 0.1) +
+      segment.size = 0.1,
+      seed = 1, max.time = Inf) +
     geom_point(data = subset(plot_data, MarkerID == "7:28135367:T:C"), 
             shape = "diamond filled", fill = "red3", size = 5) +
   scale_fill_viridis_b(n.breaks = 7) +
@@ -31,7 +32,7 @@ plot_data <- join %>% filter(p_CD4Naive < 0.05 | p_cDC2 < 0.05) %>%
 
 # Supplementary Figure 17
 dir.create("figures", recursive = TRUE, showWarnings = FALSE)
-ggsave("figures/fig-s17.png", p, device = ragg::agg_png(),
+ggsave("figures/fig-s17.png", p, device = ragg::agg_png,
        width = 5.0, height = 4.5, bg = "white", scaling = 0.7, dpi = 500)
 ggsave("figures/fig-s17.pdf", p, device = cairo_pdf,
        width = 5.0, height = 4.5, bg = "white")

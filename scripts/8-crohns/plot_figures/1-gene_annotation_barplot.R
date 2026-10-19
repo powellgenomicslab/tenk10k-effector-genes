@@ -103,7 +103,7 @@ plot_data2$annotation_new <- factor(plot_data2$annotation_new, levels = plot_dat
 # 
 # saveRDS(p1, "resources/crohns_case_study/figures/annotation_fig.RDS")
 
-# ggsave("resources/crohns_case_study/figures/ext_source_annotation_barplot.png", p1, device = ragg::agg_png(),
+# ggsave("resources/crohns_case_study/figures/ext_source_annotation_barplot.png", p1, device = ragg::agg_png,
 #        width = 5.0, height = 2, bg = "white", scaling = 1.0, dpi = 300)
 
 p1 <- ggplot(plot_data2 %>% arrange(annotation), aes(y = annotation_new, x = total)) +
@@ -124,7 +124,7 @@ p1
 
 # Figure 6a panel
 dir.create("figures/panels/8-crohns", recursive = TRUE, showWarnings = FALSE)
-ggsave("figures/panels/8-crohns/fig6a_ext_source_annotation_barplot.png", p1, device = ragg::agg_png(),
+ggsave("figures/panels/8-crohns/fig6a_ext_source_annotation_barplot.png", p1, device = ragg::agg_png,
        width = 5.0, height = 2, bg = "white", scaling = 1.0, dpi = 500)
 ggsave("figures/panels/8-crohns/fig6a_ext_source_annotation_barplot.pdf", p1, device = cairo_pdf,
        width = 5.0, height = 2, bg = "white")

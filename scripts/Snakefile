@@ -19,6 +19,8 @@
 # Every external input is declared with ext(), which also records it for the
 # bundle manifest (`make manifest` -> config/figure_inputs.txt).
 
+import os
+
 configfile: "config/figures.yaml"
 
 containerized: config["container"]
@@ -55,6 +57,9 @@ def log(name):
 
 
 R = "Rscript {params.script} > {log} 2>&1"
+
+# top-level plot printing goes to a null device rather than Rplots.pdf
+os.environ["R_PROFILE_USER"] = os.path.abspath("scripts/util/Rprofile.R")
 
 
 META = ext(
