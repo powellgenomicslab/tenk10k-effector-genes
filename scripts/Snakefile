@@ -26,7 +26,6 @@ configfile: "config/figures.yaml"
 containerized: config["container"]
 
 ENV = "../workflow/envs/figures.yaml"
-SC_ENV = "../workflow/envs/scverse.yaml"
 
 # --- helpers --------------------------------------------------------------------
 
@@ -326,9 +325,10 @@ rule inventory:
         print(f"wrote INVENTORY.tsv: {len(rows)} files, {sum(r[1] for r in rows) / 1e9:.2f} GB")
 
 
-# Data-free rules naming each software environment, so that
+# A data-free rule naming the software environment, so that
 # `snakemake --containerize containerize` (make dockerfile) can collect the
-# environments without any inputs present.
+# environment without any inputs present. Steps that need the single-cell
+# environment (workflow/envs/scverse.yaml) are in workflow/, not here.
 rule env_figures:
     output:
         temp(touch("logs/figures/.env_figures")),
@@ -338,19 +338,9 @@ rule env_figures:
         "true"
 
 
-rule env_scverse:
-    output:
-        temp(touch("logs/figures/.env_scverse")),
-    conda:
-        SC_ENV
-    shell:
-        "true"
-
-
 rule containerize:
     input:
         rules.env_figures.output,
-        rules.env_scverse.output,
 
 
 rule download_inputs:

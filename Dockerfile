@@ -1,7 +1,7 @@
 FROM condaforge/miniforge3:latest
 LABEL io.github.snakemake.containerized="true"
 LABEL org.opencontainers.image.source=https://github.com/powellgenomicslab/tenk10k-effector-genes
-LABEL io.github.snakemake.conda_env_hash="14336bddede0507f63ea45e8de10b4e392b7100488ef5b0e0c3dfb89cbbe1a09"
+LABEL io.github.snakemake.conda_env_hash="c39561da9a4598840ce2d770295c38106004b392c94388ba6d26ef34f76f6622"
 
 # Step 2: Retrieve conda environments
 
@@ -87,35 +87,8 @@ COPY workflow/envs/figures.yaml /conda-envs/d0dbc9ad2051ad75ff2038ee5493aedc/env
 COPY workflow/envs/figures.linux-64.pin.txt /conda-envs/d0dbc9ad2051ad75ff2038ee5493aedc/pin.txt
 COPY workflow/envs/figures.post-deploy.sh /conda-envs/d0dbc9ad2051ad75ff2038ee5493aedc/post-deploy.sh
 
-# Conda environment:
-#   source: workflow/envs/scverse.yaml
-#   prefix: /conda-envs/4c190834c12b1a68e32971e995c9caf0
-#   # Single-cell Python environment for the scDRS rules (`conda: "scverse"`).
-#   name: scverse
-#   channels:
-#     - conda-forge
-#   dependencies:
-#     - python=3.11
-#     - scanpy
-#     - anndata
-#     - python-igraph
-#     - leidenalg
-#     - pyarrow
-#     - numpy
-#     - pandas
-#     - pyyaml
-#     - git
-#     - pip
-#     - pip:
-#       # scDRS is not packaged for conda, and 1.0.3 is not on PyPI (which stops at
-#       # 1.0.2): install the v1.0.3 release tag from GitHub, pinned to its commit
-#       - scdrs @ git+https://github.com/martinjzhang/scDRS@bc1e77b58ec53296857701018a86d4494e23806b
-RUN mkdir -p /conda-envs/4c190834c12b1a68e32971e995c9caf0
-COPY workflow/envs/scverse.yaml /conda-envs/4c190834c12b1a68e32971e995c9caf0/environment.yaml
-
 # Step 3: Generate conda environments
 
 RUN conda create --yes --prefix /conda-envs/d0dbc9ad2051ad75ff2038ee5493aedc --file /conda-envs/d0dbc9ad2051ad75ff2038ee5493aedc/pin.txt && \
     conda run --prefix /conda-envs/d0dbc9ad2051ad75ff2038ee5493aedc bash /conda-envs/d0dbc9ad2051ad75ff2038ee5493aedc/post-deploy.sh && \
-    conda env create --prefix /conda-envs/4c190834c12b1a68e32971e995c9caf0 --file /conda-envs/4c190834c12b1a68e32971e995c9caf0/environment.yaml && \
     conda clean --all -y
