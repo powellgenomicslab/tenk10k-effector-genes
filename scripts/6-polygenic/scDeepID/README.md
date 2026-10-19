@@ -10,7 +10,10 @@ B cells sampled for scDRS, by the scDeepID revision notebook
 for each of the 400 cell functions, and their GO categories (the children of
 "biological process", GO:0008150, with at least 5 cell functions at FDR < 0.05, with
 membership taken through the GO graph in `go-basic.obo`). That file is in the data
-bundle.
+bundle. The notebook is kept, without outputs, in `workflow/rules/snakescripts/scdeepid/`,
+and its analysis is rule `scdeepid_pathway_test` (`workflow/rules/scdrs.smk`), which
+reproduces the file (identical statistics; only the order of the rows tied at P = 1
+differs).
 
 | Script | Manuscript item | Make target | Key inputs | Output |
 |---|---|---|---|---|
