@@ -2,8 +2,7 @@
 
 This archive holds the summary-level data needed to rebuild every figure and
 supplementary table of *Single-cell genetics identifies cell-type-specific
-effector genes across complex traits and diseases* (Henry, Senabouth,
-Tyebally et al.; medRxiv doi:10.1101/2025.08.28.25334614). The code is at
+effector genes across complex traits and diseases*. The code is at
 <https://github.com/powellgenomicslab/tenk10k-effector-genes>.
 
 ## Main results
@@ -87,6 +86,10 @@ KEGG pathway terms (rows with source `KEGG`), which remain under KEGG's terms
 
 ## Citation
 
-Henry A, Senabouth A, Tyebally R, et al. Single-cell genetics identifies
+If you use these data in your research, please cite:
+* [The zenodo record](https://doi.org/10.5281/zenodo.23406585)
+* The paper, if not yet published, please cite the preprint:
+
+    Henry A, Senabouth A, Tyebally R, et al. Single-cell genetics identifies
 cell type-specific causal mechanisms in complex traits and diseases.
 medRxiv 2025.08.28.25334614 (2025). doi:10.1101/2025.08.28.25334614
