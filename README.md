@@ -1,6 +1,7 @@
 # TenK10K Phase1 effector genes identification manuscript
 
 [![medRxiv](https://img.shields.io/badge/medRxiv-10.1101%2F2025.08.28.25334614-B31B1B)](https://doi.org/10.1101/2025.08.28.25334614)
+[![Code](https://img.shields.io/badge/code-10.5281%2Fzenodo.23487289-1682D4)](https://doi.org/10.5281/zenodo.23487289)
 [![Data](https://img.shields.io/badge/data-10.5281%2Fzenodo.23406585-1682D4)](https://doi.org/10.5281/zenodo.23406585)
 
 
@@ -13,7 +14,8 @@
 This repository contains the code behind the manuscript *Single-cell genetics
 identifies cell-type-specific effector genes across complex traits and
 diseases*. It holds code and small metadata tables only, with no data or
-results. Its two parts are:
+results; each release is archived on Zenodo
+([doi:10.5281/zenodo.23487289](https://doi.org/10.5281/zenodo.23487289)). Its two parts are:
 
 - **Analysis pipelines** (`workflow/`, `sensitivity/`). These are Snakemake pipelines that turn GWAS and single-cell eQTL summary statistics into Mendelian randomisation (MR), sensitivity, colocalisation, MAGMA, scDRS, enrichment and Open Targets results. They need the TenK10K data (not included due to size).
 - **Display items** (`scripts/`). These are the R, Python and Typst scripts that turn those results into every figure and table in the manuscript. Each item has a single command that rebuilds it from summary-level inputs (released separately on Zenodo, doi:[10.5281/zenodo.23406585](https://doi.org/10.5281/zenodo.23406585); see [Data Availability](#data-availability)).
@@ -194,7 +196,7 @@ snakemake --snakefile workflow/snakefile --workflow-profile none --list-rules
 
 The data needed to rebuild the display items are deposited on Zenodo as a
 dataset with its own DOI, [10.5281/zenodo.23406585](https://doi.org/10.5281/zenodo.23406585), separate from this code's
-release; its files are restricted until the manuscript is published. `make data` downloads the archive and checks every file
+release ([10.5281/zenodo.23487289](https://doi.org/10.5281/zenodo.23487289)); its files are restricted until the manuscript is published. `make data` downloads the archive and checks every file
 against its checksum. The archive's `INVENTORY.tsv` lists each file with its
 source and licence. [`RELEASING.md`](RELEASING.md) describes how the code and
 data releases are linked. The sc-eQTL summary statistics are released separately as described in the main [TenK10K phase 1 sc-eQTL mapping study (Cuomo et al.)](https://www.medrxiv.org/content/10.1101/2025.03.20.25324352v2).
@@ -237,6 +239,11 @@ If you use this code or data in your research, please consider citing
 Henry, A., Senabouth, A., Tyebally, R., et al. Single-cell genetics identifies cell-type-specific effector genes across complex traits and diseases. medRxiv 2025.08.28.25334614 (2025) doi:10.1101/2025.08.28.25334614
 
 [medRxiv link](https://doi.org/10.1101/2025.08.28.25334614)
+
+**Code and data**:
+
+- Code: [doi:10.5281/zenodo.23487289](https://doi.org/10.5281/zenodo.23487289) (all versions)
+- Data: [doi:10.5281/zenodo.23406585](https://doi.org/10.5281/zenodo.23406585)
 
 See *References* section in the manuscript for additional citations of methods and data sources.
 

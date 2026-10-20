@@ -3,9 +3,15 @@
 The code and the data are archived as two Zenodo records, each with its own DOI:
 
 - **Code**: this repository. Each GitHub release is archived by Zenodo's GitHub
-  integration, using the metadata in `.zenodo.json`.
+  integration, using the metadata in `.zenodo.json`. Concept DOI (all versions)
+  10.5281/zenodo.23487289; v4.0 is 10.5281/zenodo.23487290.
 - **Data**: the bundle of figure and table inputs (`make bundle`), uploaded as
-  a Zenodo dataset with the metadata in `zenodo/data.json`.
+  a Zenodo dataset with the metadata in `zenodo/data.json`. DOI
+  10.5281/zenodo.23406585 (files restricted until the manuscript is published).
+
+Both records are in the `powellgenomicslab` community. Their creators, with
+every author's affiliations, come from `zenodo/creators.json`, which follows
+`resources/authors.docx`.
 
 They are linked both ways: `make data` downloads the bundle from the data
 record and checks every file against its SHA-256, and each record's metadata
@@ -15,8 +21,9 @@ exactly the inputs that release was tested with.
 ## Once
 
 1. The `creators` in `.zenodo.json` (code) and `zenodo/data.json` (data)
-   follow the manuscript's author list and affiliations. Add ORCIDs
-   (`"orcid"` per creator) if wanted. The data DOI reserved for the first
+   follow the manuscript's author list, with each author's first affiliation
+   only: both files use Zenodo's legacy schema, which allows one. The full
+   lists are in `zenodo/creators.json`. The data DOI reserved for the first
    release is 10.5281/zenodo.23406585 (record 23406585).
 2. A repository owner enables the repository in Zenodo under
    *Account → GitHub*.
@@ -59,11 +66,16 @@ exactly the inputs that release was tested with.
    be changed once published; a change needs a new version, with a new DOI.
 6. **Check the link.** In a fresh clone, run `make data` (it downloads from the
    published record and checks every file) and build one item.
-7. **Release the code** (can come later). Merge into `main`, then tag and
-   publish a GitHub release (e.g. `v4.1.0`); Zenodo archives it and mints the
-   code DOI. Then edit the data record's metadata to add the code DOI under
-   related works (relation "is supplement to"); editing metadata does not
-   create a new version.
+7. **Release the code** (can come later). Tag and publish a GitHub release
+   from `main` (e.g. `v4.1.0`); Zenodo archives it under the code concept DOI.
+   Then restore every author's affiliations on the new version, which
+   `.zenodo.json` cannot hold:
+   ```bash
+   python3 zenodo/set_creators.py --record <new code record ID> --publish
+   ```
+   The data record already lists the code concept DOI under related works
+   (relation "is supplement to"), so it needs no change; editing metadata
+   would not create a new version in any case.
 
 ### Uploading with the API
 

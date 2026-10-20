@@ -3,7 +3,8 @@
 This archive holds the summary-level data needed to rebuild every figure and
 supplementary table of *Single-cell genetics identifies cell-type-specific
 effector genes across complex traits and diseases*. The code is at
-<https://github.com/powellgenomicslab/tenk10k-effector-genes>.
+<https://github.com/powellgenomicslab/tenk10k-effector-genes>, archived on Zenodo
+(doi:10.5281/zenodo.23487289).
 
 ## Main results
 
