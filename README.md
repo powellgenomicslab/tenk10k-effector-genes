@@ -234,7 +234,7 @@ If you use this code or data in your research, please consider citing
 
 **Preprint**:
 
-Henry, A., Senabouth, A., Tyebally, R., et al. Single-cell genetics identifies cell type-specific causal mechanisms in complex traits and diseases. medRxiv 2025.08.28.25334614 (2025) doi:10.1101/2025.08.28.25334614
+Henry, A., Senabouth, A., Tyebally, R., et al. Single-cell genetics identifies cell-type-specific effector genes across complex traits and diseases. medRxiv 2025.08.28.25334614 (2025) doi:10.1101/2025.08.28.25334614
 
 [medRxiv link](https://doi.org/10.1101/2025.08.28.25334614)
 

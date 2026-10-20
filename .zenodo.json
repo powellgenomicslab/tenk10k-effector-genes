@@ -1,7 +1,7 @@
 {
   "title": "TenK10K Phase 1 effector genes: analysis pipelines and figure code",
   "upload_type": "software",
-  "description": "<p>Code accompanying <em>Single-cell genetics identifies cell type-specific causal mechanisms in complex traits and diseases</em> (medRxiv doi:10.1101/2025.08.28.25334614): Snakemake pipelines that produce the Mendelian randomisation, colocalisation, MAGMA, scDRS, enrichment and Open Targets results from GWAS and single-cell eQTL summary statistics, and the scripts that rebuild every figure and supplementary table from the companion data record (<code>make data</code>, then <code>make all</code>).</p><p>Albert Henry, Anne Senabouth and Rika Tyebally contributed equally. Correspondence: Joseph E. Powell (j.powell@garvan.org.au).</p>",
+  "description": "<p>Code accompanying <em>Single-cell genetics identifies cell-type-specific effector genes across complex traits and diseases</em> (medRxiv doi:10.1101/2025.08.28.25334614): Snakemake pipelines that produce the Mendelian randomisation, colocalisation, MAGMA, scDRS, enrichment and Open Targets results from GWAS and single-cell eQTL summary statistics, and the scripts that rebuild every figure and supplementary table from the companion data record (<code>make data</code>, then <code>make all</code>).</p><p>Albert Henry, Anne Senabouth and Rika Tyebally contributed equally. Correspondence: Joseph E. Powell (j.powell@garvan.org.au).</p>",
   "creators": [
     {
       "name": "Henry, Albert",
