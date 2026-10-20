@@ -43,11 +43,11 @@ rule mk_gene_annot:
   """Make gene type annotation from gencode gtf"""
   input: "resources/misc/gencode.v44.basic.annotation.gtf"
   output: "resources/misc/gencode.{version}.gene_type.tsv"
-  conda: "renv"
+  conda: "../envs/renv.yaml"
   script: "snakescripts/mk_gene_annot.R"
 
 # Initialise trait metadata (update from Anne's and additional manual entries)
 # rule init_trait_metadata:
-#     output: "resources/metadata/trait_metadata_n.tsv"
-#     conda: "renv"
+#     output: "metadata/trait.tsv"
+#     conda: "../envs/renv.yaml"
 #     script: "snakescripts/prep_trait_metadata.R"

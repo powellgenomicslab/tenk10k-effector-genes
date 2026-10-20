@@ -13,44 +13,62 @@ This Snakemake workflow processes and analyzes data for the Tenk10k causal infer
 - scDRS computation
 
 ## Requirements
-- Python 3.x
-- Snakemake
-- R (v4.0+) with required libraries
-- Conda (optional)
-- External tools:
-  - MAGMA
-  - PLINK
-  - CrossMap
+
+- **Snakemake ≥ 8.** Only `profiles/default/config.v8+.yaml` is provided, and it
+  uses the `cluster-generic` executor plugin, which is Snakemake 8+ syntax.
+- Conda, for the environments in [`envs/`](envs/). All rules declare one, so
+  pass `--use-conda`; the default profile already sets it.
+- R ≥ 4.4 and Python ≥ 3.11 come from those environments.
+- External tools **not** provided by the conda environments, which must be on
+  `PATH`: `smr`, `magma`, `ldak`, `plink` (1.9), `tabix`/`htslib`, and `CrossMap`
+  for the liftover chain. The multivariant coloc rules additionally expect NCI
+  Gadi's `nci-parallel` module and PBS environment variables.
+
+## Prerequisites you must supply
+
+The workflow will parse without these, but rules will not run:
+
+1. **`config/path/nci.yaml`** (or a host-specific equivalent) — a file map read at
+   parse time by `rule init_file_nci`. A template with placeholder paths ships in
+   the repository; replace the `source` entries with your own.
+2. **`resources/ma/{trait}.ma`** — the curated GWAS inputs. This is an input, not
+   an output; see the provenance note at the top of `rules/format_gwas.smk` and
+   [`../scripts/0-preprocess/gwas/README.md`](../scripts/0-preprocess/gwas/README.md).
+3. **Pre-built BESD files** for the sc-eQTL data, plus the GENCODE v44 GTF. Point
+   `TENK10K_BESD_DIR` and `GENCODE_GTF` at them; see
+   [`../scripts/0-preprocess/tenk10k-eqtl/README.md`](../scripts/0-preprocess/tenk10k-eqtl/README.md).
+4. **Genotypes** under `resources/genotypes/` for LD, SMR and coloc.
 
 ## Usage
-Run the workflow:
+
+Run from the **working-directory root**, not from inside `workflow/`: every rule
+declares its script paths relative to the root (for example
+`workflow/rules/snakescripts/...`).
+
 ```bash
-snakemake --profile profiles/default
+# Dry run - the quickest check that your configuration is complete
+snakemake --snakefile workflow/snakefile \
+          --profile workflow/profiles/default --dry-run
+
+# A specific target
+snakemake --snakefile workflow/snakefile \
+          --profile workflow/profiles/default \
+          results/aggregate/tenk10k_phase1.msmr.parquet.gz
+
+# Locally, with N cores instead of submitting to PBS
+snakemake --snakefile workflow/snakefile --use-conda --cores 8 <target>
 ```
 
-### Example Commands
-
-- Dry-run the workflow:
-```bash
-snakemake --profile profiles/default --dry-run
-```
-
-- Run with specific targets:
-```bash
-snakemake --profile profiles/default results/enrichment/{study}.tsv
-```
-
-- Use multiple cores:
-```bash
-snakemake --profile profiles/default --cores 8
-```
+The default profile submits to PBS on NCI Gadi (project `fy54`, `cluster-generic`).
+Edit `profiles/default/config.v8+.yaml` — in particular `project`, `storage` and
+`email` — or supply your own profile.
 
 ## Workflow Steps
 
 ### 1. GWAS Formatting
 - **Scripts:** `rules/snakescripts/format_gwas/*.R`
 - **Purpose:** Standardize GWAS summary statistics, liftover coordinates, harmonize alleles, filter variants.
-- **Output:** Formatted files in `resources/pipeline_ma/`
+- **Output:** Formatted files in `resources/pipeline_ma/` (a staging area; see the provenance note in `rules/format_gwas.smk` for how these reach `resources/ma/`)
 
 ### 2. eQTL Preparation
 - **Scripts:** `rules/snakescripts/prep_besd_chr/*.sh`, `prep_smr_input/*.R`

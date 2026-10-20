@@ -8,7 +8,7 @@ INPUT <- snakemake@input
 OUTPUT <- snakemake@output
 PHENO <- snakemake@wildcards[['phenotype']]
 
-n_eff <- read_excel(INPUT$trait_metadata) %>% 
+n_eff <- fread(INPUT$trait_metadata) %>% 
     filter(include) %>%
     filter(trait_id == PHENO) %>% 
     pull(n_eff)

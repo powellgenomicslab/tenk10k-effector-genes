@@ -1,0 +1,39 @@
+# R environment for the majority of rules (referenced as `conda: "renv"`).
+#
+# Versions are those of the environment in which the published results were
+# produced (R 4.4.1). Package set derived from the library() and pkg:: calls in
+# workflow/rules/snakescripts/**/*.R.
+name: renv
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-base=4.4.1
+  # core data handling
+  - r-tidyverse=2.0.0
+  - r-data.table=1.15.4
+  - r-fs=1.6.4
+  - r-arrow=17.0.0
+  - r-readxl=1.4.3
+  - r-glue=1.8.0
+  - r-fst=0.9.8
+  - r-readr=2.1.5
+  - r-janitor=2.2.1
+  - r-yaml=2.3.10
+  - r-optparse=1.7.5
+  - r-httr=1.4.7
+  - r-data.tree
+  # statistics
+  - bioconductor-qvalue=2.15.0
+  - r-coloc=5.2.3
+  - r-susieR=0.14.2
+  - r-gprofiler2=0.2.4
+  # genomic annotation
+  - bioconductor-rtracklayer=1.66.0
+  - bioconductor-genomicranges=1.58.0
+  - bioconductor-genomeinfodb=1.42.0
+  - bioconductor-annotationdbi=1.68.0
+  # database backends used by the Open Targets rules
+  - r-dbi=1.2.3
+  - r-dbplyr=2.5.1
+  - r-rsqlite=2.4.6

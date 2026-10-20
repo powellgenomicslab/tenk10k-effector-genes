@@ -43,7 +43,7 @@ rule gget_enrichr_pheno:
         msmr_sig = "results/enrichment_pheno/{study}~q_{q_thresh}~heidi_{heidi_thresh}/gene_celltype/{pheno}.txt",
         # full gene_set list: https://maayanlab.cloud/Enrichr/#libraries
         gene_set = "resources/misc/enrichr.gene_set.txt"
-    conda: "pydata"
+    conda: "../envs/pydata.yaml"
     log: "logs/enrichment/gget_enrichr_pheno/{study}~q_{q_thresh}~heidi_{heidi_thresh}/{pheno}.log"
     params: min_gene = 5
     resources:
@@ -75,7 +75,7 @@ checkpoint prep_gene_set:
     wildcard_constraints:
         set = "[^/]+"
     output: directory("resources/enrichment/set/{set}")
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     log: "logs/prep_gene_set/{set}.log"
     resources:
         ncpus = 8,
@@ -90,7 +90,7 @@ rule map_string_ids:
     """
     input:
         gencode = "resources/misc/gencode.v44.gene_type.tsv"
-    conda: "pydata"
+    conda: "../envs/pydata.yaml"
     output:
         mapping = "resources/enrichment/string_id_map.tsv"
     params:
@@ -113,7 +113,7 @@ checkpoint prep_gene_set_string:
     input:
         string_id_map = "resources/enrichment/string_id_map.tsv"
     output: directory("resources/enrichment/set_string/{set}")
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     log: "logs/prep_gene_set_string/{set}.log"
     resources:
         ncpus = 8,
@@ -138,7 +138,7 @@ rule enrichment_by_method_py:
     input:
         dir_gene_set = "resources/enrichment/set_string/{set}/{biosample}",
         gene_universe = "results/enrichment/{study}/gene_universe.txt"
-    conda: "pydata"
+    conda: "../envs/pydata.yaml"
     output:
         enrich    = "results/enrichment/{study}/{set}/{biosample}.{enrich_method}.tsv",
         ppi_network = "results/enrichment/{study}/{set}/{biosample}.{enrich_method}.ppi_network.tsv",
@@ -175,7 +175,7 @@ rule enrichment_by_method:
         # gene_set = "resources/enrichment/set/{set}/{biosample}/{pheno}.txt",
         dir_gene_set = "resources/enrichment/set/{set}/{biosample}",
         gene_universe = "results/enrichment/{study}/gene_universe.txt"
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     output: enrich = "results/enrichment/{study}/{set}/{biosample}.{enrich_method}.tsv"
     params:
         # --- gprofiler params ---
@@ -227,4 +227,30 @@ rule aggregate_enrichment:
                 awk -v cell="$cell" -v OFS='\\t' 'FNR > 1 {{print cell, $0}}' "$f"
             done
         ) | gzip -c > {output}
+        """
+
+
+rule string_trim_publications:
+    """
+    Copy of the STRING enrichment table for the data bundle without the
+    "Publications" term source (about 98% of rows), which the figure and table
+    scripts filter out. The gene-term (bipartite) table is copied unchanged,
+    because the PPI network figure counts each gene's phenotypes across all
+    sources, and so is the network, so that all three files share the
+    .trimmed prefix.
+    """
+    input:
+        enrich = "results/enrichment/{set}/{subset}/{biosample}.string_rank_api.tsv",
+        bipartite = "results/enrichment/{set}/{subset}/{biosample}.string_rank_api.bipartite.tsv",
+        network = "results/enrichment/{set}/{subset}/{biosample}.string_rank_api.ppi_network.tsv"
+    output:
+        enrich = "results/enrichment/{set}/{subset}/{biosample}.string_rank_api.trimmed.tsv",
+        bipartite = "results/enrichment/{set}/{subset}/{biosample}.string_rank_api.trimmed.bipartite.tsv",
+        network = "results/enrichment/{set}/{subset}/{biosample}.string_rank_api.trimmed.ppi_network.tsv"
+    shell:
+        r"""
+        awk -F'\t' 'NR == 1 {{for (k = 1; k <= NF; k++) if ($k == "source") c = k; print; next}}
+                    $c != "Publications"' {input.enrich} > {output.enrich}
+        cp {input.bipartite} {output.bipartite}
+        cp {input.network} {output.network}
         """

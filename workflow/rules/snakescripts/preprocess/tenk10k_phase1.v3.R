@@ -12,16 +12,14 @@ setDTthreads(Sys.getenv("NCPUS"))
 df_cell_map <- fread("resources/metadata/cell_map_revised.tsv") |> 
   select(-major_cell_type) |> 
   rename(major_cell_type = revision_major_cell_type)
-df_trait_map_all <- read_xlsx("resources/metadata/trait_metadata_curated.xlsx")
+df_trait_map_all <- fread("metadata/trait.tsv")
 df_trait_map <- filter(df_trait_map_all, include)
 df_gene_annot <- fread("resources/misc/gencode.v44.gene_type.tsv")
 
 setDT(df_trait_map)
 phenotypes <- df_trait_map$trait_id
 
-cat_order <- read_xlsx("resources/metadata/trait_metadata_curated.xlsx",
-  sheet = "trait_category_order"
-) %>%
+cat_order <- fread("metadata/trait_category.tsv") %>%
   pull(cat_order)
 
 df_msmr_tenk10k <- read_parquet("results/sensitivity/smr/tenk10k_phase1/tenk10k_phase1_sensitivity.msmr.parquet.gz") |> 

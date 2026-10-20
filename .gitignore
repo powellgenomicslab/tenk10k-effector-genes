@@ -31,8 +31,10 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# Ignore results and intermediate files
-results/
+# Ignore results and intermediate files (assumed available locally); `results`
+# without a slash also covers a symlink to a data tree
+resources/
+/results
 logs/
 *.gz
 *.parquet
@@ -78,6 +80,7 @@ dist/
 
 # Ignore data files that should not be committed
 data/
+results/
 raw_data/
 *.bak
 *.backup
@@ -91,3 +94,54 @@ raw_data/
 tmp/
 temp/
 scratch/
+
+# Ignore .claude
+.claude/
+
+# Generated figures and tables (rebuilt by `make`); only the BioRender study
+# design image is tracked
+figures/*
+!figures/biorender/
+tables/
+
+# Never commit credentials, single-cell data, R objects or container images
+.env
+*.env
+*.token
+.huggingface/
+.netrc
+*.pem
+*.key
+*.rds
+*.RDS
+*.Rds
+*.rda
+*.h5seurat
+*.loom
+*.mtx
+*.sif
+*.bam
+*.fastq
+*.fq
+*.vcf
+*.bgen
+*.pgen
+# --- Exceptions -------------------------------------------------------------
+# The blanket data patterns above (*.tsv, *.csv, *.xlsx, *.gz, *.parquet) exist
+# to keep results and bulk data out of the repository. The directories below
+# hold small, tracked configuration and metadata that the code needs in order
+# to run, so they must be exempt; without these lines the next `git add` will
+# silently drop them.
+!metadata/**
+!config/**
+!resources/misc/target_phenotypes.txt
+!resources/scdrs/config/**
+!workflow/config/**
+!workflow/envs/**
+!sensitivity/config/**
+
+# default R graphics device output from scripts run non-interactively
+Rplots.pdf
+
+# caches written by programs run in the container (its home is the repository)
+.cache/

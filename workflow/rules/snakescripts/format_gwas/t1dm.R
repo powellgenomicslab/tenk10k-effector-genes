@@ -34,5 +34,5 @@ df_out <- gwas_df %>%
     select(SNP = snp_id,  A1, A2, freq, b,
            se = standard_error, p = p_value, n)
 
-output_filepath <- "resources/pipeline_ma/t1dm.ma"
+output_filepath <- snakemake@output[[1]]
 fwrite(df_out, output_filepath, sep = "\t")

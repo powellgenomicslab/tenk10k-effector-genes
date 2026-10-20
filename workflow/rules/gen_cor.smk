@@ -39,11 +39,11 @@ rule ldak_join_tag_files:
 rule ldak_format_ma_sumstats:
     input:
         ma = "resources/ma/{phenotype}.ma",
-        trait_metadata = "resources/metadata/trait_metadata_curated.xlsx"
+        trait_metadata = "metadata/trait.tsv"
     output:
         "resources/ldak/sumstats/{phenotype}.sumstats.ldak"
     log: "logs/ldak/format_sumstats/{phenotype}.ma"
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     script: "snakescripts/ldak/format_ma_sumstats.R"
 
 def all_traits_sumstats_ldak():
@@ -87,7 +87,7 @@ rule ldak_gen_cor:
 
 rule mk_trait_list:
     output: "resources/ldak/trait_list/{study}.txt"
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     script: "snakescripts/prep_trait_list/{wildcards.study}.R"
 
 rule mk_pairwise_trait:
@@ -98,7 +98,7 @@ rule mk_pairwise_trait:
     output: "resources/ldak/misc/{study}.trait_pairs.gen_cor.txt"
     params:
         ldak_prefix = "results/gen_cor/{study}"
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     script: "snakescripts/ldak/make_pairwise_trait_gencor.R"
 
 def ldak_gen_cor_all(x):
@@ -110,7 +110,7 @@ def ldak_gen_cor_all(x):
 rule all_gencor_ldak:
     input: ldak_gen_cor_all
     output: "results/aggregate/{study}.gen_cor.ldak.tsv"
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     log: "logs/ldak/gen_cor/{study}.all.log"
     script: "snakescripts/aggregate/gen_cor_ldak.R"
 
@@ -118,7 +118,7 @@ rule gencor_eigen:
     """create eigenvectors & eigen values for genetic correlation"""
     input: "results/aggregate/{study}.gen_cor.ldak.tsv"
     output: "results/aggregate/{study}.gen_cor_eigen.tsv"
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     log: "logs/gen_cor/{study}.eigen.log"
     script: "snakescripts/aggregate/gen_cor_eigen.R"
 

@@ -1,38 +1,21 @@
 # Aggregate all coloc results into a single parquet file
 
-library(tidyverse)
-library(data.table)
 library(arrow)
 library(fs)
 
 ## Get inputs from snakemake
-# This is a list of all coloc result files
-input_files <- snakemake@input
+input_files <- unlist(snakemake@input)
 output_file <- snakemake@output[[1]]
 study <- snakemake@wildcards[["study"]]
 
-# read_coloc_input <- function(file) {
-#   df <- fread(file)
-#   if ("nspns_coloc_tested" %in% colnames(df)) {
-#     df <- df %>% rename(nspns_coloc = nsnps_coloc_tested)
-#   }
-#   return(df)
-# }
+# Shared schema normalisation - see the header of coloc_schema.R for why the
+# per-file column layout varies.
+source(snakemake@params[["schema_helper"]])
 
-# input_files <- dir_ls("results/coloc/tenk10k_phase1", recurse = TRUE, glob = "*all_chr.coloc.tsv")
-# crohns_files <- input_files[str_detect(input_files, "crohns")]
-# input_files <- dir_ls("results/coloc/tenk10k_phase1", recurse = TRUE, glob = "*all_chr.coloc.tsv")
+combined_df <- read_coloc_all_chr(input_files, expected_n = length(input_files))
 
-combined_df <- rbindlist(map(input_files, ~fread(.x, fill = TRUE)), fill = TRUE)
-combined_df[is.na(nsnps_coloc_tested), nsnps_coloc_tested := nsnps_coloc]
-# combined_df[is.na(nsnps_coloc_tested), nsnps_coloc_tested := V13]
-
-# remove redundant column
-combined_df[,nsnps_coloc := NULL]
-# combined_df[,V13 := NULL]
-## Summary statistics
+cat(sprintf("Aggregated %d rows from %d files\n", nrow(combined_df), length(input_files)))
 
 ## Save as compressed parquet file
-# output_file <- "results/aggregate/tenk10k_phase1.coloc.parquet.gz"
 dir_create(dirname(output_file))
 write_parquet(combined_df, output_file, compression = "gzip")

@@ -1,12 +1,31 @@
 # snakemake rules to format GWAS summary stats
 
+# NOTE ON GWAS PROVENANCE
+# `resources/ma/` is a curated *input* to this pipeline, not one of its outputs.
+# Every downstream arm (SMR, MAGMA, coloc, LDAK, and the sensitivity MR pipeline)
+# reads `resources/ma/{pheno}.ma`, and no rule writes it. The directory is
+# assembled by hand from three routes:
+#   1. `rule format_gwas` below, for the 25 traits with a trait-specific script
+#      in snakescripts/format_gwas/. It writes to `resources/pipeline_ma/`, a
+#      staging area, and the harmonised files are reviewed before being promoted
+#      into `resources/ma/`.
+#   2. `rule extract_finngen_gwas` + `rule format_finngen_gwas`, for the
+#      phenotypes listed in workflow/config/finngen_meta_path.yaml.
+#   3. Summary statistics already supplied in GCTA .ma format by the source
+#      consortium, copied in directly.
+# Anyone reproducing this pipeline must assemble `resources/ma/` the same way;
+# see the "GWAS inputs" section of workflow/README.md.
+
 rule format_gwas:
     """
-    Format GWAS summary statistics
+    Format GWAS summary statistics into GCTA .ma format.
+
+    Writes to the resources/pipeline_ma/ staging area; see the provenance note
+    above for how those files reach resources/ma/.
     """
     input:
         gwas = "resources/sumstats/gwas/{pheno}.gwas",
-        trait_metadata = "resources/metadata/trait_metadata_curated.xlsx",
+        trait_metadata = "metadata/trait.tsv",
         hg19tohg38 = "resources/misc/hg19ToHg38.over.chain",
         liftover_script = "workflow/rules/snakescripts/hg19tohg38.R"
     output: "resources/pipeline_ma/{pheno}.ma"
@@ -15,7 +34,7 @@ rule format_gwas:
         mem = "16G",
         jobfs = "8G",
         ncpus = 8
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     log: "logs/format_gwas/{pheno}.log"
     script: "snakescripts/format_gwas/{wildcards.pheno}.R"
 
@@ -75,22 +94,9 @@ rule format_finngen_gwas:
         frq = "resources/genotypes_frq/{study}.frq",
     output: "resources/sumstats/finngen_gwas_extract/{study}/{pheno}.ma"
     threads: 8
-    conda: "renv"
+    conda: "../envs/renv.yaml"
     log: "logs/format_finngen_gwas/{study}/{pheno}.log"
     script: "snakescripts/format_finngen_gwas.R"
-
-rule sumstats_diagnosis:
-    """
-    Run SuSie diagnostic tool to check consistency between LD matrix and GWAS summary statistics
-    """
-    input:
-        ld_matrix = "resources/ld/{study}.ld",
-        gwas_summary = "resources/sumstats/finngen_gwas_extract/{study}/{pheno}.ma"
-    output: "resources/sumstats/finngen_gwas_extract/{study}/{pheno}_susie_diag.txt"
-    threads: 8
-    conda: "renv"
-    log: "logs/sumstats_diagnosis/{study}/{pheno}.log"
-    script: "snakescripts/sumstats_diagnosis.R"
 
 rule split_ma_by_chr:
     """

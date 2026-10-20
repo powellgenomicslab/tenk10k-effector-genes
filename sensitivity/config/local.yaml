@@ -1,0 +1,39 @@
+# Configuration for running the sensitivity MR pipeline off-cluster.
+#
+# sensitivity/Snakefile loads this file when neither PBS_JOBID nor SLURM_JOB_ID
+# is set, and configfile: is evaluated at parse time, so the file must exist
+# before any rule can be evaluated. Copy it and replace the paths with your own.
+#
+# Note that sensitivity/config/gadi.yaml conflates two things: the config keys
+# below, and Snakemake profile settings (cluster, default-resources, jobs,
+# use-singularity, singularity-args). Only the config keys belong here; pass
+# execution settings via --profile pointing at a profile *directory*.
+
+workflow:
+  # Written by the prepare_phenotype_list checkpoint
+  phenotype_dir: "sensitivity/metadata/phenotypes"
+  phenotype_list: "sensitivity/metadata/phenotype_list.txt"
+  # Working directories for the two MR methods. Both are also hardcoded inside
+  # rules/snakescripts/ivw_mr/{process_ivw_corr,make_ivw_corr_parquet}.R, so
+  # changing ivw_output_dir here alone will not take effect.
+  ivw_output_dir: "results/sensitivity/ivw-ld"
+  mrlink2_output_dir: "results/sensitivity/mrlink2"
+
+# Singularity image carrying PLINK, TwoSampleMR, MendelianRandomization and
+# MR-link-2. See sensitivity/README.md for the source. Leave empty to run with
+# the tools on your PATH instead of in a container.
+mr_singularity_image: ""
+
+# Host paths, used to declare rule inputs
+key_files:
+  smr_results: "results/sensitivity/smr/tenk10k_phase1/tenk10k_phase1_sensitivity.msmr.parquet.gz"
+  eqtl_dir: "/path/to/eqtl/saige_qtl/december24_freeze"
+
+# Paths as seen from inside the container. When running without a container,
+# set these to the same values as the host paths above.
+container_paths:
+  smr_results: "results/sensitivity/smr/tenk10k_phase1/tenk10k_phase1_sensitivity.msmr.parquet.gz"
+  sensitivity_smr_results: "results/sensitivity/smr/tenk10k_phase1/tenk10k_phase1_sensitivity.msmr.parquet.gz"
+  snp_smr_results: "results/sensitivity/smr/tenk10k_phase1/tenk10k_phase1_sensitivity.snps4msmr.parquet.gz"
+  probe_smr_results: "results/sensitivity/smr/tenk10k_phase1/tenk10k_phase1_sensitivity.prbregion4msmr.parquet.gz"
+  ma_dir: "resources/ma"
