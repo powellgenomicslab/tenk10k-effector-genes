@@ -95,8 +95,9 @@ build installs a pinned conda environment, which takes several minutes; later
 builds reuse it.
 
 > [!NOTE]
-> The data record ([doi:10.5281/zenodo.23406585](https://doi.org/10.5281/zenodo.23406585)) will be published with the
-> manuscript. Until then, `make data` cannot download it.
+> The data record ([doi:10.5281/zenodo.23406585](https://doi.org/10.5281/zenodo.23406585)) is published, but its
+> files stay restricted until the manuscript is published. Until then, `make data`
+> cannot download them.
 
 ### Using the container instead of conda
 
@@ -193,7 +194,7 @@ snakemake --snakefile workflow/snakefile --workflow-profile none --list-rules
 
 The data needed to rebuild the display items are deposited on Zenodo as a
 dataset with its own DOI, [10.5281/zenodo.23406585](https://doi.org/10.5281/zenodo.23406585), separate from this code's
-release, and will be published with the manuscript. `make data` downloads the archive and checks every file
+release; its files are restricted until the manuscript is published. `make data` downloads the archive and checks every file
 against its checksum. The archive's `INVENTORY.tsv` lists each file with its
 source and licence. [`RELEASING.md`](RELEASING.md) describes how the code and
 data releases are linked. The sc-eQTL summary statistics are released separately as described in the main [TenK10K phase 1 sc-eQTL mapping study (Cuomo et al.)](https://www.medrxiv.org/content/10.1101/2025.03.20.25324352v2).

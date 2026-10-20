@@ -59,7 +59,7 @@ positional arguments match. Do not reintroduce `helper.R`.
 
 - It reads from the tracked `metadata/` directory: `cell.tsv` (cell types, colours, ordering), `trait.tsv` (trait definitions, sample sizes, `include` flags), `trait_category.tsv` (category ordering) and `gencode.v44.gene_type.tsv.gz` (gene annotation). The older `resources/metadata/*` and `resources/misc/cell_map.tsv` paths have been migrated away; do not reintroduce them. `metadata/cell.tsv` is authoritative — the Crohn's DEG script derives the same table but must not write back over it.
 - The threshold is everywhere local FDR from the `qvalue` package at `lfdr < 0.05`, but the scope differs by dataset and this matters: eQTLGen mSMR is computed **per phenotype** (`.by = "phenotype"`), MAGMA is computed **globally** across the filtered table, and TenK10K's own lfdr arrives **pre-computed** from the pipeline in `results/preprocessed/tenk10k_phase1.v5.parquet.gz` and is not recalculated here. Colocalisation is `PP.H4.abf >= 0.8`.
-- Two version numbers are in play and must not be conflated: the **code** version (this branch, `v4`) and the **summary-statistics** version (`v5`). All scripts read `v5`; its changelog lives in `tenk10k-causal` (`CHANGELOG.v5.md`). The coloc vintage that goes with `v5` is `coloc.v3`, which the pipeline cannot currently regenerate — see the note at `rule concat_coloc_all`.
+- Two version numbers are in play and must not be conflated: the **code** version (`v4`) and the **summary-statistics** version (`v5`). All scripts read `v5`; its changelog lives in `tenk10k-causal` (`CHANGELOG.v5.md`). The coloc vintage that goes with `v5` is `coloc.v3`, which the pipeline cannot currently regenerate — see the note at `rule concat_coloc_all`.
 - The gene universe is the intersection of genes tested by both MAGMA and TenK10K MR; eQTLGen and MAGMA overlap flags are joined onto the TenK10K table with `data.table` update-joins.
 - Cell type ordering comes from the `major_cell_type_order` vector defined near the top of the file. Reuse it so figures stay consistent.
 
@@ -98,4 +98,4 @@ There are no tests and no linter configured — do not invent commands for eithe
 
 The `TenK10K_causal_inference_vs_IBDverse` submodule is not checked out; run `git submodule update --init` if you need it.
 
-Work happens on the `v4` branch; `main` is the default for pull requests.
+Work happens on `main`, the default branch (the `v4` branch was merged into it and deleted).
