@@ -164,20 +164,19 @@ Dependencies between scripts are resolved automatically. For example, `make fig-
 
 | Results subsection | Display items | Folder |
 |---|---|---|
-| Landscape of causal associations between gene expression and complex traits across immune cells | Fig. 1; Supp. Figs. 1–6; Supp. Tables 1–3 | [`1-overview`](scripts/1-overview/README.md) |
+| Landscape of causal associations between gene expression and complex traits across immune cells | Fig. 1; Supp. Figs. 1–6, 20 (not built here); Supp. Tables 1–3 | [`1-overview`](scripts/1-overview/README.md) |
 | Trait-level insights from cell-type-specific effector gene mapping | Fig. 2a–b; ED Fig. 1; Supp. Fig. 7; Supp. Tables 4–5 | [`2-trait`](scripts/2-trait/README.md) |
 | Assessing horizontal pleiotropy via sensitivity analyses and colocalisation | Fig. 2c; ED Figs. 2–3; Supp. Fig. 8 | [`3-pleiotropy`](scripts/3-pleiotropy/README.md) |
 | Single-cell eQTL enhances identification of effector genes | Fig. 3; ED Fig. 4; Supp. Figs. 9–11; Supp. Tables 6–7 | [`4-comparison`](scripts/4-comparison/README.md) |
 | Identifying disease-relevant biological pathways | ED Fig. 5; Supp. Figs. 12–13; Supp. Table 8 | [`5-pathways`](scripts/5-pathways/README.md) |
 | Polygenic enrichment reveals trait-relevant immune cell types | Fig. 4; ED Figs. 6–7; Supp. Figs. 14–15, 21–24; Supp. Tables 9–10 | [`6-polygenic`](scripts/6-polygenic/README.md) |
 | Single-cell MR supports drug target discovery | Fig. 5; ED Fig. 8; Supp. Fig. 16; Supp. Tables 11–15 | [`7-drug`](scripts/7-drug/README.md) |
-| Triangulation of evidence prioritises effector genes for Crohn's disease | Fig. 6; ED Figs. 9–10; Supp. Figs. 17, 25 (raw data only); Supp. Tables 16–21 | [`8-crohns`](scripts/8-crohns/README.md) |
+| Triangulation of evidence prioritises effector genes for Crohn's disease | Fig. 6; ED Figs. 9–10; Supp. Figs. 17, 18–19 (not built here), 25 (raw data only); Supp. Tables 16–21 | [`8-crohns`](scripts/8-crohns/README.md) |
 
 Some items are not produced by code in this repository:
-- **Fig. 1a** is BioRender artwork, provided in `figures/biorender/`.
-- **Fig. 6** is assembled by `make fig-m6` (`scripts/8-crohns/fig6.typ`); panel d is ported from the IBDverse comparison (`scripts/8-crohns/plot_figures/ibdverse_blood_enrichment.R`).
-- **Supp. Figs. 18–19** come from the [`TenK10K_causal_inference_vs_IBDverse`](TenK10K_causal_inference_vs_IBDverse) submodule.
-- **Supp. Fig. 20** (genes tested per cell type) is not yet linked to a script.
+- **Fig. 1a** is BioRender artwork, provided in `figures/biorender/`; `make fig-m1` places it in Fig. 1.
+- **Supp. Figs. 18–19** (replication of TenK10K eQTLs in IBDverse) come from the [`TenK10K_causal_inference_vs_IBDverse`](TenK10K_causal_inference_vs_IBDverse) submodule.
+- **Supp. Fig. 20** (scRNA-seq metrics for each PBMC cell type) is not yet linked to a script.
 
 ### Options
 

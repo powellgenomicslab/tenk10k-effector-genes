@@ -53,7 +53,7 @@ written by `prepare_data/2-postprocess.R` in this folder.
 4. `plot_figures/JAZF1_scatterplot.R`, for Supp Fig 17.
 5. `supplementary/1-…`, then `supplementary/3-…`. The second script sources the `2-*` scripts.
 
-Figure 6 is assembled from the panels in `figures/panels/8-crohns/` by `fig6.typ` (`make fig-m6`, compiled with Typst like Figure 1). Panel 6d is drawn by `plot_figures/ibdverse_blood_enrichment.R`, ported from the IBDverse comparison (`TenK10K_causal_inference_vs_IBDverse/scripts/enrichment.r`, branch `new_annot`), from two tables written by that analysis's `summarise.r` (`results/pi1_mr_novelty_results/{prop_blood_ibdverse.csv,tenk_not_novel_res_relative.tsv}`). Supplementary Figure 24 (π1 replication, `pi1_estimate.r`) also comes from that analysis.
+Figure 6 is assembled from the panels in `figures/panels/8-crohns/` by `fig6.typ` (`make fig-m6`, compiled with Typst like Figure 1). Panel 6d is drawn by `plot_figures/ibdverse_blood_enrichment.R`, ported from the IBDverse comparison (`TenK10K_causal_inference_vs_IBDverse/scripts/enrichment.r`, branch `new_annot`), from two tables written by that analysis's `summarise.r` (`results/pi1_mr_novelty_results/{prop_blood_ibdverse.csv,tenk_not_novel_res_relative.tsv}`). Supplementary Figures 18–19 (π1 replication of TenK10K eQTLs in IBDverse, `pi1_estimate.r`) also come from that analysis and are not built here.
 
 ## Data not shared
 

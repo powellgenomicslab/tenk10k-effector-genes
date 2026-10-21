@@ -130,7 +130,7 @@ ITEMS = {
     "fig_s4": ("Cell-type-exclusive associations", figs("s4")),
     "fig_s5": ("CAD MR gene P values, TenK10K vs Ray et al.", figs("s5")),
     "fig_s6": ("CAD MR gene effects, TenK10K vs Ray et al.", figs("s6")),
-    "fig_s7": ("FADS locus pleiotropy by cell type", figs("s7")),
+    "fig_s7": ("Pleiotropic associations of MYRF locus genes", figs("s7")),
     "fig_s8": ("MR-colocalisation overlap", figs("s8")),
     "fig_s9": ("MAGMA vs MR gene counts per trait", figs("s9")),
     "fig_s10": ("Gene-trait overlap with MAGMA", figs("s10")),
