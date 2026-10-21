@@ -99,7 +99,9 @@ builds reuse it.
 > [!NOTE]
 > The data record ([doi:10.5281/zenodo.23406585](https://doi.org/10.5281/zenodo.23406585)) is published, but its
 > files stay restricted until the manuscript is published. Until then, `make data`
-> cannot download them.
+> cannot download them, unless your Zenodo account has been granted access: save a
+> Zenodo personal access token (Account → Applications) in `~/.zenodo_token`, or
+> set `ZENODO_TOKEN`, and `make data` downloads through Zenodo's API.
 
 ### Using the container instead of conda
 
