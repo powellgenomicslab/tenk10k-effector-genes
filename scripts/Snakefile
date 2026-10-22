@@ -119,10 +119,6 @@ FIG6_PANELS = panels(
 )
 
 FIG6D_PANEL = panels("8-crohns", "fig6d_ibdverse_blood_enrichment.pdf", "fig6d_ibdverse_blood_enrichment.png")
-FIGE9_PANELS = panels(
-    "8-crohns",
-    *[f"fige9{p}.{e}" for p in ("a_locus_zoom", "b_cross_plot", "c_cross_plot") for e in ("pdf", "png")],
-)
 
 ITEMS = {
     "fig_m1": ("Study design and overview of tested genes and traits", figs("m1")),
@@ -1151,7 +1147,7 @@ rule crohns_gpx1_plot:
             ],
         ),
     output:
-        FIGE9_PANELS,
+        figs("e9"),
     params:
         script="scripts/8-crohns/plot_figures/2-plot_locus_zoom_fig.R",
     log:
@@ -1161,23 +1157,6 @@ rule crohns_gpx1_plot:
     shell:
         R
 
-
-# Extended Data Fig. 9: a is base graphics (locuszoomr), so the panels are assembled
-# with Typst rather than patchwork
-rule fige9_typst:
-    input:
-        typ="scripts/8-crohns/fige9.typ",
-        panels=[f for f in FIGE9_PANELS if f.endswith(".pdf")],
-    output:
-        figs("e9"),
-    log:
-        log("fige9_typst"),
-    conda:
-        ENV
-    shell:
-        # one compile per requested format (from the output's extension)
-        "(for f in {output}; do typst compile --root . --font-path $CONDA_PREFIX/fonts --ppi 300 {input.typ} $f "
-        "|| exit 1; done) > {log} 2>&1"
 
 
 rule crohns_jazf1_plot:

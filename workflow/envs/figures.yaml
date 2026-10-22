@@ -35,6 +35,7 @@ dependencies:
   # plotting
   - r-ggplot2
   - r-patchwork
+  - r-gridgraphics   # patchwork: base-graphics panels (ED Fig. 9)
   - r-cowplot
   - r-ggrepel
   - r-ggnewscale

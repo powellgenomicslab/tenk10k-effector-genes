@@ -2,7 +2,7 @@
 
 # Container holding the figures conda environment, used with
 # `--sdm conda apptainer`. Built from the generated Dockerfile; see README.md.
-container: "docker://ghcr.io/powellgenomicslab/tenk10k-effector-genes:v4.2"
+container: "docker://ghcr.io/powellgenomicslab/tenk10k-effector-genes:v4.3"
 
 # Formats of the final figures: png, pdf or both (make all FORMATS=both).
 formats: "png"

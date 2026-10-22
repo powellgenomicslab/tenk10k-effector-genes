@@ -3,22 +3,16 @@
 #      (locus object from 1-generate_locus_zoom_object.R)
 #   b, c) eQTL vs GWAS effects of the MR instruments in CD4 TCM and cDC2
 #      (cross plots, from tenk10k-causal scripts/crohns_publication/cross_plot.R)
-# The panels are written to figures/panels/8-crohns/ and assembled by fige9.typ
-# (180 x 195 mm, as published): panel a is drawn with locuszoomr's base-graphics
-# plots, which patchwork cannot combine with ggplot panels without gridGraphics.
+# Assembled as in tenk10k-causal 2-plot_locus_zoom_fig.R: panel a is locuszoomr's
+# base-graphics plot, recorded and placed beside the ggplot cross plots by patchwork
+# (which needs gridGraphics for base graphics). Saved at the published size,
+# 180 x 195 mm.
 library(tidyverse)
 library(data.table)
+library(patchwork)
 library(locuszoomr)
 library(glue)
 library(ragg)
-
-out_dir <- "figures/panels/8-crohns"
-dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
-# panel sizes (mm): page 180 x 195 with 2 mm margins; a fills the left half,
-# b and c share the right half
-w_mm <- 88
-a_h_mm <- 191
-bc_h_mm <- 94
 
 target_gene = "GPX1"
 probe <- "ENSG00000233276"
@@ -53,11 +47,12 @@ draw_locus <- function() {
                })
 }
 
-cairo_pdf(file.path(out_dir, "fige9a_locus_zoom.pdf"), width = w_mm / 25.4, height = a_h_mm / 25.4)
+# record the plot (as upstream recordPlot()); under Rscript the display list of a
+# new device is off, so enable it before drawing
+pdf(NULL, width = 90 / 25.4, height = 200 / 25.4)
+dev.control("enable")
 draw_locus()
-dev.off()
-agg_png(file.path(out_dir, "fige9a_locus_zoom.png"), width = w_mm, height = a_h_mm, units = "mm", res = 500)
-draw_locus()
+c <- recordPlot()
 dev.off()
 
 # --- b, c) cross plots ----------------------------------------------------------
@@ -163,10 +158,16 @@ df_metadata <- tibble(
     })
   )
 
-# --- save b and c ----------------------------------------------------------------
+# --- assemble (as upstream) ------------------------------------------------------
 
-walk2(df_metadata$plot, c("b", "c"), function(p, tag) {
-  stem <- file.path(out_dir, paste0("fige9", tag, "_cross_plot"))
-  ggsave(paste0(stem, ".pdf"), p, width = w_mm, height = bc_h_mm, units = "mm", device = cairo_pdf, bg = "white")
-  ggsave(paste0(stem, ".png"), p, width = w_mm, height = bc_h_mm, units = "mm", dpi = 500, device = agg_png, bg = "white")
-})
+a <- df_metadata$plot[[1]]
+b <- df_metadata$plot[[2]]
+
+combined <- wrap_elements(panel = ~replayPlot(c)) + (a / b) +
+  plot_annotation(tag_levels = "a", theme = theme(plot.tag = element_text(face = "bold"))) +
+  plot_layout(widths = c(1.3, 1))
+
+# Extended Data Figure 9
+dir.create("figures", recursive = TRUE, showWarnings = FALSE)
+ggsave("figures/fig-e9.pdf", combined, width = 180, height = 195, units = "mm", device = cairo_pdf, bg = "white")
+ggsave("figures/fig-e9.png", combined, width = 180, height = 195, units = "mm", dpi = 500, device = agg_png, bg = "white")
