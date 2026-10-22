@@ -1,8 +1,8 @@
 # Reproduce the manuscript figures and tables.
 #
-#   make fig-m3        Main Figure 3              -> figures/fig-m3.{pdf,png}
-#   make fig-e3        Extended Data Figure 3     -> figures/fig-e3.{pdf,png}
-#   make fig-s3        Supplementary Figure 3     -> figures/fig-s3.{pdf,png}
+#   make fig-m3        Main Figure 3              -> figures/fig-m3.png
+#   make fig-e3        Extended Data Figure 3     -> figures/fig-e3.png
+#   make fig-s3        Supplementary Figure 3     -> figures/fig-s3.png
 #   make tab-s3        Supplementary Table 3      -> tables/tab-s3.tsv
 #   make figs-m | figs-e | figs-s | tabs-s | all
 #   make figures/panels/<folder>/<file>   one output file, e.g. a panel
@@ -10,6 +10,9 @@
 #   make pull          download the container image only (needs internet)
 #   make inventory     list the bundle files with checksums -> INVENTORY.tsv
 #   make bundle        pack the bundle for Zenodo (BUNDLE=out.tar.gz)
+#
+# Figures are PNG; FORMATS=pdf or FORMATS=both for PDF or both. CORES=N runs N
+# scripts at once (about 16 GB of memory each).
 #
 # Inputs: `make data` downloads the public summary-statistics bundle, or
 # `make link-data DATA_DIR=/path/to/tenk10k-causal` links the files listed in
@@ -29,14 +32,15 @@ SNAKEMAKE ?= snakemake
 CORES     ?= 1
 SDM       ?= conda
 ARGS      ?=
+FORMATS   ?=
 SMK = $(SNAKEMAKE) --snakefile scripts/Snakefile --workflow-profile none \
-      --cores $(CORES) $(if $(SDM),--sdm $(SDM)) $(ARGS) --
+      --cores $(CORES) $(if $(SDM),--sdm $(SDM)) $(if $(FORMATS),--config formats=$(FORMATS)) $(ARGS) --
 
 .PHONY: help list all figs-m figs-e figs-s tabs-s data link-data \
         manifest inventory bundle env lock dockerfile dry-run pull FORCE
 
 help:
-	@sed -n '2,21p' Makefile | sed 's/^# \{0,1\}//'
+	@sed -n '2,24p' Makefile | sed 's/^# \{0,1\}//'
 
 list:
 	@$(SNAKEMAKE) --snakefile scripts/Snakefile --workflow-profile none --cores 1 \

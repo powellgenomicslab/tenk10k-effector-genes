@@ -1,9 +1,12 @@
 # Rebuild every manuscript figure and table from summary-level inputs.
 #
-#   make fig-m3     Main Figure 3              -> figures/fig-m3.{pdf,png}
-#   make fig-e3     Extended Data Figure 3     -> figures/fig-e3.{pdf,png}
-#   make fig-s3     Supplementary Figure 3     -> figures/fig-s3.{pdf,png}
+#   make fig-m3     Main Figure 3              -> figures/fig-m3.png
+#   make fig-e3     Extended Data Figure 3     -> figures/fig-e3.png
+#   make fig-s3     Supplementary Figure 3     -> figures/fig-s3.png
 #   make tab-s3     Supplementary Table 3      -> tables/tab-s3.tsv
+#
+# Figures are PNG by default; `--config formats=pdf` or `formats=both` (make: FORMATS=)
+# gives PDF or both.
 #
 # The Makefile is a thin front door to this file; run from the repository root:
 #   snakemake --snakefile scripts/Snakefile --cores 1 --sdm conda fig_m3
@@ -39,8 +42,12 @@ def ext(*paths, review=""):
     return list(paths)
 
 
+# Formats of the final figures (figures/fig-*): png (default), pdf or both
+FORMATS = {"png": ("png",), "pdf": ("pdf",), "both": ("pdf", "png")}[str(config.get("formats", "png"))]
+
+
 def figs(*ids):
-    return [f"figures/fig-{i}.{e}" for i in ids for e in ("pdf", "png")]
+    return [f"figures/fig-{i}.{e}" for i in ids for e in FORMATS]
 
 
 def tabs(*ids):
@@ -55,7 +62,16 @@ def log(name):
     return f"logs/figures/{name}.log"
 
 
-R = "Rscript {params.script} > {log} 2>&1"
+# The scripts write each final figure as both PDF and PNG (several PNGs are rendered
+# from the PDF); afterwards remove the copy in a format that was not requested.
+# Panels (figures/panels/) are kept: assembled figures read them.
+PRUNE = (
+    'for f in {output}; do case "$f" in '
+    'figures/fig-*.png) t="${{f%.png}}.pdf";; figures/fig-*.pdf) t="${{f%.pdf}}.png";; *) continue;; esac; '
+    'case " {output} " in *" $t "*) ;; *) rm -f "$t";; esac; done'
+)
+
+R = "Rscript {params.script} > {log} 2>&1 && " + PRUNE
 
 # top-level plot printing goes to a null device rather than Rplots.pdf
 os.environ["R_PROFILE_USER"] = os.path.abspath("scripts/util/Rprofile.R")
@@ -103,6 +119,10 @@ FIG6_PANELS = panels(
 )
 
 FIG6D_PANEL = panels("8-crohns", "fig6d_ibdverse_blood_enrichment.pdf", "fig6d_ibdverse_blood_enrichment.png")
+FIGE9_PANELS = panels(
+    "8-crohns",
+    *[f"fige9{p}.{e}" for p in ("a_locus_zoom", "b_cross_plot", "c_cross_plot") for e in ("pdf", "png")],
+)
 
 ITEMS = {
     "fig_m1": ("Study design and overview of tested genes and traits", figs("m1")),
@@ -384,8 +404,9 @@ rule fig1_typst:
     conda:
         ENV
     shell:
-        "(typst compile --root . --font-path $CONDA_PREFIX/fonts {input.typ} figures/fig-m1.pdf && "
-        "typst compile --root . --font-path $CONDA_PREFIX/fonts --ppi 300 {input.typ} figures/fig-m1.png) > {log} 2>&1"
+        # one compile per requested format (from the output's extension)
+        "(for f in {output}; do typst compile --root . --font-path $CONDA_PREFIX/fonts --ppi 300 {input.typ} $f "
+        "|| exit 1; done) > {log} 2>&1"
 
 
 rule mr_heatmap_diseases:
@@ -1111,8 +1132,9 @@ rule fig6_typst:
     conda:
         ENV
     shell:
-        "(typst compile --root . --font-path $CONDA_PREFIX/fonts {input.typ} figures/fig-m6.pdf && "
-        "typst compile --root . --font-path $CONDA_PREFIX/fonts --ppi 300 {input.typ} figures/fig-m6.png) > {log} 2>&1"
+        # one compile per requested format (from the output's extension)
+        "(for f in {output}; do typst compile --root . --font-path $CONDA_PREFIX/fonts --ppi 300 {input.typ} $f "
+        "|| exit 1; done) > {log} 2>&1"
 
 
 rule crohns_gpx1_plot:
@@ -1129,7 +1151,7 @@ rule crohns_gpx1_plot:
             ],
         ),
     output:
-        figs("e9"),
+        FIGE9_PANELS,
     params:
         script="scripts/8-crohns/plot_figures/2-plot_locus_zoom_fig.R",
     log:
@@ -1138,6 +1160,24 @@ rule crohns_gpx1_plot:
         ENV
     shell:
         R
+
+
+# Extended Data Fig. 9: a is base graphics (locuszoomr), so the panels are assembled
+# with Typst rather than patchwork
+rule fige9_typst:
+    input:
+        typ="scripts/8-crohns/fige9.typ",
+        panels=[f for f in FIGE9_PANELS if f.endswith(".pdf")],
+    output:
+        figs("e9"),
+    log:
+        log("fige9_typst"),
+    conda:
+        ENV
+    shell:
+        # one compile per requested format (from the output's extension)
+        "(for f in {output}; do typst compile --root . --font-path $CONDA_PREFIX/fonts --ppi 300 {input.typ} $f "
+        "|| exit 1; done) > {log} 2>&1"
 
 
 rule crohns_jazf1_plot:

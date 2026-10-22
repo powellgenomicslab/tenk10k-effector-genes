@@ -3,11 +3,22 @@
 #      (locus object from 1-generate_locus_zoom_object.R)
 #   b, c) eQTL vs GWAS effects of the MR instruments in CD4 TCM and cDC2
 #      (cross plots, from tenk10k-causal scripts/crohns_publication/cross_plot.R)
+# The panels are written to figures/panels/8-crohns/ and assembled by fige9.typ
+# (180 x 195 mm, as published): panel a is drawn with locuszoomr's base-graphics
+# plots, which patchwork cannot combine with ggplot panels without gridGraphics.
 library(tidyverse)
 library(data.table)
-library(patchwork)
 library(locuszoomr)
 library(glue)
+library(ragg)
+
+out_dir <- "figures/panels/8-crohns"
+dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+# panel sizes (mm): page 180 x 195 with 2 mm margins; a fills the left half,
+# b and c share the right half
+w_mm <- 88
+a_h_mm <- 191
+bc_h_mm <- 94
 
 target_gene = "GPX1"
 probe <- "ENSG00000233276"
@@ -27,28 +38,27 @@ tenk_ct1 = "3:49369275:G:A"
 tenk_ct2 = "3:49361826:G:A"
 tenk10k_all <- unique(c(tenk_ct1, tenk_ct2))
 
-# a) one scatter track per dataset over a shared gene track. ggplot versions of
-# locus_plot()/multi_layout(), so the panel can be combined with the cross plots
+# --- a) locus zoom (as in tenk10k-causal 2-plot_locus_zoom_fig.R) -------------
+
 max_y = 25
-locus_track <- function(loc, title, labels, legend_pos = NULL) {
-  p <- gg_scatter(loc, pcutoff = 5e-08, labels = labels, ylim = c(0, max_y), size = 1,
-                  cex.axis = 0.7, cex.lab = 0.7, legend_pos = legend_pos, xticks = FALSE) +
-    labs(title = title) +
-    theme(plot.title = element_text(size = 7))
-  # shrink the SNP labels (gg_scatter has no argument for their size)
-  p$layers <- lapply(p$layers, function(l) {
-    if (inherits(l$geom, "GeomTextRepel")) l$aes_params$size <- 6 / .pt
-    l
-  })
-  p
+draw_locus <- function() {
+  multi_layout(nrow = 3,
+               plots = {
+                 locus_plot(loclist[["GWAS"]], use_layout = FALSE, legend_pos = 'topleft', pcutoff = 5e-08, labels = tenk10k_all, highlight = target_gene, main = final_plot_names[1], ylim = c(0, max_y),
+                            cex.main = 0.7, cex = 0.6, cex.axis = 0.7, cex.lab = 0.7, cex.text = 0.6, filter_gene_biotype = "protein_coding", label_x = c(4, -5))
+                 locus_plot(loclist[["CD4_TCM"]], use_layout = FALSE, legend_pos = NULL, pcutoff = 5e-08, labels = tenk_ct1, highlight = target_gene, main = final_plot_names[2], ylim = c(0, max_y),
+                            cex.main = 0.7, cex = 0.6, cex.axis = 0.7, cex.lab = 0.7, cex.text = 0.6, filter_gene_biotype = "protein_coding")
+                 locus_plot(loclist[["cDC2"]], use_layout = FALSE, legend_pos = NULL, pcutoff = 5e-08, labels = tenk_ct2, highlight = target_gene, main = final_plot_names[3], ylim = c(0, max_y),
+                            cex.main = 0.7, cex = 0.6, cex.axis = 0.7, cex.lab = 0.7, cex.text = 0.6, filter_gene_biotype = "protein_coding")
+               })
 }
 
-p_locus <- locus_track(loclist[["GWAS"]], final_plot_names[1], tenk10k_all, legend_pos = "topleft") /
-  locus_track(loclist[["CD4_TCM"]], final_plot_names[2], tenk_ct1) /
-  locus_track(loclist[["cDC2"]], final_plot_names[3], tenk_ct2) /
-  gg_genetracks(loclist[["GWAS"]], filter_gene_biotype = "protein_coding", highlight = target_gene,
-                cex.axis = 0.7, cex.lab = 0.7, cex.text = 0.45, italics = TRUE) +
-  plot_layout(heights = c(1, 1, 1, 1.2))
+cairo_pdf(file.path(out_dir, "fige9a_locus_zoom.pdf"), width = w_mm / 25.4, height = a_h_mm / 25.4)
+draw_locus()
+dev.off()
+agg_png(file.path(out_dir, "fige9a_locus_zoom.png"), width = w_mm, height = a_h_mm, units = "mm", res = 500)
+draw_locus()
+dev.off()
 
 # --- b, c) cross plots ----------------------------------------------------------
 
@@ -148,20 +158,15 @@ df_metadata <- tibble(
     }),
     plot = pmap(list(df_x, df_y, x_ins, gene, biosample), function(a, b, c, d, e) {
       make_plot_mr(a,b , c) +
-        labs(title = bquote(italic(.(d)) ~ "in" ~.(str_replace_all(e, "_", " "))))
+        labs(title = bquote(italic(.(d)) ~ "in" ~.(str_replace_all(e, "_", " ")))) +
+        theme(plot.margin = margin(5.5, 10, 5.5, 5.5))  # room for the last x-axis label
     })
   )
 
-# --- assemble -------------------------------------------------------------------
+# --- save b and c ----------------------------------------------------------------
 
-plots <- wrap_elements(full = p_locus) + (df_metadata$plot[[1]] / df_metadata$plot[[2]]) +
-  plot_layout(widths = c(1, 1)) +
-  plot_annotation(tag_levels = "a") &
-  theme(plot.tag = element_text(size = 9, face = "bold"))
-
-# Extended Data Figure 9
-dir.create("figures", recursive = TRUE, showWarnings = FALSE)
-ggsave("figures/fig-e9.png", plots, width = 180, height = 170, units = "mm",
-       dpi = 500, device = ragg::agg_png, bg = "white")
-ggsave("figures/fig-e9.pdf", plots, width = 180, height = 170, units = "mm",
-       device = cairo_pdf, bg = "white")
+walk2(df_metadata$plot, c("b", "c"), function(p, tag) {
+  stem <- file.path(out_dir, paste0("fige9", tag, "_cross_plot"))
+  ggsave(paste0(stem, ".pdf"), p, width = w_mm, height = bc_h_mm, units = "mm", device = cairo_pdf, bg = "white")
+  ggsave(paste0(stem, ".png"), p, width = w_mm, height = bc_h_mm, units = "mm", dpi = 500, device = agg_png, bg = "white")
+})

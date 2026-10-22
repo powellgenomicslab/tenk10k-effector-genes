@@ -83,7 +83,7 @@ git clone https://github.com/powellgenomicslab/tenk10k-effector-genes.git
 cd tenk10k-effector-genes
 make data
 
-# 3. Build a figure -> figures/fig-m2.pdf, figures/fig-m2.png
+# 3. Build a figure -> figures/fig-m2.png
 make fig-m2
 ```
 
@@ -150,15 +150,15 @@ directory; if your data are linked from elsewhere (see `make link-data` under
 
 | Command | Builds |
 |---|---|
-| `make fig-mN` | Main Figure N → `figures/fig-mN.pdf`, `.png` |
-| `make fig-eN` | Extended Data Figure N → `figures/fig-eN.pdf`, `.png` |
-| `make fig-sN` | Supplementary Figure N → `figures/fig-sN.pdf`, `.png` |
+| `make fig-mN` | Main Figure N → `figures/fig-mN.png` |
+| `make fig-eN` | Extended Data Figure N → `figures/fig-eN.png` |
+| `make fig-sN` | Supplementary Figure N → `figures/fig-sN.png` |
 | `make tab-sN` | Supplementary Table N → `tables/tab-sN.tsv` |
 | `make figs-m`, `figs-e`, `figs-s`, `tabs-s` | All items of one kind |
 | `make list` | Every target, with its caption |
 | `make figures/panels/<folder>/<file>` | One output file by path, such as a panel saved on its own (e.g. `make figures/panels/1-overview/panel_b.svg`). Scripts that draw several panels write them all |
 
-Dependencies between scripts are resolved automatically. For example, `make fig-m2` first builds the panels that Fig. 2 is assembled from.
+Figures are written as PNG; add `FORMATS=pdf` or `FORMATS=both` for PDF or both (e.g. `make all FORMATS=both`). Dependencies between scripts are resolved automatically. For example, `make fig-m2` first builds the panels that Fig. 2 is assembled from.
 
 ### Display items by Results subsection
 
