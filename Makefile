@@ -19,6 +19,12 @@
 # (workflow/envs/figures.<platform>.pin.txt); SDM="conda apptainer" runs
 # inside the container image; SDM= uses software on PATH.
 
+# Run from the physical path of the checkout. Apptainer starts each step in $PWD,
+# and Snakemake replaces the home directory inside the container with the
+# checkout; a checkout reached through a symlink in the home directory would
+# then not exist inside the container.
+export PWD := $(CURDIR)
+
 SNAKEMAKE ?= snakemake
 CORES     ?= 1
 SDM       ?= conda
