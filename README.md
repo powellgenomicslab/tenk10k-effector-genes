@@ -114,7 +114,7 @@ ready-made container image instead of installing the conda environment. Add
 make fig-m2 SDM="conda apptainer"
 ```
 
-The first such build downloads the image (1.5 GB); later builds reuse it.
+The first such build downloads the image (1.2 GB); later builds reuse it. `make pull` downloads it on its own, from a ready-made SIF file, which is several times faster.
 
 ### Running on an HPC cluster
 
@@ -181,7 +181,7 @@ Some items are not produced by code in this repository:
 ### Options
 
 - **Your own software.** `make fig-m2 SDM=` uses the R and Python already on your `PATH`. The packages needed are listed in `workflow/envs/figures.yaml`.
-- **Rebuilding the container image.** The image is built from the `Dockerfile`, which `make dockerfile` regenerates from the conda environments. Publish each rebuild under a new tag and update `container:` in `config/figures.yaml`: Snakemake caches images under a name derived from the tag, so a rebuilt image pushed under an existing tag is ignored wherever the old one has been downloaded.
+- **Rebuilding the container image.** The image is built from the `Dockerfile`, which `make dockerfile` regenerates from the conda environments. Publish each rebuild under a new tag, with its SIF file under the same tag plus `-sif` (`oras://`), and update `container:` and `container_sif:` in `config/figures.yaml`: Snakemake caches images under a name derived from the tag, so a rebuilt image pushed under an existing tag is ignored wherever the old one has been downloaded.
 - **Existing results tree.** If you already have the results tree, run `make link-data DATA_DIR=/path/to/results/root` instead of `make data`. It links each input file listed in `config/figure_inputs.txt` and does not modify the source.
 - **Not rebuildable from the download.** Supp. Fig. 25 (UMAPs of the Kong et al. 2023 colon immune cells) needs their single-cell data, which is not shared, so it is drawn by the analysis pipeline (`workflow/rules/crohns.smk`); `make fig-s25` says so. Everything else is built from the download alone: steps that start from raw or unshared data (genotype LD, the Crohn's literature and DEG tables, the AIFI label transfer, the scDeepID cell function scores) are in `workflow/`, and only their results are in the download.
 

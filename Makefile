@@ -64,15 +64,18 @@ dry-run:
 	$(MAKE) all ARGS=--dry-run
 
 # Download the container image to the file Snakemake looks for (the MD5 of its
-# URL, under APPTAINER_CACHEDIR or .snakemake/singularity), so that builds can
-# then run on nodes without internet access.
+# docker:// URL, under APPTAINER_CACHEDIR or .snakemake/singularity), so that
+# builds can then run on nodes without internet access. The ready-made SIF
+# (container_sif in config/figures.yaml) downloads several times faster than the
+# docker image, which apptainer has to convert; it is used when set.
 IMAGE = $(shell sed -n 's/^container: *"\(.*\)"/\1/p' config/figures.yaml)
+IMAGE_SIF = $(shell sed -n 's/^container_sif: *"\(.*\)"/\1/p' config/figures.yaml)
 pull:
 	@dir="$${APPTAINER_CACHEDIR:-.snakemake/singularity}"; \
 	name="$$(printf %s '$(IMAGE)' | md5sum | cut -c1-32).simg"; \
 	mkdir -p "$$dir"; \
 	if [ -e "$$dir/$$name" ]; then echo "$$dir/$$name is already present"; \
-	else cd "$$dir" && apptainer pull --name "$$name" '$(IMAGE)'; fi
+	else cd "$$dir" && apptainer pull --name "$$name" '$(or $(IMAGE_SIF),$(IMAGE))'; fi
 
 # Download and verify the data bundle. Runs the script directly, not through
 # Snakemake, so that it never runs inside the container.
