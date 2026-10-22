@@ -395,7 +395,7 @@ p_graph <- ggraph(layout_full) +
     data = pleio_nodes,
     aes(x = x, y = y, label = name),
     size = 2.5, max.overlaps = 40, fontface = "italic",
-    fill = alpha("white", 0.5), label.size = 0, label.padding = 0.1,
+    fill = alpha("white", 0.5), label.size = 0, linewidth = 0, label.padding = 0.1,
     segment.colour = "grey60", segment.size = 0.2,
     show.legend = FALSE
   ) +
@@ -438,7 +438,7 @@ p_violin <- ggplot(degree_df, aes(x = is_mr, y = betweenness)) +
     data = top_genes,
     aes(x = is_mr, y = betweenness, label = name),
     size = 2.5, max.overlaps = 20, fontface = "italic",
-    fill = alpha("white", 0.6), label.size = 0,
+    fill = alpha("white", 0.6), label.size = 0, linewidth = 0,
     segment.colour = "grey50", segment.size = 0.1,
     inherit.aes = FALSE,
     direction = "y", hjust = 1, xlim = c(-Inf, 1.8)
@@ -567,7 +567,7 @@ p_ms <- ggraph(layout_full) +
     size = 2.5, max.overlaps = 40, fontface = "plain", seed = 42,
     fill = alpha("white", 0.5),
     show.legend = FALSE, segment.colour = "grey60",
-    segment.size = 0.2, label.size = 0
+    segment.size = 0.2, label.size = 0, linewidth = 0
   ) +
   scale_fill_manual(
     name = "Enrichment term", values = ms_pal,
@@ -634,7 +634,10 @@ p_ms_pub <- scale_layer_sizes(p_ms, point = 1.4, text = 1.45) +
 p_ms_pub$layers[[2]]$aes_params$size <- 0.8  # background nodes
 # no label border (a zero-width border is drawn as a hairline in cairo PDFs)
 for (l in p_ms_pub$layers) {
-  if (inherits(l$geom, "GeomLabelRepel")) l$geom_params$label.size <- NA
+  if (inherits(l$geom, "GeomLabelRepel")) {
+    l$geom_params$label.size <- NA
+    l$aes_params$linewidth <- 0  # ggrepel >= 0.9.6 draws the border from linewidth
+  }
 }
 
 # Supplementary Fig. 12
@@ -718,7 +721,7 @@ p_graph <- ggraph(layout_full) +
     data = layout_cluster,
     aes(x = x, y = y, label = name), colour = "black",
     size = 2.5, max.overlaps = 40, fontface = "italic", fill = alpha("white", 0.5),
-    show.legend = FALSE, segment.colour = "grey60", segment.size = 0.2, label.size = 0
+    show.legend = FALSE, segment.colour = "grey60", segment.size = 0.2, label.size = 0, linewidth = 0
   ) +
   scale_fill_manual(name = "STRING cluster", values = cluster_pal) +
   scale_size_continuous(name = "N Phenotypes", range = c(2, 8)) +

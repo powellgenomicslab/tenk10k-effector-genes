@@ -173,7 +173,7 @@ p_pval <- ggplot(df_shared_genes[overlap != "Neither"],
     data = df_shared_genes[overlap == "TenK10K & Ray et al"],
     aes(label = Gene), size = 2, max.overlaps = Inf,
     box.padding = 0.3, point.padding = 0.2, segment.color = "grey50",
-    fill = alpha("white", 0.7), label.size = 0, label.padding = 0.1,
+    fill = alpha("white", 0.7), label.size = 0, linewidth = 0, label.padding = 0.1,
     segment.size = 0.1, fontface = "italic", show.legend = FALSE
   ) +
   geom_hline(yintercept = -log10(0.05), linetype = "dashed", colour = "grey40") +

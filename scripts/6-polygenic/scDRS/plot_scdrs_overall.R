@@ -403,7 +403,7 @@ set.seed(100)
                size = 0.2, alpha = 0.5, raster.dpi = 300) +
     geom_label_repel(
       aes(label = cell_label), color = "black", 
-      fontface = "bold", force = 1, label.size = NA, label.padding = 0.1,
+      fontface = "bold", force = 1, label.size = NA, linewidth = 0, label.padding = 0.1,
       size = 12/.pt, fill = alpha("white", 0.8),
       data = df_labels, max.overlaps = Inf
     ) +

@@ -36,8 +36,8 @@ p <- ggplot(tenk_not_novel_rel_res, aes(x = log10(prop_blood), y = log(OR))) +
   geom_smooth(method = "lm", se = FALSE, color = "black", linetype = "dashed", linewidth = 0.5) +
   geom_point(aes(fill = blood_derived), size = 4, shape = 21, stroke = 0.7) +
   scale_fill_manual(values = c("TRUE" = "#B03060", "FALSE" = "darkblue")) +
-  geom_label_repel(aes(label = category), size = 9/.pt, force = 5, min.segment.length = 0, border.colour = NA,
-    label.size = 0, max.overlaps = Inf, label.padding = 0.1, point.padding = unit(5, "lines"), fill = alpha("white", .8),
+  geom_label_repel(aes(label = category), size = 9/.pt, force = 5, min.segment.length = 0,
+    label.size = 0, linewidth = 0, max.overlaps = Inf, label.padding = 0.1, point.padding = unit(5, "lines"), fill = alpha("white", .8),
     seed = 1, max.time = Inf) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "lightgrey", linewidth = 0.5) +
   labs(
