@@ -193,7 +193,7 @@ top_annotation <- HeatmapAnnotation(
     ),
     gap = unit(3, "mm"),
     annotation_label = c(
-        n_MAGMA = expression(atop(Number ~ of ~ MAGMA ~ eGenes, (LFDR[MAGMA] ~ "<" ~ 0.05))),
+        n_MAGMA = expression(atop(Number ~ of ~ MAGMA ~ eGenes, LFDR[MAGMA] ~ "<" ~ 0.05)),
         n_SMR = "Number of MR genes",
         cell_type_specificity = str_wrap("Proportion of total MR genes", width = 20)
     ),
