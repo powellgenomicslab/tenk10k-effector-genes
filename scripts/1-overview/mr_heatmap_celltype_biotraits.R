@@ -165,6 +165,12 @@ col_fun <- colorRamp2(seq(quantile(msmr_mat, 0), quantile(msmr_mat, 1), len = le
 discrete_colors <- pal_npg()(5)
 
 # column (top) annotation
+
+# HeatmapAnnotation() evaluates its labels through do.call(). A plotmath label
+# survives only if evaluating it gives the expression back, as `~` does (it
+# builds a formula); atop() is defined the same way so a label can span two lines.
+atop <- function(a, b) substitute(atop(a, b))
+
 top_annotation <- HeatmapAnnotation(
   n_MAGMA = anno_barplot(
     genes_tested_per_trait_magma$`Number of MAGMA significant genes`,
@@ -186,7 +192,7 @@ top_annotation <- HeatmapAnnotation(
   ),
   gap = unit(3, "mm"),
   annotation_label = c(
-    n_MAGMA = expression(Number ~ of ~ MAGMA ~ eGenes ~ (LFDR[MAGMA] ~ "<" ~ 0.05)),
+    n_MAGMA = expression(atop(Number ~ of ~ MAGMA ~ eGenes, (LFDR[MAGMA] ~ "<" ~ 0.05))),
     n_SMR = "Number of MR genes",
     cell_type_specificity = str_wrap("Proportion of total MR genes", width = 20)
   ),
@@ -261,7 +267,7 @@ binned_color_pal <- setNames(paletteer::paletteer_d("MoMAColors::Exter"), 0:9)
 
 decile_legend <- Legend(
   at = break_labels,
-  title = expression(Number ~ of ~ MR ~ genes ~ (LFDR[MR] ~ "<" ~ 0.05 * "," ~ p[HEIDI] ~ ">=" ~ 0.05)),
+  title = expression(atop(Number ~ of ~ MR ~ genes, (LFDR[MR] ~ "<" ~ 0.05 * "," ~ p[HEIDI] ~ ">=" ~ 0.05))),
   type = "grid",
   title_gp = gpar(fontsize = 10, fontface = "plain", fontfamily = "Helvetica"),
   labels_gp = gpar(fontfamily = "Helvetica"),
